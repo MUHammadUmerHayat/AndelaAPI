@@ -15,11 +15,11 @@ module.exports = function(app) {
 
     //instructor updates his personal info
     app.route('/instructor/updateInfo')
-        .post(users.requiresLogin, instructor.checkRights, instr.updateInfo);
+        .post(users.requiresLogin, instructor.checkRights, instructor.updateInfo);
 
     //instructor can delete his photo avatar
     app.route('/instructor/:userId/deletePhoto')
-        .delete(users.requiresLogin, instructor.checkRights, instr.deletePhoto);
+        .delete(users.requiresLogin, instructor.checkRights, instructor.deletePhoto);
 
 
     app.route('/instructor/fellows')
@@ -31,7 +31,7 @@ module.exports = function(app) {
     
     //instructor can add skills for himself
     app.route('/instructor/skill')
-        .post(users.requiresLogin, instructor.checkRights, instr.addSkills);
+        .post(users.requiresLogin, instructor.checkRights, instructor.addSkills);
     
     //admin can checkout bootcamp instructors
     app.route('/instructor/camp/:campId')
