@@ -5,21 +5,17 @@
  */
 var users = require('../../app/controllers/users'),
     admin = require('../../app/controllers/admin'),
-    instr = require('../../app/controllers/instructor');
+    instructor = require('../../app/controllers/instructor');
 
 
 module.exports = function(app) {
-    // Admin Routes
+
+    // Setting up the Admin api
     app.route('/admin')
         .get(users.requiresLogin, admin.checkPermission, admin.listApplicants);
     
-    //create users
     app.route('/admin/create')
         .post(users.requiresLogin, admin.checkPermission, admin.createUsers);
-
-    //download applicant's cv
-    app.route('/admin/download')
-        .get(users.requiresLogin, admin.checkPermission, admin.download);
 
     app.route('/admin/trainees')
         .get(users.requiresLogin, admin.checkPermission, admin.listTrainees);
@@ -36,59 +32,50 @@ module.exports = function(app) {
     app.route('/admin/admins')
         .get(users.requiresLogin, admin.checkPermission, admin.listAdmins);
 
-    app.route('/admin/appt/:apptId')
-        .get(users.requiresLogin, admin.checkPermission, admin.apptRead) //get one particular applicant
-        .put(users.requiresLogin, admin.checkPermission, admin.changeStatus) // change applicant's status
+    app.route('/admin/applicant/:applicantId')
+        .get(users.requiresLogin, admin.checkPermission, admin.applicantRead) 
+        .put(users.requiresLogin, admin.checkPermission, admin.changeStatus)
         .put(users.requiresLogin, admin.checkPermission, admin.updateApplicantDetails);
 
-    //change applicant/fellow/trainee role
-    app.route('/admin/appt/:apptId/role')
+    app.route('/admin/applicant/:applicantId/role')
         .put(users.requiresLogin, admin.checkPermission, admin.changeRole);
 
-    app.route('/admin/instr/:instrId')
-        .get(users.requiresLogin, admin.checkPermission, admin.instrRead)  //get one particular instructor
-        .put(users.requiresLogin, admin.checkPermission, admin.changeInstrRole); //change instructor/admin role
+    app.route('/admin/instructor/:instructorId')
+        .get(users.requiresLogin, admin.checkPermission, admin.instructorRead)  
+        .put(users.requiresLogin, admin.checkPermission, admin.changeInstrRole); 
 
     app.route('/admin/user/:userId')
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteUser);
 
-    //current work placement status of a fellow
-    // app.route('/admin/fellow/:userId/placement')
-    //     .put(users.requiresLogin, admin.checkPermission, admin.placementStatus);
-    
-    //for adding placements of fellow
     app.route('/admin/fellow/:userId/placements')
         .get(users.requiresLogin, admin.checkPermission, admin.getPlacements)
         .post(users.requiresLogin, admin.checkPermission, admin.addPlacement);
 
     app.route('/admin/fellow/:userId/placements/:placementId')
-        .get(users.requiresLogin, admin.checkPermission, admin.getPlacement) //one particular placement
+        .get(users.requiresLogin, admin.checkPermission, admin.getPlacement) 
         .put(users.requiresLogin, admin.checkPermission, admin.editPlacement)
         .delete(users.requiresLogin, admin.checkPermission, admin.deletePlacement);
-    
-    //create and list bootcamps
+
+    // Setting up Camp Api
     app.route('/admin/camp')
         .get(users.requiresLogin, admin.checkPermission,  admin.bootCamps)
         .post(users.requiresLogin, admin.checkPermission, admin.createBootCamp);
     
     app.route('/admin/camp/:campId')
-        .get(users.requiresLogin, admin.checkPermission, admin.read) //one particular bootcamp
+        .get(users.requiresLogin, admin.checkPermission, admin.read) 
         .put(users.requiresLogin, admin.checkPermission, admin.editCamp)
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteCamp);
 
-    //create and get skill categories
+    // Setting up Skills Api
     app.route('/admin/skillCategories')
         .get(users.requiresLogin, admin.checkPermission, admin.listSkillCategories)
         .post(users.requiresLogin, admin.checkPermission, admin.createSkillCategory);
 
-    //edit and delete skill categories
-    app.route('/admin/skillCategories/:skillCategoryId')
+     app.route('/admin/skillCategories/:skillCategoryId')
         .get(users.requiresLogin, admin.checkPermission, admin.getSkillCategory)
         .put(users.requiresLogin, admin.checkPermission, admin.updateSkillCategory)
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteSkillCategory);
-        //.delete(users.requiresLogin, admin.checkPermission, admin.deleteSkillCategory);
-
-    //Skills API
+       
     app.route('/admin/skills')
         .get(users.requiresLogin, admin.checkPermission, admin.listSkills);
 
@@ -97,38 +84,39 @@ module.exports = function(app) {
         .post(users.requiresLogin, admin.checkPermission, admin.createSkill);
         
 
-    //add a skill rating to fellows
     app.route('/admin/trainee/:traineeId/skills/:skillId')
-        .put(users.requiresLogin, admin.checkPermission, instr.editFellowRating);
+        .put(users.requiresLogin, admin.checkPermission, instructor.editFellowRating);
 
-    
-    //list and create tests
+    // Setting up Test Api
     app.route('/admin/test')
         .get(users.requiresLogin, admin.checkPermission, admin.listTests)
         .post(users.requiresLogin, admin.checkPermission, admin.createTests);
 
     app.route('/admin/test/:testId')
-        .get(users.requiresLogin, admin.checkPermission, admin.testRead) //one particular test
+        .get(users.requiresLogin, admin.checkPermission, admin.testRead) 
         .post(users.requiresLogin, admin.checkPermission, admin.addQuestion)
         .put(users.requiresLogin, admin.checkPermission, admin.updateTestName)
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteTest);
 
-    app.route('/admin/test/:testId/:questId')
+    app.route('/admin/test/:testId/:questionId')
         .put(users.requiresLogin, admin.checkPermission, admin.updateQuestion)
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteQuestion);
 
-    app.route('/admin/test/:testId/:questId/options')
+    app.route('/admin/test/:testId/:questionId/options')
         .post(users.requiresLogin, admin.checkPermission, admin.addOption);
-        //.put( admin.updateChoices);
-
-    app.route('/admin/test/:testId/:questId/:optionId')
+        
+    app.route('/admin/test/:testId/:questionId/:optionId')
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteOption);
 
+    //Setting up applicant's cv api
+    app.route('/admin/download')
+        .get(users.requiresLogin, admin.checkPermission, admin.download);
+
     // Finish by binding the applicant middleware
-    app.param('apptId', admin.apptByID);
+    app.param('applicantId', admin.applicantByID);
 
     // Finish by binding the instructor middleware
-    app.param('instrId', admin.instrByID);
+    app.param('instructorId', admin.instructorByID);
 
     // Finish by binding the delete user middleware
     app.param('userId', users.userByID);
@@ -140,12 +128,15 @@ module.exports = function(app) {
     app.param('testId', admin.testByID);
 
     // Finish by binding the question middleware
-    app.param('questId', admin.questByID);
+    app.param('questionId', admin.questionByID);
 
     // Finish by binding the placement middleware
     app.param('placementId', admin.placementByID);
 
     // Finish by binding the skill category middleware
     app.param('skillCategoryId', admin.skillCategoryByID);
+    app.param('skillId', admin.skillById);
+
+    // Finish by binding the skill middleware
     app.param('skillId', admin.skillById);
 };
