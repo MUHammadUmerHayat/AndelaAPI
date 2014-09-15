@@ -5,70 +5,55 @@
  */
 var users = require('../../app/controllers/users'),
     admin = require('../../app/controllers/admin'),
-    instr = require('../../app/controllers/instructor');
+    instructor = require('../../app/controllers/instructor');
 
 module.exports = function(app) {
     // Instructor Routes
-    app.route('/instr')
-        .get(users.requiresLogin, instr.checkRights, admin.listTrainees);
-        // done
+    app.route('/instructor')
+        .get(users.requiresLogin, instructor.checkRights, admin.listTrainees);
+        
 
     //instructor updates his personal info
-    app.route('/instr/updateInfo')
-        .post(users.requiresLogin, instr.checkRights, instr.updateInfo);
+    app.route('/instructor/updateInfo')
+        .post(users.requiresLogin, instructor.checkRights, instr.updateInfo);
 
     //instructor can delete his photo avatar
-    app.route('/instr/:userId/deletePhoto')
-        .delete(users.requiresLogin, instr.checkRights, instr.deletePhoto);
+    app.route('/instructor/:userId/deletePhoto')
+        .delete(users.requiresLogin, instructor.checkRights, instr.deletePhoto);
 
 
-    app.route('/instr/fellows')
-        .get(users.requiresLogin, instr.checkRights, admin.listFellows);
-        // done
+    app.route('/instructor/fellows')
+        .get(users.requiresLogin, instructor.checkRights, admin.listFellows);
+        
 
-    app.route('/instr/bootcamps')
-        .get(users.requiresLogin, instr.checkRights, admin.bootCamps);
-        // done
+    app.route('/instructor/bootcamps')
+        .get(users.requiresLogin, instructor.checkRights, admin.bootCamps);
     
     //instructor can add skills for himself
-    app.route('/instr/skill')
-        .post(users.requiresLogin, instr.checkRights, instr.addSkills);
-        // not done
-
-    //instructor can add skills for himself
-    // app.route('/instr/:userId/expr')
-    //     .put(users.requiresLogin, instr.checkRights, instr.updateExp);
-
-    //instructor can edit and delete his own rating
-    // app.route('/instr/skill/:userId/:skillId')
-    //     .put(users.requiresLogin, instr.checkRights, instr.editRating)
-    //     .delete(users.requiresLogin, instr.checkRights, instr.deleteRating);
-    //     // not done
-
-    app.route('/instr/camp/:campId')
-        .get(users.requiresLogin, instr.checkRights, admin.read);
-
-    app.route('/instr/trainee/:traineeId')
-        .get(users.requiresLogin, instr.checkRights, instr.readTrainee)
-        .put(users.requiresLogin, instr.checkRights, instr.selectFellow)
-        .post(users.requiresLogin, instr.checkRights, instr.createAssmt);
-
-    app.route('/instr/trainee/:traineeId/:assmtId')
-        .put(users.requiresLogin, instr.checkRights, instr.isCreator, instr.updateAssmt)
-        .delete(users.requiresLogin, instr.checkRights, instr.isCreator, instr.deleteAssmt);
-
-    // app.route('/instr/trainee/:traineeId/rate')
-    //      .post( users.requiresLogin, instr.checkRights, instr.rateFellow);
+    app.route('/instructor/skill')
+        .post(users.requiresLogin, instructor.checkRights, instr.addSkills);
     
-    // app.route('/instr/trainee/:traineeId/rate/:skillId')
-    //     .put(users.requiresLogin, instr.checkRights, instr.editRating)
-    //     .delete(users.requiresLogin, instr.checkRights, instr.deleteRating);
+    //admin can checkout bootcamp instructors
+    app.route('/instructor/camp/:campId')
+        .get(users.requiresLogin, instructor.checkRights, admin.read);
+
+    //instructor can look for a fellow , set assesment...
+    app.route('/instructor/trainee/:traineeId')
+        .get(users.requiresLogin, instructor.checkRights, instructor.readTrainee)
+        .put(users.requiresLogin, instructor.checkRights, instructor.selectFellow)
+        .post(users.requiresLogin, instructor.checkRights, instructor.createAssmt);
+
+    //instructor can make assesment updates
+    app.route('/instructor/trainee/:traineeId/:assmtId')
+        .put(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.updateAssmt)
+        .delete(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.deleteAssmt);
+
 
     // Finish by binding the trainee middleware
-    app.param('traineeId', instr.traineeByID);
+    app.param('traineeId', instructor.traineeByID);
 
     // Finish by binding the assessment middleware
-    app.param('assmtId', instr.assessmentByID);
+    app.param('assmtId', instructor.assessmentByID);
 
     // Finish by binding the skillset middleware
     app.param('skillId', admin.skillById);
