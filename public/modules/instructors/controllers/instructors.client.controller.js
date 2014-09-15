@@ -44,7 +44,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		$scope.listBootcamps = function() {
 
 			$scope.appl_length= 0;
-		  	$http.get('/instr/bootcamps').success(function(response) {
+		  	$http.get('/instructor/bootcamps').success(function(response) {
 		    // If successful show success message and clear form
 		    	$scope.success = true;
 		    	$scope.bootcamps = response;
@@ -62,9 +62,9 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 				$location.path('/');
 			}else{
 			
-			  	$http.get('/instr/camp/' + $stateParams.bootcampId).success(function(response) {
+			  	$http.get('/instructor/camp/' + $stateParams.bootcampId).success(function(response) {
 			    // If successful show success message and clear form
-			    	console.log('/instr/camp/' + $stateParams.bootcampId);
+			    	console.log('/instructor/camp/' + $stateParams.bootcampId);
 			    	$scope.success = true;
 			    	$scope.bootcamp = response;
 			    	console.log($scope.bootcamp);
@@ -80,7 +80,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		// for trainees
 		$scope.listTrainees = function() {
 			console.log('inside listcontroller');
-		  	$http.get('/instr').success(function(response) {
+		  	$http.get('/instructor').success(function(response) {
 		    // If successful show success message and clear form
 		    // $scope.user;
 		    console.log('working list');

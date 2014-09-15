@@ -8,7 +8,10 @@ var users = require('../../app/controllers/users'),
     instructor = require('../../app/controllers/instructor');
 
 module.exports = function(app) {
-    // Instructor Routes
+
+    /** 
+    * Instructor Routes
+    **/
     app.route('/instructor')
         .get(users.requiresLogin, instructor.checkRights, admin.listTrainees);
         
@@ -21,21 +24,26 @@ module.exports = function(app) {
     app.route('/instructor/:userId/deletePhoto')
         .delete(users.requiresLogin, instructor.checkRights, instructor.deletePhoto);
 
-
-    app.route('/instructor/fellows')
-        .get(users.requiresLogin, instructor.checkRights, admin.listFellows);
-        
-
-    app.route('/instructor/bootcamps')
-        .get(users.requiresLogin, instructor.checkRights, admin.bootCamps);
-    
-    //instructor can add skills for himself
+     //instructor can add skills for himself
     app.route('/instructor/skill')
         .post(users.requiresLogin, instructor.checkRights, instructor.addSkills);
     
+
+    /**
+    *   Instructors Bootcamps Routes and Fellows
+    **/
+    app.route('/instructor/bootcamps')
+        .get(users.requiresLogin, instructor.checkRights, admin.bootCamps);
+
     //admin can checkout bootcamp instructors
     app.route('/instructor/camp/:campId')
         .get(users.requiresLogin, instructor.checkRights, admin.read);
+    
+   /**
+   *    Instructor Fellow and Trainee
+   **/
+     app.route('/instructor/fellows')
+        .get(users.requiresLogin, instructor.checkRights, admin.listFellows);
 
     //instructor can look for a fellow , set assesment...
     app.route('/instructor/trainee/:traineeId')
