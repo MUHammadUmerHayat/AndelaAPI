@@ -1,4 +1,4 @@
-<section data-ng-controller="InstructorsController" data-ng-init="listTrainees()">
+<section data-ng-controller="InstructorsController" data-ng-init="listTrainees()" class="pad">
     <div class="container"  data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">

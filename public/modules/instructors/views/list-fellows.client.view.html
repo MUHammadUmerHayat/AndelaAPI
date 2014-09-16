@@ -1,4 +1,4 @@
-<section data-ng-controller="InstructorsController" data-ng-init="listFellows()">
+<section data-ng-controller="InstructorsController" data-ng-init="listFellows()" class="pad">
     <div class="container"  data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
@@ -9,21 +9,36 @@
                 <table class="list">
                     <thead>
                       <tr>
+                        <th>#</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
-                        <th>Score</th>
+                        <th>Skills Summary</th>
+                        <th>Placement Status</th>
+                        <th>Needs work</th>
                         <th></th>
                         <th></th>
                       </tr>
                     </thead>
                     <tbody class="capitalize">
                         <tr data-ng-repeat="fellow in fellows" data-ng-href="/#!/instructors/fellows/{{fellow._id}}">
-                            <td data-ng-bind="fellow.firstName"></td>
-                            <td data-ng-bind="fellow.lastName"></td>
-                            <td data-ng-bind="fellow.email"></td>
-                            <td data-ng-bind="fellow.testScore"></td>
-                            <td><a class="btn btn-primary btn-xs" data-ng-href="/#!/instructors/fellows/{{fellow._id}}" ng-click="view(fellow)">View</a></td>          
+                            <td data-ng-href="/#!/instructors/fellows/{{fellow._id}}"><a>{{$index + 1}}</a></td>
+                            <td data-ng-href="/#!/instructors/fellows/{{fellow._id}}"><a data-ng-bind="fellow.firstName"></a></td>
+                            <td data-ng-href="/#!/instructors/fellows/{{fellow._id}}"><a data-ng-bind="fellow.lastName"></a></td>
+                            <td data-ng-href="/#!/instructors/fellows/{{fellow._id}}"><a data-ng-bind="fellow.email"></a></td>
+                            <td data-ng-href="/#!/instructors/fellows/{{fellow._id}}">
+                              <a ng-repeat="(key, val) in fellow.skillSummary" 
+                              >
+                               <svg height="45px" width= "45px" viewBox="0 0 32 32" tooltip="{{key + ', ' + getSkillLevel(val) | uppercase}}">
+                                <use class="{{getSkillLevel(val)}}" xlink:href="{{ '#' + key}}"></use>
+                               </svg>
+
+                              </a>
+                            </td>
+                            <td  data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.available"><a></a></td>
+                            <td  data-ng-href="/#!/instructors/fellows/{{fellow._id}}">{{get_availability_date(fellow) | date}}</td>
+                            <td><button ng-click="deleteFellow(fellow._id, $index)" class="btn btn-danger btn-xs">Delete User</button></td>
+                            <td data-ng-href="/#!/instructors/fellows/{{fellow._id}}"><a data-ng-bind="fellow."></a></td>      
                         </tr>               
                     </tbody>
                 </table>
