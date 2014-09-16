@@ -26,9 +26,7 @@ exports.checkPermission = function(req, res, next) {
     if (req.user._type === 'Instructor' && req.user.role === 'admin') {
         next();
     } else { 
-        return res.send(403, {
-              message: 'User is not authorized'
-        });
+        res.send(403, { message: 'You are not an Admin' });
     }
 };
 
@@ -40,7 +38,7 @@ exports.createUsers = function(req, res, next) {
    instructor.provider ='local';
    
    if (req.body.role !== 'instructor' && req.body.role !== 'admin') {
-       return res.send(400, {
+       res.send(400, {
             message: 'Error: Only admin or instructors can be created'
        });
    } else {
@@ -49,7 +47,7 @@ exports.createUsers = function(req, res, next) {
            instructor.password = undefined;
            instructor.salt = undefined;
            if (err) {
-               return res.send(400, { message: 'error: could not create user' });
+               res.send(400, { message: err });
            } else {
                res.jsonp(instructor);
            }
@@ -62,13 +60,10 @@ exports.createUsers = function(req, res, next) {
 */
 exports.changeStatus = function(req, res) {
       var applicant = req.applicant;
-      // console.log('Status Change Init');
-      //  console.log('Applicant req init');
-      //  console.log('appt req: ' + req.applicant);
       
       if (req.body.status.name === 'rejected') { 
         if (!req.body.status.reason || req.body.status.reason.length === 0) {
-           return res.send(400, {
+           res.send(400, {
               message: 'Please give reason why applicant was rejected'
            });
         }
@@ -76,7 +71,6 @@ exports.changeStatus = function(req, res) {
 
       if (req.body.status.name === 'selected for bootcamp') {
           applicant.role = 'trainee';
-          console.log('role changed to trainee');
       }
 
       if (applicant.role === 'trainee' && req.body.status.name !== 'selected for bootcamp' ) {
@@ -91,19 +85,15 @@ exports.changeStatus = function(req, res) {
 
       
       applicant.status.name = req.body.status.name;
-       console.log('status: ' + req.body.status.name);
 
       Applicant.update(
-         {_id: req.params.apptId },
+         {_id: req.params.applicantId },
          {$set: {'role': applicant.role, 'status.name': applicant.status.name, 'status.reason': applicant.status.reason}},
-          function (err, appt) {
+          function (err) {
              if (err) {
-                return res.send(400, {message: err });
+                return res.send(500, {message: err });
              } else {
                  instr.returnJson(res, applicant._id);
-                 console.log('response');
-                 console.log('res: ' + res.status);
-                 //res.jsonp(appt);
              }
           }
 
@@ -117,18 +107,17 @@ exports.updateApplicantDetails = function(req, res) {
     var applicant = req.applicant;
     applicant = _.extend(applicant, req.body);
 
-     Applicant.update(
-         {_id: req.params.apptId },
+    Applicant.update(
+         {_id: req.params.applicantId },
          {$set: {'firstName': applicant.firstName, 'lastName': applicant.lastName, 'email': applicant.email}},
-          function (err, appt) {
+          function (err) {
              if (err) {
-                return res.send(400, {message: err });
+                res.send(500, { message: err });
              } else {
                  instr.returnJson(res, applicant._id);
              }
           }
-
-      ); 
+    ); 
 };
 
 /**
@@ -139,7 +128,7 @@ exports.changeRole = function(req, res) {
       var role = req.body.role;
 
       if (role === 'instructor' || role === 'admin') {
-          return res.send(400, {
+          res.send(400, {
                message: 'you cannot change user to an admin or instructor'
           });
       } else {
@@ -165,11 +154,10 @@ exports.changeRole = function(req, res) {
                       'status': { name: applicant.status.name, reason: applicant.status.reason }
                     }
              },
-             function (err, appt) {
+             function (err) {
                  if (err) {
-                    return res.send(400, { message: 'operation failed' });
+                    res.send(500, { message: 'operation failed' });
                  } else {
-                     //res.jsonp(appt);
                      instr.returnJson(res, applicant._id);
                  }
              }
@@ -184,7 +172,7 @@ exports.changeInstrRole = function(req, res) {
       var instructor = req.instructor;
       
       if (req.body.role !== 'instructor' && req.body.role !== 'admin'){
-          return res.send(400, {
+          res.send(400, {
                 message: 'user\'s role can only be changed to admin or instructor'
           });
       } else {
@@ -195,9 +183,8 @@ exports.changeInstrRole = function(req, res) {
              {$set: {'role': instructor.role } },
               function (err) {
                  if (err) {
-                    return res.send(400, {message: 'error occurred while trying to change role' });
+                    return res.send(500, { message: 'error occurred while trying to change role' });
                  } else {
-                     //res.jsonp(instructor);
                      instr.returnJson(res, instructor._id);
                  }
               }
@@ -212,17 +199,16 @@ exports.deleteUser = function(req, res) {
     var person = req.profile;
     
     if (person._type === 'Instructor' && person.role === 'admin') {
-        return res.send(400, {
+        res.send(400, {
             message: 'You cannot delete another admin'
         });
     } else {
         person.remove(function(err, user) {
             if (err) {
-                return res.send(400, {
+                return res.send(500, {
                     message: 'could not delete user'
                 });
             } else {
-                //res.jsonp(user);
                 instr.returnJson(res, person._id);
             }
         });
@@ -237,8 +223,8 @@ exports.createBootCamp = function(req, res) {
     
     camp.save(function(err) {
         if (err) {
-            return res.send(400, {
-                message: err
+            res.send(500, {
+                message: 'bootcamp could not be created at this time'
             });
         } else {
             res.jsonp(camp);
@@ -252,11 +238,10 @@ exports.createBootCamp = function(req, res) {
 exports.bootCamps = function(req, res) {
      Bootcamp.find().sort('-start_date').exec(function(err, camps){
          if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Could not find bootcamps'
             });
          } else {
-            console.log(camps);
             res.jsonp(camps);
          }
      });  
@@ -281,9 +266,8 @@ exports.editCamp = function(req, res) {
         }, 
         function(err) {
             if (err) {
-               return res.send(400, {message: 'could not edit camp' });
+               res.send(500, { message: 'could not edit camp' });
             } else {
-               //res.jsonp(user);
                instr.jsonCamp(res, camp._id);
             }
         }
@@ -299,13 +283,13 @@ exports.deleteCamp = function(req, res) {
 
     camp.remove(function(err, bootCamp) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Couldn\'t delete camp'
             });
         } else {
             User.find().where({campId: campId}).remove(function(err, user) {
                  if (err) {
-                    return res.send(400, {
+                    res.send(500, {
                         message: 'Couldn\'t delete user'
                     });
                  } else {
@@ -326,14 +310,14 @@ exports.read = function(req, res) {
 /**
  * Show the current applicant/trainee/fellow
  */
-exports.apptRead = function(req, res) {
+exports.applicantRead = function(req, res) {
     res.jsonp(req.applicant);
 };
 
 /**
  * Show the current instructor/admin
  */
-exports.instrRead = function(req, res) {
+exports.instructorRead = function(req, res) {
     res.jsonp(req.instructor);
 };
 
@@ -341,22 +325,21 @@ var doListing = function(req, res, schema, whichRole) {
   if (schema === 'Applicant') {
      Applicant.find().where({role: whichRole}).populate('campId').populate('placements').exec(function (err, users) {
          if (err) {
-            return res.send(400, {
+            res.send(400, {
                 message: 'No ' + whichRole + ' found'
             });
          } else {
             Placement.populate(users.placements, { path:'placement'},
-              function(err, data) {
-                res.jsonp(users);
-              }
-            );
-            
+                function(err, data) {
+                   res.jsonp(users);
+                }
+            );  
          }
      });
   } else {
       Instructor.find().where({role: whichRole}).exec(function (err, users) {
          if (err) {
-            return res.send(400, {
+            res.send(500, {
                message: 'No ' + whichRole + ' found'
             });
           } else {
@@ -434,11 +417,11 @@ exports.createTests = function(req, res) {
     }
     var test = new Test({testName: req.body.testName, questions: questions});
     test.save(function(err) {
-      if (err) {
-          return res.send(400, { message: err });
-      } else {
-          res.jsonp(test);
-      }
+          if (err) {
+              res.send(500, { message: err });
+          } else {
+              res.jsonp(test);
+          }
     });
 };
 
@@ -451,7 +434,7 @@ exports.updateTestName = function(req, res) {
 
     test.save(function(err) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: err
             });
         } else {
@@ -469,7 +452,7 @@ exports.updateQuestion = function(req, res) {
 
     req.test.save(function(err, test) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Error: couldn\'t update question'
             });
         } else {
@@ -503,7 +486,7 @@ exports.addQuestion = function(req, res) {
      
      test.save(function(err, test) {
           if (err) {
-              return res.send(400, {
+              res.send(500, {
                   message: err
               });
           } else {
@@ -523,7 +506,7 @@ exports.addOption = function(req, res) {
      question.questOptions.push(new Options({option: option, answer: false}));
      test.save(function(err, test) {
         if (err) {
-           return res.send(400, { message: err });
+           res.send(500, { message: err });
         } else {
             res.jsonp(test);
         }
@@ -538,7 +521,7 @@ exports.deleteTest = function(req, res) {
 
     test.remove(function(err) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Couldn\'t delete test'
             });
         } else {
@@ -557,7 +540,7 @@ exports.deleteQuestion = function(req, res, next) {
     question.remove();
     test.save(function(err) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Couldn\'t delete question'
             });
         } else {
@@ -576,26 +559,24 @@ exports.deleteOption = function(req, res) {
 
     var option = question.questOptions.id(id);
     if (question.questOptions.length === 2) {
-        return res.send(400, { 
+        res.send(400, { 
           message: 'A question can only have a minimum of two options'
         });
-    } else {
-        if (option.answer === true) {
-            return res.send(400, { 
+    } else if (option.answer === true) {
+            res.send(400, { 
                 message: 'This option is the answer to the question. Change the answer before deleting it'
             });
-        } else {
-             option.remove();
-             test.save(function(err, test) {
-               if (err) {
-                    return res.send(400, {
+    } else {
+          option.remove();
+          test.save(function(err, test) {
+              if (err) {
+                    res.send(500, {
                         message: 'Couldn\'t delete option'
                     });
-               } else {
+              } else {
                     res.jsonp(test);
-               }
-             });
-        }
+              }
+          });
     }
 };
 
@@ -606,26 +587,24 @@ exports.placementStatus = function(req, res) {
     var profile = req.profile;
     
     if (profile.role === 'fellow') {
-
        Applicant.update({_id: profile._id}, 
           {$set: { 'currPlacement':
-                  { 'status': req.body.status,
+                   { 'status': req.body.status,
                      'startDate': req.body.startDate,
                      'endDate': req.body.endDate
-                  }
+                   }
                  }
           }, 
-          function(err, fellow) {
+          function(err) {
                 if (err) {
-                   return res.send(400, { message: 'Couldn\'t save placement status' });
+                   res.send(400, { message: 'Couldn\'t save placement status' });
                 } else {
-                   //res.jsonp(fellow);
                    instr.returnJson(res, profile._id);
                 }
           }
        ); 
     } else {
-        return res.send(400, { message: 'Only a fellow\'s placement status can be updated' });
+        res.send(400, { message: 'Only a fellow\'s placement status can be updated' });
     }
 };
 
@@ -670,7 +649,7 @@ exports.addPlacement = function(req, res) {
  * Admin edits fellow's work history
  */
 exports.editPlacement = function(req, res) {
-   var placement = req.placement,
+    var placement = req.placement,
         profile = req.profile;
 
     placement = _.extend(placement, req.body);
@@ -687,9 +666,8 @@ exports.editPlacement = function(req, res) {
          },
          function (err) {
              if (err) {
-                return res.send(400, { message: 'error occurred trying to update placement' });
+                res.send(500, { message: 'error occurred trying to update placement' });
              } else {
-                 //res.jsonp(instructor);
                  instr.returnJson(res, profile._id);
              }
          }
@@ -700,11 +678,11 @@ exports.editPlacement = function(req, res) {
  * A particular work history extracted from the whole set 
  */
 exports.getPlacement = function(req, res)  {
-   res.jsonp(req.placement);
+    res.jsonp(req.placement);
 }
 
 exports.getPlacements = function(req, res)  {
-  res.jsonp(req.profile.placements);
+    res.jsonp(req.profile.placements);
 }
 
 /**
@@ -720,11 +698,10 @@ exports.deletePlacement = function(req, res) {
         { $pull: { 'placements': { '_id': placement._id } }  
         }, function (err) {
           if (err) {
-            return res.send(400, {
-              message: 'Couldn\'t delete placement'
-            });
+             res.send(500, {
+                message: 'Couldn\'t delete placement'
+             });
           } else {
-              //res.jsonp(user);
               instr.returnJson(res, profile._id);
           }
         }
@@ -748,7 +725,7 @@ exports.download = function(req, res) {
 exports.listTests = function(req, res) {
     Test.find().sort('-created').exec(function(err, tests) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list test'
             });
         } else {
@@ -770,7 +747,7 @@ exports.testRead = function(req, res) {
 exports.listSkillCategories = function(req, res){
   SkillCategory.find().sort('-created').exec(function(err, skillCategories) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list skillCategories'
             });
         } else {
@@ -784,7 +761,7 @@ exports.createSkillCategory = function(req, res){
   var skillCategory = new SkillCategory(req.body);
   skillCategory.save(function(err, result) {
          if (err) {
-              return res.send(400, {
+              res.send(500, {
                   message: 'Couldn\'t create skillCategory'
               });
          } else {
@@ -803,7 +780,7 @@ exports.updateSkillCategory = function(req, res){
          {$set: {name: req.body.name}},
          function (err) {
              if (err) {
-                return res.send(400, { message: 'error occurred trying to update skill category' });
+                res.send(500, { message: 'error occurred trying to update skill category' });
              } else {
                 req.skillCategory.name = req.body.name;
                 res.jsonp(req.skillCategory);
@@ -816,7 +793,7 @@ exports.updateSkillCategory = function(req, res){
 exports.listSkills = function(req, res){
   Skill.find().populate('category').exec(function(err, skills) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list skillCategories'
             });
         } else {
@@ -828,7 +805,7 @@ exports.listSkills = function(req, res){
 exports.listSkillsByCategory = function(req, res){
   Skill.find().where('category').equals(req.skillCategory._id).exec(function(err, skills){
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list skills'
             });
         } else {
@@ -841,7 +818,7 @@ exports.createSkill = function(req, res){
   var skill = new Skill({name: req.body.name, category: req.skillCategory._id});
   skill.save(function(err, result) {
      if (err) {
-          return res.send(400, {
+          res.send(500, {
               message: 'Couldn\'t create skill'
           });
      } else {
@@ -853,7 +830,7 @@ exports.createSkill = function(req, res){
 exports.deleteSkillCategory = function(req, res) {
     SkillCategory.remove(function(err, category) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Couldn\'t delete category'
             });
         } else {
@@ -871,24 +848,23 @@ exports.deleteSkillCategory = function(req, res) {
 /**
  * Applicant middleware
  */
-exports.apptByID = function(req, res, next, id)  {
+exports.applicantByID = function(req, res, next, id)  {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('placements').populate('skillSet.skill').exec(function(err, user) {
         if (err) return next(err);
         if (!user) return next(new Error('User is not an applicant'));
         Placement.populate(user.placements, { path:'placement'},
-          function(err, data) {
-            req.applicant = user;
-            next();
-          }
-        );
-        
+            function(err, data) {
+                req.applicant = user;
+                next();
+            }
+        );    
     });
 };
 
 /**
  * Instructor middleware
  */
-exports.instrByID = function(req, res, next, id)  {
+exports.instructorByID = function(req, res, next, id)  {
      Instructor.findById(id).where({_type: 'Instructor'}).exec(function(err, user) {
          if (err) return next(err);
          if (!user) return next(new Error('User is not an instructor'));
@@ -937,7 +913,7 @@ exports.placementByID = function(req, res, next, id) {
 /**
  * Question middleware
  */
-exports.questByID = function(req, res, next, id) {
+exports.questionByID = function(req, res, next, id) {
     req.question = req.test.questions.id(id);
     next();
 };

@@ -6,7 +6,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		$scope.user = Authentication.user;
 
 
-				// instructor sigin 
+		// instructor sigin 
 		$scope.instructor_signin = function() {
 			$http.post('/auth/signin', $scope.credentials).success(function(response) {
 				//If successful we assign the response to the global user model
@@ -205,7 +205,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		};
 		
 
- // Upload Image
+        // Upload Image
 	    $scope.onFileSelect = function($file) {
 			$scope.file = $file;
 			if ($scope.file) { 
@@ -217,7 +217,6 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 			}
 	    };
 
-
 	    $scope.removeAlert = function(message) {
             if (message === "error") {
                 $scope.error = null;
@@ -226,9 +225,8 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
             }
         };
 
-
         // upload file
-		$scope.create = function() {;
+		$scope.create = function() {
 			$scope.success = null;
 			$scope.error = null;
 			$scope.upload = $upload.upload({
@@ -237,7 +235,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 	            data: $scope.details,
 	            file: $scope.file
 	        }).success(function(response) {
-	        	// $scope.instr = response;
+	        	$scope.user.photo = response.photo;
 	            $scope.success = 'Your details have been updated successfully';
 	        }).error(function(err) {
 	        	$scope.error = err.message;;
