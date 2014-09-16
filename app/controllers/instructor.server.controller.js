@@ -92,7 +92,6 @@ exports.updateAssmt = function(req, res) {
           }, 
           function(err) {
               if (err) {
-
                  res.send(500, { message: err });
               } else {
                  exports.returnJson(res, trainee._id);
@@ -113,12 +112,10 @@ exports.deleteAssmt = function(req, res) {
         { $pull: { 'assessments': { '_id': assessment._id } }  
         }, function (err) {
             if (err) {
-
                 res.send(500, {
                     message: 'error occurred while trying to delete assessment'
                 });
             } else {
-
                 exports.returnJson(res, trainee._id);
             }
         }
@@ -146,7 +143,6 @@ exports.selectFellow = function(req, res){
                   if (err) {
                      res.send(500, { message: 'could not change applicant role' });
                   } else {
-
                      exports.returnJson(res, trainee._id);
                   }
               }
@@ -234,21 +230,17 @@ exports.addSkills = function(req, res) {
                 }, 
                 function (err) {
                     if (err) {
-
                         res.send(500, {
                             message: 'Error: Couldn\'t add skill'
                         });
                     } else {
-
                         exports.returnJson(res, req.user._id);
                     }
                 }
              );
         } else {
-
             res.send(403, {
-
-                    message: 'Error: You are not authorized to carryout this operation'
+               message: 'Error: You are not authorized to carryout this operation'
             });
         }
     });
@@ -452,14 +444,14 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
     // Server side file type checker.
     if (contentType !== 'image/png' && contentType !== 'image/jpeg') {
         fs.unlink(tmpPath);
-        return res.send(400, { 
+        res.send(400, { 
             message: 'Unsupported file type. Only jpeg or png format allowed' 
         });
     } else {
         fs.readFile(tmpPath , function(err, data) {
             fs.writeFile(destPath, data, function(err) {
                 if (err) {
-                   return res.send(400, { message: 'Destination path doesn\'t exist.' });
+                   res.send(400, { message: 'Destination path doesn\'t exist.' });
                 }
                 else {
                    fs.unlink(tmpPath, function(){
@@ -474,9 +466,8 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
                              {$set: { photo: destPath, experience: experience } },
                               function (error, user) {
                                  if (error) {
-                                    return res.send(400, { message: 'Error: save operation failed' });
+                                     res.send(400, { message: 'Error: save operation failed' });
                                  } else {
-                                     //res.jsonp(user);
                                      exports.returnJson(res, person._id);
                                  }
                               }
