@@ -67,11 +67,9 @@ exports.createAssmt = function(req, res){
       },
       function(err) {
           if (err) {
-<<<<<<< HEAD
-             res.send(500, { message: err });
-=======
+
              return res.send(400, {message: err });
->>>>>>> feature/userserver
+
           } else {
              exports.returnJson(res, req.trainee._id);
           }
@@ -97,11 +95,9 @@ exports.updateAssmt = function(req, res) {
           }, 
           function(err) {
               if (err) {
-<<<<<<< HEAD
-                 res.send(500, { message: err });
-=======
+
                  return res.send(400, { message: err });
->>>>>>> feature/userserver
+
               } else {
                  exports.returnJson(res, trainee._id);
               }
@@ -121,18 +117,12 @@ exports.deleteAssmt = function(req, res) {
         { $pull: { 'assessments': { '_id': assessment._id } }  
         }, function (err) {
             if (err) {
-<<<<<<< HEAD
-                res.send(500, {
-                    message: 'error occurred while trying to delete assessment'
-                });
-            } else {
-=======
+
                 return res.send(400, {
                     message: 'error occurred while trying to delete assessment'
                 });
             } else {
                 //res.jsonp(trainee);
->>>>>>> feature/userserver
                 exports.returnJson(res, trainee._id);
             }
         }
@@ -155,13 +145,6 @@ exports.selectFellow = function(req, res){
             Applicant.update({_id: trainee._id}, 
               {$set: 
                   { 'role' : role }
-<<<<<<< HEAD
-              }, 
-              function(err) {
-                  if (err) {
-                     res.send(500, { message: 'could not change applicant role' });
-                  } else {
-=======
 
               }, 
               function(err) {
@@ -169,7 +152,6 @@ exports.selectFellow = function(req, res){
                      return res.send(400, {message: 'could not change applicant role' });
                   } else {
                      //res.jsonp(trainee);
->>>>>>> feature/userserver
                      exports.returnJson(res, trainee._id);
                   }
               }
@@ -214,19 +196,13 @@ exports.editFellowRating = function(req, res) {
         }
 
         if (fellow.role !== 'fellow') {
-<<<<<<< HEAD
-            res.send(400, {
-                   message: 'Error: You can only rate a fellow\'s skills'
-            });
-        } else if (req.body.rating < 0 || req.body.rating > 10) {
-            res.send(400, {
-=======
+
         return res.send(400, {
                message: 'Error: You can only rate a fellow\'s skills'
         });
         } else if (req.body.rating < 0 || req.body.rating > 10) {
             return res.send(400, {
->>>>>>> feature/userserver
+
                    message: 'Error: rating is a 10 point system'
             });
         } else {
@@ -239,27 +215,20 @@ exports.editFellowRating = function(req, res) {
                  },
                  function (err, changes) {
                      if (err) {
-<<<<<<< HEAD
-                        res.send(500, { message: 'error occurred trying to update skill rating' });
-=======
+
                         return res.send(400, { message: 'error occurred trying to update skill rating' });
->>>>>>> feature/userserver
+
                      } else {
                          exports.returnJson(res, fellow._id);
                      }
                  }
             );
-<<<<<<< HEAD
-        }   
-    }); 
-=======
         }
 
         
     });
     
->>>>>>> feature/userserver
-};
+  };
 
 /*
 *Instructor adds his own skillset
@@ -274,28 +243,19 @@ exports.addSkills = function(req, res) {
                 }, 
                 function (err) {
                     if (err) {
-<<<<<<< HEAD
-                        res.send(500, {
-                            message: 'Error: Couldn\'t add skill'
-                        });
-                    } else {
-=======
+
                         return res.send(400, {
                             message: 'Error: Couldn\'t add skill'
                         });
                     } else {
                         //res.jsonp(user);
->>>>>>> feature/userserver
                         exports.returnJson(res, req.user._id);
                     }
                 }
              );
         } else {
-<<<<<<< HEAD
-            res.send(403, {
-=======
+
             return res.send(400, {
->>>>>>> feature/userserver
                     message: 'Error: You are not authorized to carryout this operation'
             });
         }
@@ -473,11 +433,8 @@ exports.assessmentByID = function(req, res, next, id){
 */
 exports.isCreator = function(req, res, next){ 
     if (req.assessment.instructorId.toString() !== req.user.id) {
-<<<<<<< HEAD
-       res.send(400, { message: 'You are not the creator of the assessment' }); 
-=======
+       
        return res.send(403, 'User is not authorized'); 
->>>>>>> feature/userserver
     }
     next();
 };
@@ -494,8 +451,7 @@ exports.checkRights = function(req, res, next) {
         });
     }
 };
-<<<<<<< HEAD
-=======
+
 
 /**
  * Upload image
@@ -615,4 +571,3 @@ exports.deletePhoto = function(req, res) {
           }
     );
 };
->>>>>>> feature/userserver

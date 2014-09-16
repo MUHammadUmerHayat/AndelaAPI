@@ -15,7 +15,8 @@ var mongoose        = require('mongoose'),
 var admin = require('../../app/controllers/admin');
 
 var uuid = require('node-uuid'),
-    multiparty = require('multiparty');
+    multiparty = require('multiparty'),
+    async = require('async');
 
 var path = require('path'),
     fs = require('fs');
@@ -50,25 +51,40 @@ var getErrorMessage = function(err) {
 */
 
 var uploadCV = function(req, res, contentType, tmpPath, destPath) {
-        // Server side file type checker.
-        if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
-            fs.unlink(tmpPath);
-            console.log('contenttypefail');
-            return res.status(400).send('Unsupported file type.');
-        }
-
-        fs.readFile(tmpPath , function(err, data) {
-            fs.writeFile(destPath, data, function(err) {
-                    
-                fs.unlink(tmpPath, function(){
-                    if(err) {
-                        console.log('CV not saved error');
-                        console.log(err);
+    // Server side file type checker.
+    if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
+        fs.unlink(tmpPath);
+        res.send(415, { message: 'Unsupported file type. Only support .pdf and .docx'});
+    }
+    async.waterfall([
+            function (callback){
+                fs.readFile(tmpPath , function(err, data){
+                    if(err){
+                        var message = 'tmpPath doesn\'t exist.';
+                        return callback(message);
+                    }
+                    callback(data);
+                });             
+            },
+            function (data, callback){
+                fs.writeFile(destPath, data, function(err) {
+                    if (err) {
+                        var message = 'Destination psth doesn\'t exists';
+                        return callback(message);
+                    }
+                    callback();
+                });
+            },
+            function (callback){
+                fs.unlink(tmpPath);
+            }
+        ],
+        function (err, results){
+                    if (err){
                         throw err;
                     }
-                });
-            }); 
-        });
+                }
+    );
 };
 
 
