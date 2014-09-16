@@ -149,42 +149,7 @@ exports.selectFellow = function(req, res){
       }
 };
 
-/*
-* Rate a fellow's skill
-*/
-exports.editFellowRating = function(req, res) {
-    var skill = {skill: req.skill, rating: req.body.rating},
-        fellow = req.trainee;
-    var skillSummary;
-
-    SkillCategory.find().exec(function(err, data){
-        var categories = data;
-        var categoriesLength = categories.length;
-        var skillSummary = {};
-
-        for(var i = 0; i < categoriesLength; i++){
-            //find all skills with category and calculate average
-            var averageRating = 0,
-                sumRating     = 0,
-                numRating     = 0;
-
-            for(var j = 0; j < fellow.skillSet.length; j++){
-                if(categories[i]._id.toString() === fellow.skillSet[j].skill.category.toString()){
-                    if(req.skill._id.toString() === fellow.skillSet[j].skill._id.toString()){
-                        numRating ++;
-                        sumRating = sumRating + parseInt(req.body.rating);
-                    }
-                    else{
-                        numRating ++;
-                        sumRating = sumRating + parseInt(fellow.skillSet[j].rating);
-                    }
-                }
-            }
-
-            averageRating = sumRating / numRating;
-            skillSummary[categories[i].name] = averageRating;
-        }
-
+var validateAndChangeRating = function (req, res, fellow, skillSummary) {
         if (fellow.role !== 'fellow') {
             res.send(400, {
                    message: 'Error: You can only rate a fellow\'s skills'
@@ -210,6 +175,44 @@ exports.editFellowRating = function(req, res) {
                  }
             );
         }   
+};
+
+/*
+* Rate a fellow's skill
+*/
+exports.editFellowRating = function(req, res) {
+    var skill = {skill: req.skill, rating: req.body.rating},
+        fellow = req.trainee;
+
+    SkillCategory.find().exec(function(err, data){
+        var categories = data;
+        var categoriesLength = categories.length;
+        var skillSummary = {};
+
+        for(var i = 0; i < categoriesLength; i++){
+            // find all skills with category and calculate average
+            var averageRating = 0,
+                sumRating     = 0,
+                numRating     = 0;
+
+            for(var j = 0; j < fellow.skillSet.length; j++){
+                if(categories[i]._id.toString() === fellow.skillSet[j].skill.category.toString()){
+                    if(req.skill._id.toString() === fellow.skillSet[j].skill._id.toString()){
+                        numRating ++;
+                        sumRating = sumRating + parseInt(req.body.rating);
+                    }
+                    else{
+                        numRating ++;
+                        sumRating = sumRating + parseInt(fellow.skillSet[j].rating);
+                    }
+                }
+            }
+
+            averageRating = sumRating / numRating;
+            skillSummary[categories[i].name] = averageRating;
+        }
+
+        validateAndChangeRating(req, res, fellow, skillSummary); 
     }); 
 };
 
