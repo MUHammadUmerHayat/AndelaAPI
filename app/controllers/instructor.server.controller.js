@@ -20,7 +20,7 @@ var path = require('path'),
 
 
 /*
-*Return json object of particular applicant/trainee/fellow 
+* Return json object of particular applicant/trainee/fellow 
 */
 exports.returnJson = function(res, id) {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('skillSet.skill').exec(function(err, user) {
@@ -30,7 +30,7 @@ exports.returnJson = function(res, id) {
 };
 
 /*
-*Return json object of particular bootcamp
+* Return json object of particular bootcamp
 */
 exports.jsonCamp = function(res, id) {
     Bootcamp.findById(id).exec(function(err, camp) {
@@ -39,7 +39,7 @@ exports.jsonCamp = function(res, id) {
 };
 
 /*
-*Return json object of instructor
+* Return json object of instructor
 */
 var jsonInstructor = function(res, id) {
     Instructor.findById(id).exec(function(err, instructor) {
@@ -49,7 +49,7 @@ var jsonInstructor = function(res, id) {
 };
 
 /**
-*Input assessment score for trainee
+* Input assessment score for trainee
 */
 exports.createAssmt = function(req, res){
     req.body.instructorId = req.user.id;
@@ -73,7 +73,7 @@ exports.createAssmt = function(req, res){
 };
 
 /*
-*Update assessment
+* Update assessment
 */
 exports.updateAssmt = function(req, res) {
     var assessment = req.assessment,
@@ -99,7 +99,7 @@ exports.updateAssmt = function(req, res) {
 };
 
 /*
-*delete an assessment
+* delete an assessment
 */
 exports.deleteAssmt = function(req, res) {
     var assessment = req.assessment,
@@ -121,7 +121,7 @@ exports.deleteAssmt = function(req, res) {
 };
 
 /*
-*Select a fellow
+* Select a fellow
 */
 exports.selectFellow = function(req, res){
       var trainee = req.trainee,
@@ -149,7 +149,7 @@ exports.selectFellow = function(req, res){
 };
 
 /*
-*Rate a fellow's skill
+* Rate a fellow's skill
 */
 exports.editFellowRating = function(req, res) {
     var skill = {skill: req.skill, rating: req.body.rating},
@@ -213,7 +213,7 @@ exports.editFellowRating = function(req, res) {
 };
 
 /*
-*Instructor adds his own skillset
+* Instructor adds his own skillset
 */
 exports.addSkills = function(req, res) {
     var skill = req.body;
@@ -243,17 +243,16 @@ exports.addSkills = function(req, res) {
 
 
 /**
- * Show the current trainee/fellow
- */
+* Show the current trainee/fellow
+*/
 exports.readTrainee = function(req, res) {
     res.jsonp(req.trainee);
 };
 
 /**
  * Upload image
- */
+*/
 var uploadImage = function(req, res, contentType, tmpPath, destPath, person, experience) {
-    
     // Server side file type checker.
     if (contentType !== 'image/png' && contentType !== 'image/jpeg') {
         fs.unlink(tmpPath);
@@ -312,10 +311,10 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
 };
 
 /**
- * Instructor updates experience and photo
- */
+* Instructor updates experience and photo
+*/
 exports.updateInfo = function(req, res) {
-    //Parse Form
+    // Parse Form
     var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
 
@@ -331,7 +330,7 @@ exports.updateInfo = function(req, res) {
                 } 
         
                 if (files.file) {
-                    //if there is a file do upload
+                    // if there is a file do upload
                     var file = files.file[0],     
                         contentType = file.headers['content-type'],
                         tmpPath = file.path,      
@@ -346,7 +345,7 @@ exports.updateInfo = function(req, res) {
                 } else {
                     Instructor.update(
                          {_id: person._id},
-                         {$set: { experience: experience } },
+                        {$set: { experience: experience } },
                           function (error) {
                              if (error) {
                                 res.send(500, { message: 'Error: save operation failed' });
@@ -362,8 +361,8 @@ exports.updateInfo = function(req, res) {
 };
 
 /**
- * Delete photo 
- */
+* Delete photo 
+*/
 exports.deletePhoto = function(req, res) {
     var profile = req.profile;
 
@@ -418,8 +417,8 @@ exports.isCreator = function(req, res, next){
 };
 
 /**
- * Instructor authorization middleware
- */
+* Instructor authorization middleware
+*/
 exports.checkRights = function(req, res, next) { 
     if (req.user._type === 'Instructor' && req.user.role === 'instructor') {
         next();

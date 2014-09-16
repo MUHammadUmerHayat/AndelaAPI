@@ -20,8 +20,8 @@ var instr = require('../../app/controllers/instructor');
 
 
 /**
- * Admin authorization middleware
- */
+* Admin authorization middleware
+*/
 exports.checkPermission = function(req, res, next) {
     if (req.user._type === 'Instructor' && req.user.role === 'admin') {
         next();
@@ -301,22 +301,22 @@ exports.deleteCamp = function(req, res) {
 };
 
 /**
- * Show the current bootcamp
- */
+* Show the current bootcamp
+*/
 exports.read = function(req, res) {
     res.jsonp(req.camp);
 };
 
 /**
- * Show the current applicant/trainee/fellow
- */
+* Show the current applicant/trainee/fellow
+*/
 exports.applicantRead = function(req, res) {
     res.jsonp(req.applicant);
 };
 
 /**
- * Show the current instructor/admin
- */
+* Show the current instructor/admin
+*/
 exports.instructorRead = function(req, res) {
     res.jsonp(req.instructor);
 };
@@ -350,43 +350,43 @@ var doListing = function(req, res, schema, whichRole) {
 };
 
 /**
- * List applicants
- */
+* List applicants
+*/
 exports.listApplicants = function(req, res) {
    doListing(req, res, 'Applicant', 'applicant');
 };
 
 /**
- * List fellows
- */
+* List fellows
+*/
 exports.listFellows = function(req, res) {
    doListing(req, res, 'Applicant', 'fellow');
 };
 
 /**
- * List Trainees
- */
+* List Trainees
+*/
 exports.listTrainees = function(req, res) {
    doListing(req, res, 'Applicant', 'trainee');
 };
 
 /**
- * List Instructors
- */
+* List Instructors
+*/
 exports.listInstructors = function(req, res) {
    doListing(req, res, 'Instructor', 'instructor');
 };
 
 /**
- * List Admins
- */
+* List Admins
+*/
 exports.listAdmins = function(req, res) {
    doListing(req, res, 'Instructor', 'admin');
 };
 
 /**
- * Create tests
- */
+* Create tests
+*/
 exports.createTests = function(req, res) {
     var quest = req.body.questions;
     var questions = [];
@@ -426,8 +426,8 @@ exports.createTests = function(req, res) {
 };
 
 /**
- * Update a particular test's name
- */
+* Update a particular test's name
+*/
 exports.updateTestName = function(req, res) {
     var test = req.test;
     test = _.extend(test, req.body);
@@ -444,8 +444,8 @@ exports.updateTestName = function(req, res) {
 };
 
 /**
- * Update Question
- */
+* Update Question
+*/
 exports.updateQuestion = function(req, res) {
     var question = req.question;
     question = _.extend(question, req.body);
@@ -462,8 +462,8 @@ exports.updateQuestion = function(req, res) {
 };
 
 /**
- * Add question to already existing test
- */
+* Add question to already existing test
+*/
 exports.addQuestion = function(req, res) {
      var quest = req.body.question;
      var test = req.test;
@@ -496,8 +496,8 @@ exports.addQuestion = function(req, res) {
 };
 
 /**
- * Add new option to a question
- */
+* Add new option to a question
+*/
 exports.addOption = function(req, res) {
      var test = req.test,
      question = req.question,
@@ -514,8 +514,8 @@ exports.addOption = function(req, res) {
 };
 
 /**
- * Delete tests
- */
+* Delete tests
+*/
 exports.deleteTest = function(req, res) {
     var test = req.test;
 
@@ -531,8 +531,8 @@ exports.deleteTest = function(req, res) {
 };
 
 /**
- * Delete a question
- */
+* Delete a question
+*/
 exports.deleteQuestion = function(req, res, next) {
     var test = req.test,
         question = req.question;
@@ -550,8 +550,8 @@ exports.deleteQuestion = function(req, res, next) {
 };
 
 /**
- * Delete an option
- */
+* Delete an option
+*/
 exports.deleteOption = function(req, res) {
     var test = req.test,
         question = req.question,
@@ -581,8 +581,8 @@ exports.deleteOption = function(req, res) {
 };
 
 /**
- * Update placement status
- */
+* Update placement status
+*/
 exports.placementStatus = function(req, res) {
     var profile = req.profile;
     
@@ -609,8 +609,8 @@ exports.placementStatus = function(req, res) {
 };
 
 /**
- * Admin adds fellow's work history
- */
+* Admin adds fellow's work history
+*/
 exports.addPlacement = function(req, res) {
     var profile = req.profile;
     var company = req.body.company; 
@@ -646,8 +646,8 @@ exports.addPlacement = function(req, res) {
 };
 
 /**
- * Admin edits fellow's work history
- */
+* Admin edits fellow's work history
+*/
 exports.editPlacement = function(req, res) {
     var placement = req.placement,
         profile = req.profile;
@@ -675,8 +675,8 @@ exports.editPlacement = function(req, res) {
 };
 
 /**
- * A particular work history extracted from the whole set 
- */
+* A particular work history extracted from the whole set and all placements
+*/
 exports.getPlacement = function(req, res)  {
     res.jsonp(req.placement);
 }
@@ -686,8 +686,8 @@ exports.getPlacements = function(req, res)  {
 }
 
 /**
- * Admin deletes fellow's work history
- */
+* Admin deletes fellow's work history
+*/
 exports.deletePlacement = function(req, res) {
    var profile = req.profile,
         placement = req.placement;
@@ -709,8 +709,8 @@ exports.deletePlacement = function(req, res) {
 }
 
 /**
- * Download CV
- */
+* Download CV
+*/
 exports.download = function(req, res) {
      var file = req.param('file'),
          fileName = path.basename(file);
@@ -720,8 +720,8 @@ exports.download = function(req, res) {
 };
 
 /**
- * List of Tests
- */
+* List of Tests
+*/
 exports.listTests = function(req, res) {
     Test.find().sort('-created').exec(function(err, tests) {
         if (err) {
@@ -735,8 +735,8 @@ exports.listTests = function(req, res) {
 };
 
 /**
- * Show the current test
- */
+* Show the current test
+*/
 exports.testRead = function(req, res) {
     res.jsonp(req.test);
 };
@@ -835,8 +835,8 @@ exports.deleteSkillCategory = function(req, res) {
             });
         } else {
                   res.jsonp(category);
-                 }
-            });
+        }
+    });
 };
 
 
@@ -846,8 +846,8 @@ exports.deleteSkillCategory = function(req, res) {
 /****************************** MIDDLEWARE ******************************************/
 
 /**
- * Applicant middleware
- */
+* Applicant middleware
+*/
 exports.applicantByID = function(req, res, next, id)  {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('placements').populate('skillSet.skill').exec(function(err, user) {
         if (err) return next(err);
@@ -862,8 +862,8 @@ exports.applicantByID = function(req, res, next, id)  {
 };
 
 /**
- * Instructor middleware
- */
+* Instructor middleware
+*/
 exports.instructorByID = function(req, res, next, id)  {
      Instructor.findById(id).where({_type: 'Instructor'}).exec(function(err, user) {
          if (err) return next(err);
@@ -874,8 +874,8 @@ exports.instructorByID = function(req, res, next, id)  {
 };
 
 /**
- * Bootcamp middleware
- */
+* Bootcamp middleware
+*/
 exports.campByID = function(req, res, next, id) {
     Bootcamp.findById(id).populate('applicants').exec(function(err, camp) {
       console.log('camp: ' + camp);
@@ -891,8 +891,8 @@ exports.campByID = function(req, res, next, id) {
 };
 
 /**
- * Test middleware
- */
+* Test middleware
+*/
 exports.testByID = function(req, res, next, id) {
     Test.findById(id).exec(function(err, test) {
         if (err) return next(err);
@@ -903,24 +903,24 @@ exports.testByID = function(req, res, next, id) {
 };
 
 /**
- * Work History middleware
- */
+* Work History middleware
+*/
 exports.placementByID = function(req, res, next, id) {
     req.placement = req.profile.placement.id(id);
     next();
 };
 
 /**
- * Question middleware
- */
+* Question middleware
+*/
 exports.questionByID = function(req, res, next, id) {
     req.question = req.test.questions.id(id);
     next();
 };
 
 /**
- * SKill Category middleware
- */
+* SKill Category middleware
+*/
 exports.skillCategoryByID = function(req, res, next, id) {
     SkillCategory.findById(id).exec(function(err, skillCategory) {
         if (err) return next(err);

@@ -33,7 +33,7 @@ var QuestionSchema = new Schema({
 
 /**
  * Test Schema
- */
+*/
 var TestSchema = new Schema({
     created: {
         type: Date,
@@ -48,7 +48,6 @@ var TestSchema = new Schema({
 
 });
 
-//mongoose.model('Options', OptionSchema);
 mongoose.model('Test', TestSchema);
 mongoose.model('Question', QuestionSchema);
 mongoose.model('Options', OptionSchema);
