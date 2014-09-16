@@ -19,3 +19,16 @@ angular.module('admin').filter('range', function() {
         return input;
     };
 });
+
+//Articles service used for communicating with the articles REST endpoints
+angular.module('admin').factory('Tests', ['$resource',
+    function($resource) {
+        return $resource('admin/test/testId', {
+            testId: '@_id'
+        }, {
+            update: {
+                method: 'PUT'
+            }
+        });
+    }
+]);

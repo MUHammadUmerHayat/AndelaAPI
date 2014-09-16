@@ -23,17 +23,16 @@ var path = require('path'),
 
 
 /*
-*Return json object of particular applicant/trainee/fellow 
+* Return json object of particular applicant/trainee/fellow 
 */
 exports.returnJson = function(res, id) {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('skillSet.skill').exec(function(err, user) {
-        console.log(user);
        res.jsonp(user);
     });
 };
 
 /*
-*Return json object of particular bootcamp
+* Return json object of particular bootcamp
 */
 exports.jsonCamp = function(res, id) {
     Bootcamp.findById(id).exec(function(err, camp) {
@@ -42,17 +41,16 @@ exports.jsonCamp = function(res, id) {
 };
 
 /*
-*Return json object of instructor
+* Return json object of instructor
 */
 var jsonInstructor = function(res, id) {
     Instructor.findById(id).exec(function(err, instructor) {
-        console.log(instructor);
        res.jsonp(instructor);
     });
 };
 
 /**
-*Input assessment score for trainee
+* Input assessment score for trainee
 */
 exports.createAssmt = function(req, res){
     req.body.instructorId = req.user.id;
@@ -68,8 +66,7 @@ exports.createAssmt = function(req, res){
       function(err) {
           if (err) {
 
-             return res.send(400, {message: err });
-
+             res.send(500, { message: err });
           } else {
              exports.returnJson(res, req.trainee._id);
           }
@@ -78,7 +75,7 @@ exports.createAssmt = function(req, res){
 };
 
 /*
-*Update assessment
+* Update assessment
 */
 exports.updateAssmt = function(req, res) {
     var assessment = req.assessment,
@@ -96,8 +93,7 @@ exports.updateAssmt = function(req, res) {
           function(err) {
               if (err) {
 
-                 return res.send(400, { message: err });
-
+                 res.send(500, { message: err });
               } else {
                  exports.returnJson(res, trainee._id);
               }
@@ -106,7 +102,7 @@ exports.updateAssmt = function(req, res) {
 };
 
 /*
-*delete an assessment
+* delete an assessment
 */
 exports.deleteAssmt = function(req, res) {
     var assessment = req.assessment,
@@ -118,11 +114,11 @@ exports.deleteAssmt = function(req, res) {
         }, function (err) {
             if (err) {
 
-                return res.send(400, {
+                res.send(500, {
                     message: 'error occurred while trying to delete assessment'
                 });
             } else {
-                //res.jsonp(trainee);
+
                 exports.returnJson(res, trainee._id);
             }
         }
@@ -130,7 +126,7 @@ exports.deleteAssmt = function(req, res) {
 };
 
 /*
-*Select a fellow
+* Select a fellow
 */
 exports.selectFellow = function(req, res){
       var trainee = req.trainee,
@@ -145,13 +141,12 @@ exports.selectFellow = function(req, res){
             Applicant.update({_id: trainee._id}, 
               {$set: 
                   { 'role' : role }
-
               }, 
               function(err) {
                   if (err) {
-                     return res.send(400, {message: 'could not change applicant role' });
+                     res.send(500, { message: 'could not change applicant role' });
                   } else {
-                     //res.jsonp(trainee);
+
                      exports.returnJson(res, trainee._id);
                   }
               }
@@ -159,13 +154,40 @@ exports.selectFellow = function(req, res){
       }
 };
 
+var validateAndChangeRating = function (req, res, fellow, skillSummary) {
+        if (fellow.role !== 'fellow') {
+            res.send(400, {
+                   message: 'Error: You can only rate a fellow\'s skills'
+            });
+        } else if (req.body.rating < 0 || req.body.rating > 10) {
+            res.send(400, {
+                   message: 'Error: rating is a 10 point system'
+            });
+        } else {
+            Applicant.update(
+                 {_id: fellow._id, 'skillSet.skill': req.skill._id},
+                 {$set: { 
+                          'skillSet.$.rating': req.body.rating,
+                          'skillSummary':  skillSummary
+                        } 
+                 },
+                 function (err, changes) {
+                     if (err) {
+                         res.send(500, { message: 'error occurred trying to update skill rating' });
+                     } else {
+                         exports.returnJson(res, fellow._id);
+                     }
+                 }
+            );
+        }   
+};
+
 /*
-*Rate a fellow's skill
+* Rate a fellow's skill
 */
 exports.editFellowRating = function(req, res) {
     var skill = {skill: req.skill, rating: req.body.rating},
         fellow = req.trainee;
-    var skillSummary;
 
     SkillCategory.find().exec(function(err, data){
         var categories = data;
@@ -173,7 +195,7 @@ exports.editFellowRating = function(req, res) {
         var skillSummary = {};
 
         for(var i = 0; i < categoriesLength; i++){
-            //find all skills with category and calculate average
+            // find all skills with category and calculate average
             var averageRating = 0,
                 sumRating     = 0,
                 numRating     = 0;
@@ -195,43 +217,12 @@ exports.editFellowRating = function(req, res) {
             skillSummary[categories[i].name] = averageRating;
         }
 
-        if (fellow.role !== 'fellow') {
-
-        return res.send(400, {
-               message: 'Error: You can only rate a fellow\'s skills'
-        });
-        } else if (req.body.rating < 0 || req.body.rating > 10) {
-            return res.send(400, {
-
-                   message: 'Error: rating is a 10 point system'
-            });
-        } else {
-            Applicant.update(
-                 {_id: fellow._id, 'skillSet.skill': req.skill._id},
-                 {$set: { 
-                          'skillSet.$.rating': req.body.rating,
-                          'skillSummary':  skillSummary
-                        } 
-                 },
-                 function (err, changes) {
-                     if (err) {
-
-                        return res.send(400, { message: 'error occurred trying to update skill rating' });
-
-                     } else {
-                         exports.returnJson(res, fellow._id);
-                     }
-                 }
-            );
-        }
-
-        
-    });
-    
-  };
+        validateAndChangeRating(req, res, fellow, skillSummary); 
+    }); 
+};
 
 /*
-*Instructor adds his own skillset
+* Instructor adds his own skillset
 */
 exports.addSkills = function(req, res) {
     var skill = req.body;
@@ -244,37 +235,36 @@ exports.addSkills = function(req, res) {
                 function (err) {
                     if (err) {
 
-                        return res.send(400, {
+                        res.send(500, {
                             message: 'Error: Couldn\'t add skill'
                         });
                     } else {
-                        //res.jsonp(user);
+
                         exports.returnJson(res, req.user._id);
                     }
                 }
              );
         } else {
 
-            return res.send(400, {
+            res.send(403, {
+
                     message: 'Error: You are not authorized to carryout this operation'
             });
         }
     });
 };
 
-
 /**
- * Show the current trainee/fellow
- */
+* Show the current trainee/fellow
+*/
 exports.readTrainee = function(req, res) {
     res.jsonp(req.trainee);
 };
 
 /**
  * Upload image
- */
+*/
 var uploadImage = function(req, res, contentType, tmpPath, destPath, person, experience) {
-    
     // Server side file type checker.
     if (contentType !== 'image/png' && contentType !== 'image/jpeg') {
         fs.unlink(tmpPath);
@@ -324,7 +314,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
         ],
         function(err, results) {
             if (err) {
-                res.send(400, { message: err });
+                res.send(500, { message: err });
             } else {
                 jsonInstructor(res, person._id);    
             }
@@ -333,10 +323,10 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
 };
 
 /**
- * Instructor updates experience and photo
- */
+* Instructor updates experience and photo
+*/
 exports.updateInfo = function(req, res) {
-    //Parse Form
+    // Parse Form
     var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
 
@@ -352,7 +342,7 @@ exports.updateInfo = function(req, res) {
                 } 
         
                 if (files.file) {
-                    //if there is a file do upload
+                    // if there is a file do upload
                     var file = files.file[0],     
                         contentType = file.headers['content-type'],
                         tmpPath = file.path,      
@@ -367,12 +357,12 @@ exports.updateInfo = function(req, res) {
                 } else {
                     Instructor.update(
                          {_id: person._id},
-                         {$set: { experience: experience } },
+                        {$set: { experience: experience } },
                           function (error) {
                              if (error) {
-                                res.send(500, { message: 'Error: save operation failed' });
+                                 res.send(500, { message: 'Error: save operation failed' });
                              } else {
-                                 exports.returnJson(res, person._id);
+                                 jsonInstructor(res, person._id);
                              }
                           }
                     );
@@ -383,8 +373,8 @@ exports.updateInfo = function(req, res) {
 };
 
 /**
- * Delete photo 
- */
+* Delete photo 
+*/
 exports.deletePhoto = function(req, res) {
     var profile = req.profile;
 
@@ -399,11 +389,13 @@ exports.deletePhoto = function(req, res) {
              if (error) {
                  res.send(500, { message: 'Error: save operation failed' });
              } else {
-                 exports.returnJson(res, profile._id);
+                 jsonInstructor(res, profile._id);
              }
           }
     );
 };
+
+
 
 /***************************************   MIDDLEWARE   *****************************************/
 
@@ -433,15 +425,14 @@ exports.assessmentByID = function(req, res, next, id){
 */
 exports.isCreator = function(req, res, next){ 
     if (req.assessment.instructorId.toString() !== req.user.id) {
-       
-       return res.send(403, 'User is not authorized'); 
+       res.send(400, { message: 'You are not the creator of the assessment' }); 
     }
     next();
 };
 
 /**
- * Instructor authorization middleware
- */
+* Instructor authorization middleware
+*/
 exports.checkRights = function(req, res, next) { 
     if (req.user._type === 'Instructor' && req.user.role === 'instructor') {
         next();

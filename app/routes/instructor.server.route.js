@@ -8,50 +8,50 @@ var users = require('../../app/controllers/users'),
     instructor = require('../../app/controllers/instructor');
 
 module.exports = function(app) {
+    /*** Instructor Routes ***/
 
-    /** 
-    * Instructor Routes
-    **/
+    // list all trainees
     app.route('/instructor')
         .get(users.requiresLogin, instructor.checkRights, admin.listTrainees);
-        
 
-    //instructor updates his personal info
+
+    // list all fellows
+    app.route('/instructor/fellows')
+        .get(users.requiresLogin, instructor.checkRights, admin.listFellows);
+
+
+    // instructor updates his personal info
     app.route('/instructor/updateInfo')
         .post(users.requiresLogin, instructor.checkRights, instructor.updateInfo);
 
-    //instructor can delete his photo avatar
+
+    // instructor can delete his profile photo
     app.route('/instructor/:userId/deletePhoto')
         .delete(users.requiresLogin, instructor.checkRights, instructor.deletePhoto);
 
-     //instructor can add skills for himself
+
+    // instructor can add skills for himself
     app.route('/instructor/skill')
         .post(users.requiresLogin, instructor.checkRights, instructor.addSkills);
     
 
-    /**
-    *   Instructors Bootcamps Routes and Fellows
-    **/
+    // view all bootcamps
     app.route('/instructor/bootcamps')
         .get(users.requiresLogin, instructor.checkRights, admin.bootCamps);
 
-    //admin can checkout bootcamp instructors
+
+    // view  a particular bootcamp
     app.route('/instructor/camp/:campId')
         .get(users.requiresLogin, instructor.checkRights, admin.read);
-    
-   /**
-   *    Instructor Fellow and Trainee
-   **/
-     app.route('/instructor/fellows')
-        .get(users.requiresLogin, instructor.checkRights, admin.listFellows);
 
-    //instructor can look for a fellow , set assesment...
+    
+    // instructor can view a particular trainee and enter assessment records
     app.route('/instructor/trainee/:traineeId')
         .get(users.requiresLogin, instructor.checkRights, instructor.readTrainee)
-        .put(users.requiresLogin, instructor.checkRights, instructor.selectFellow)
         .post(users.requiresLogin, instructor.checkRights, instructor.createAssmt);
 
-    //instructor can make assesment updates
+    
+    // update and delete a particular assessment record of a trainee
     app.route('/instructor/trainee/:traineeId/:assmtId')
         .put(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.updateAssmt)
         .delete(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.deleteAssmt);
@@ -60,9 +60,11 @@ module.exports = function(app) {
     // Finish by binding the trainee middleware
     app.param('traineeId', instructor.traineeByID);
 
+    
     // Finish by binding the assessment middleware
     app.param('assmtId', instructor.assessmentByID);
 
+    
     // Finish by binding the skillset middleware
     app.param('skillId', admin.skillById);
 };

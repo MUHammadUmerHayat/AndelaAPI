@@ -13,22 +13,11 @@ var mongoose = require('mongoose'),
     Placement = mongoose.model('Placement'),
     SkillCategory = mongoose.model('SkillCategory'),
     Skill = mongoose.model('Skill'),
+    async = require('async'),
     path = require('path'),
     _ = require('lodash');
 
 var instructor = require('../../app/controllers/instructor');
-
-
-/**
- * Admin authorization middleware
- */
-exports.checkPermission = function(req, res, next) {
-    if (req.user._type === 'Instructor' && req.user.role === 'admin') {
-        next();
-    } else { 
-        res.send(403, { message: 'You are not an Admin' });
-    }
-};
 
 /**
 * Create users
@@ -83,7 +72,6 @@ exports.changeStatus = function(req, res) {
           applicant.status.reason = '';
       }
 
-      
       applicant.status.name = req.body.status.name;
 
       Applicant.update(
@@ -91,14 +79,11 @@ exports.changeStatus = function(req, res) {
          {$set: {'role': applicant.role, 'status.name': applicant.status.name, 'status.reason': applicant.status.reason}},
           function (err) {
              if (err) {
-                return res.send(500, {message: err });
+                res.send(500, { message: err });
              } else {
-                 
                  instr.returnJson(res, applicant._id);
-
              }
           }
-
       );  
 };
 
@@ -158,11 +143,9 @@ exports.changeRole = function(req, res) {
              },
              function (err) {
                  if (err) {
-                    res.send(500, { message: 'operation failed' });
+                     res.send(500, { message: 'operation failed' });
                  } else {
-
                      instr.returnJson(res, applicant._id);
-
                  }
              }
           );
@@ -187,11 +170,9 @@ exports.changeInstrRole = function(req, res) {
              {$set: {'role': instructor.role } },
               function (err) {
                  if (err) {
-                    return res.send(500, { message: 'error occurred while trying to change role' });
+                     res.send(500, { message: 'error occurred while trying to change role' });
                  } else {
-                     //res.jsonp(instructor);
                      instructor.returnJson(res, instructor._id);
-
                  }
               }
           );
@@ -211,13 +192,11 @@ exports.deleteUser = function(req, res) {
     } else {
         person.remove(function(err, user) {
             if (err) {
-                return res.send(500, {
+                res.send(500, {
                     message: 'could not delete user'
                 });
             } else {
-                //res.jsonp(user);
                 instructor.returnJson(res, person._id);
-
             }
         });
     }
@@ -276,7 +255,6 @@ exports.editCamp = function(req, res) {
             if (err) {
                res.send(500, { message: 'could not edit camp' });
             } else {
-               //res.jsonp(user);
                instructor.jsonCamp(res, camp._id);
             }
         }
@@ -287,45 +265,54 @@ exports.editCamp = function(req, res) {
 * Delete bootcamp
 */
 exports.deleteCamp = function(req, res) {
-    var camp = req.camp,
-        campId = camp._id;
+    var camp = req.camp;
 
-    camp.remove(function(err, bootCamp) {
+    async.waterfall([
+            function (callback) {
+                camp.remove(function(err, camp) { 
+                    if (err) {
+                        var message = 'Couldn\'t delete camp.';
+                        return callback(message);
+                    } 
+                    callback(null, camp);
+                });
+            },
+            function (camp, callback) { 
+                User.find().where({campId: camp._id}).remove(function(err, user) {
+                    if (err) {
+                        var message = 'Couldn\'t delete user.';
+                        return callback(message);
+                    }
+                    callback(null, camp);
+                });
+            }
+    ],
+    function(err, results) {
         if (err) {
-            res.send(500, {
-                message: 'Couldn\'t delete camp'
-            });
+            res.send(500, { message: err });
         } else {
-            User.find().where({campId: campId}).remove(function(err, user) {
-                 if (err) {
-                    res.send(500, {
-                        message: 'Couldn\'t delete user'
-                    });
-                 } else {
-                     res.jsonp(bootCamp);
-                 }
-            });
+            res.jsonp(results);    
         }
     });
 };
 
 /**
- * Show the current bootcamp
- */
+* Show the current bootcamp
+*/
 exports.read = function(req, res) {
     res.jsonp(req.camp);
 };
 
 /**
- * Show the current applicant/trainee/fellow
- */
+* Show the current applicant/trainee/fellow
+*/
 exports.applicantRead = function(req, res) {
     res.jsonp(req.applicant);
 };
 
 /**
- * Show the current instructor/admin
- */
+* Show the current instructor/admin
+*/
 exports.instructorRead = function(req, res) {
     res.jsonp(req.instructor);
 };
@@ -359,43 +346,43 @@ var doListing = function(req, res, schema, whichRole) {
 };
 
 /**
- * List applicants
- */
+* List applicants
+*/
 exports.listApplicants = function(req, res) {
    doListing(req, res, 'Applicant', 'applicant');
 };
 
 /**
- * List fellows
- */
+* List fellows
+*/
 exports.listFellows = function(req, res) {
    doListing(req, res, 'Applicant', 'fellow');
 };
 
 /**
- * List Trainees
- */
+* List Trainees
+*/
 exports.listTrainees = function(req, res) {
    doListing(req, res, 'Applicant', 'trainee');
 };
 
 /**
- * List Instructors
- */
+* List Instructors
+*/
 exports.listInstructors = function(req, res) {
    doListing(req, res, 'Instructor', 'instructor');
 };
 
 /**
- * List Admins
- */
+* List Admins
+*/
 exports.listAdmins = function(req, res) {
    doListing(req, res, 'Instructor', 'admin');
 };
 
 /**
- * Create tests
- */
+* Create tests
+*/
 exports.createTests = function(req, res) {
     var quest = req.body.questions;
     var questions = [];
@@ -435,8 +422,8 @@ exports.createTests = function(req, res) {
 };
 
 /**
- * Update a particular test's name
- */
+* Update a particular test's name
+*/
 exports.updateTestName = function(req, res) {
     var test = req.test;
     test = _.extend(test, req.body);
@@ -453,8 +440,8 @@ exports.updateTestName = function(req, res) {
 };
 
 /**
- * Update Question
- */
+* Update Question
+*/
 exports.updateQuestion = function(req, res) {
     var question = req.question;
     question = _.extend(question, req.body);
@@ -471,8 +458,8 @@ exports.updateQuestion = function(req, res) {
 };
 
 /**
- * Add question to already existing test
- */
+* Add question to already existing test
+*/
 exports.addQuestion = function(req, res) {
      var quest = req.body.question;
      var test = req.test;
@@ -505,8 +492,8 @@ exports.addQuestion = function(req, res) {
 };
 
 /**
- * Add new option to a question
- */
+* Add new option to a question
+*/
 exports.addOption = function(req, res) {
      var test = req.test,
      question = req.question,
@@ -523,8 +510,8 @@ exports.addOption = function(req, res) {
 };
 
 /**
- * Delete tests
- */
+* Delete tests
+*/
 exports.deleteTest = function(req, res) {
     var test = req.test;
 
@@ -540,8 +527,8 @@ exports.deleteTest = function(req, res) {
 };
 
 /**
- * Delete a question
- */
+* Delete a question
+*/
 exports.deleteQuestion = function(req, res, next) {
     var test = req.test,
         question = req.question;
@@ -559,8 +546,8 @@ exports.deleteQuestion = function(req, res, next) {
 };
 
 /**
- * Delete an option
- */
+* Delete an option
+*/
 exports.deleteOption = function(req, res) {
     var test = req.test,
         question = req.question,
@@ -590,8 +577,8 @@ exports.deleteOption = function(req, res) {
 };
 
 /**
- * Update placement status
- */
+* Update placement status
+*/
 exports.placementStatus = function(req, res) {
     var profile = req.profile;
     
@@ -605,14 +592,11 @@ exports.placementStatus = function(req, res) {
                  }
           }, 
           function(err) {
-                if (err) {
-                   res.send(400, { message: 'Couldn\'t save placement status' });
-                } else {
-
-                   //res.jsonp(fellow);
-                   instructor.returnJson(res, profile._id);
-
-                }
+              if (err) {
+                 res.send(400, { message: 'Couldn\'t save placement status' });
+              } else {
+                 instructor.returnJson(res, profile._id);
+              }
           }
        ); 
     } else {
@@ -621,8 +605,8 @@ exports.placementStatus = function(req, res) {
 };
 
 /**
- * Admin adds fellow's work history
- */
+* Admin adds fellow's work history
+*/
 exports.addPlacement = function(req, res) {
     var profile = req.profile;
     var company = req.body.company; 
@@ -632,7 +616,7 @@ exports.addPlacement = function(req, res) {
 
        placement.save(function(err, result) {
          if (err) {
-              return res.send(400, {
+              res.send(400, {
                   message: 'Couldn\'t add placement'
               });
          } else {
@@ -641,25 +625,23 @@ exports.addPlacement = function(req, res) {
                {$push: { 'placements':  result } },
                function (error) {
                   if (error) {
-                      return res.send(400, {message: 'Couldn\'t save work history' });
+                      res.send(400, {message: 'Couldn\'t save work history' });
                   } else {
-                      // res.jsonp(user);
-                      instructor.returnJson(res, profile._id);
+                      instr.returnJson(res, profile._id);
                   }
-              }
+               }
             );
               
          }
        });
-
     } else {
-        return res.send(400, { message: 'Only a fellow\'s work history can be added' });
+        res.send(400, { message: 'Only a fellow\'s work history can be added' });
     }
 };
 
 /**
- * Admin edits fellow's work history
- */
+* Admin edits fellow's work history
+*/
 exports.editPlacement = function(req, res) {
     var placement = req.placement,
         profile = req.profile;
@@ -669,7 +651,7 @@ exports.editPlacement = function(req, res) {
     Applicant.update(
          {_id: profile._id, 'placements._id': placement._id },
          {$set: { 
-                  'placements.$.company': placement.company,
+                  'placeements.$.company': placement.company,
                   'placements.$.jobDescription': placement.jobDescription,
                   'placements.$.location': placement.location,
                   'placements.$.start_date': placement.start_date,
@@ -680,17 +662,15 @@ exports.editPlacement = function(req, res) {
              if (err) {
                 res.send(500, { message: 'error occurred trying to update placement' });
              } else {
-                 //res.jsonp(instructor);
                  instructor.returnJson(res, profile._id);
-
              }
          }
     );
 };
 
 /**
- * A particular work history extracted from the whole set 
- */
+* A particular work history extracted from the whole set and all placements
+*/
 exports.getPlacement = function(req, res)  {
     res.jsonp(req.placement);
 }
@@ -700,13 +680,12 @@ exports.getPlacements = function(req, res)  {
 }
 
 /**
- * Admin deletes fellow's work history
- */
+* Admin deletes fellow's work history
+*/
 exports.deletePlacement = function(req, res) {
    var profile = req.profile,
         placement = req.placement;
 
-    
    Applicant.update(
         { _id: profile._id }, 
         { $pull: { 'placements': { '_id': placement._id } }  
@@ -716,18 +695,15 @@ exports.deletePlacement = function(req, res) {
                 message: 'Couldn\'t delete placement'
              });
           } else {
-
-              //res.jsonp(user);
               instructor.returnJson(res, profile._id);
-
           }
         }
    );
 }
 
 /**
- * Download CV
- */
+* Download CV
+*/
 exports.download = function(req, res) {
      var file = req.param('file'),
          fileName = path.basename(file);
@@ -737,8 +713,8 @@ exports.download = function(req, res) {
 };
 
 /**
- * List of Tests
- */
+* List of Tests
+*/
 exports.listTests = function(req, res) {
     Test.find().sort('-created').exec(function(err, tests) {
         if (err) {
@@ -752,8 +728,8 @@ exports.listTests = function(req, res) {
 };
 
 /**
- * Show the current test
- */
+* Show the current test
+*/
 exports.testRead = function(req, res) {
     res.jsonp(req.test);
 };
@@ -770,8 +746,7 @@ exports.listSkillCategories = function(req, res){
         } else {
             res.jsonp(skillCategories);
         }
-    });
-
+  });
 };
 
 exports.createSkillCategory = function(req, res){
@@ -784,7 +759,7 @@ exports.createSkillCategory = function(req, res){
          } else {
             res.jsonp(result); 
          }
-       });
+  });
 };
 
 exports.getSkillCategory = function(req, res){
@@ -803,8 +778,7 @@ exports.updateSkillCategory = function(req, res){
                 res.jsonp(req.skillCategory);
              }
          }
-    );
-
+  );
 };
 
 exports.listSkills = function(req, res){
@@ -816,7 +790,7 @@ exports.listSkills = function(req, res){
         } else {
             res.jsonp(skills);
         }
-    });
+  });
 };
 
 exports.listSkillsByCategory = function(req, res){
@@ -851,9 +825,9 @@ exports.deleteSkillCategory = function(req, res) {
                 message: 'Couldn\'t delete category'
             });
         } else {
-                  res.jsonp(category);
-                 }
-            });
+            res.jsonp(category);
+        }
+    });
 };
 
 
@@ -862,9 +836,21 @@ exports.deleteSkillCategory = function(req, res) {
 
 /****************************** MIDDLEWARE ******************************************/
 
+
 /**
- * Applicant middleware
- */
+* Admin authorization middleware
+*/
+exports.checkPermission = function(req, res, next) {
+    if (req.user._type === 'Instructor' && req.user.role === 'admin') {
+        next();
+    } else { 
+        res.send(403, { message: 'You are not an Admin' });
+    }
+};
+
+/**
+* Applicant middleware
+*/
 exports.applicantByID = function(req, res, next, id)  {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('placements').populate('skillSet.skill').exec(function(err, user) {
         if (err) return next(err);
@@ -879,8 +865,8 @@ exports.applicantByID = function(req, res, next, id)  {
 };
 
 /**
- * Instructor middleware
- */
+* Instructor middleware
+*/
 exports.instructorByID = function(req, res, next, id)  {
      Instructor.findById(id).where({_type: 'Instructor'}).exec(function(err, user) {
          if (err) return next(err);
@@ -891,11 +877,10 @@ exports.instructorByID = function(req, res, next, id)  {
 };
 
 /**
- * Bootcamp middleware
- */
+* Bootcamp middleware
+*/
 exports.campByID = function(req, res, next, id) {
     Bootcamp.findById(id).populate('applicants').exec(function(err, camp) {
-      console.log('camp: ' + camp);
         if (err) return next(err);
         if (!camp) return next(new Error('Failed to load bootcamp ' + id));
         Applicant.populate(camp.applicants, { path:'status'},
@@ -908,8 +893,8 @@ exports.campByID = function(req, res, next, id) {
 };
 
 /**
- * Test middleware
- */
+* Test middleware
+*/
 exports.testByID = function(req, res, next, id) {
     Test.findById(id).exec(function(err, test) {
         if (err) return next(err);
@@ -920,24 +905,24 @@ exports.testByID = function(req, res, next, id) {
 };
 
 /**
- * Work History middleware
- */
+* Work History middleware
+*/
 exports.placementByID = function(req, res, next, id) {
     req.placement = req.profile.placement.id(id);
     next();
 };
 
 /**
- * Question middleware
- */
+* Question middleware
+*/
 exports.questionByID = function(req, res, next, id) {
     req.question = req.test.questions.id(id);
     next();
 };
 
 /**
- * SKill Category middleware
- */
+* SKill Category middleware
+*/
 exports.skillCategoryByID = function(req, res, next, id) {
     SkillCategory.findById(id).exec(function(err, skillCategory) {
         if (err) return next(err);
@@ -947,6 +932,9 @@ exports.skillCategoryByID = function(req, res, next, id) {
     });
 };
 
+/**
+* SKill middleware
+*/
 exports.skillById = function(req, res, next, id) {
     Skill.findById(id).populate('category').exec(function(err, skill) {
         if (err) return next(err);
