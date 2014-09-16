@@ -16,7 +16,7 @@ var mongoose = require('mongoose'),
     path = require('path'),
     _ = require('lodash');
 
-var instr = require('../../app/controllers/instructor');
+var instructor = require('../../app/controllers/instructor');
 
 
 /**
@@ -60,7 +60,7 @@ exports.createUsers = function(req, res, next) {
 */
 exports.changeStatus = function(req, res) {
       var applicant = req.applicant;
-      
+
       if (req.body.status.name === 'rejected') { 
         if (!req.body.status.reason || req.body.status.reason.length === 0) {
            res.send(400, {
@@ -91,12 +91,11 @@ exports.changeStatus = function(req, res) {
          {$set: {'role': applicant.role, 'status.name': applicant.status.name, 'status.reason': applicant.status.reason}},
           function (err) {
              if (err) {
-                return res.send(500, {message: err });
+                res.send(500, { message: err });
              } else {
                  instr.returnJson(res, applicant._id);
              }
           }
-
       );  
 };
 
@@ -114,7 +113,7 @@ exports.updateApplicantDetails = function(req, res) {
              if (err) {
                 res.send(500, { message: err });
              } else {
-                 instr.returnJson(res, applicant._id);
+                 instructor.returnJson(res, applicant._id);
              }
           }
     ); 
@@ -156,7 +155,7 @@ exports.changeRole = function(req, res) {
              },
              function (err) {
                  if (err) {
-                    res.send(500, { message: 'operation failed' });
+                     res.send(500, { message: 'operation failed' });
                  } else {
                      instr.returnJson(res, applicant._id);
                  }
@@ -183,9 +182,9 @@ exports.changeInstrRole = function(req, res) {
              {$set: {'role': instructor.role } },
               function (err) {
                  if (err) {
-                    return res.send(500, { message: 'error occurred while trying to change role' });
+                     res.send(500, { message: 'error occurred while trying to change role' });
                  } else {
-                     instr.returnJson(res, instructor._id);
+                     instructor.returnJson(res, instructor._id);
                  }
               }
           );
@@ -205,11 +204,11 @@ exports.deleteUser = function(req, res) {
     } else {
         person.remove(function(err, user) {
             if (err) {
-                return res.send(500, {
+                res.send(500, {
                     message: 'could not delete user'
                 });
             } else {
-                instr.returnJson(res, person._id);
+                instructor.returnJson(res, person._id);
             }
         });
     }
@@ -268,7 +267,7 @@ exports.editCamp = function(req, res) {
             if (err) {
                res.send(500, { message: 'could not edit camp' });
             } else {
-               instr.jsonCamp(res, camp._id);
+               instructor.jsonCamp(res, camp._id);
             }
         }
     ); 
@@ -599,7 +598,7 @@ exports.placementStatus = function(req, res) {
                 if (err) {
                    res.send(400, { message: 'Couldn\'t save placement status' });
                 } else {
-                   instr.returnJson(res, profile._id);
+                   instructor.returnJson(res, profile._id);
                 }
           }
        ); 
@@ -620,7 +619,7 @@ exports.addPlacement = function(req, res) {
 
        placement.save(function(err, result) {
          if (err) {
-              return res.send(400, {
+              res.send(400, {
                   message: 'Couldn\'t add placement'
               });
          } else {
@@ -629,18 +628,17 @@ exports.addPlacement = function(req, res) {
                {$push: { 'placements':  result } },
                function (error) {
                   if (error) {
-                      return res.send(400, {message: 'Couldn\'t save work history' });
+                      res.send(400, {message: 'Couldn\'t save work history' });
                   } else {
                       instr.returnJson(res, profile._id);
                   }
-              }
+               }
             );
               
          }
        });
-
     } else {
-        return res.send(400, { message: 'Only a fellow\'s work history can be added' });
+        res.send(400, { message: 'Only a fellow\'s work history can be added' });
     }
 };
 
@@ -656,7 +654,7 @@ exports.editPlacement = function(req, res) {
     Applicant.update(
          {_id: profile._id, 'placements._id': placement._id },
          {$set: { 
-                  'placements.$.company': placement.company,
+                  'placeements.$.company': placement.company,
                   'placements.$.jobDescription': placement.jobDescription,
                   'placements.$.location': placement.location,
                   'placements.$.start_date': placement.start_date,
@@ -667,7 +665,7 @@ exports.editPlacement = function(req, res) {
              if (err) {
                 res.send(500, { message: 'error occurred trying to update placement' });
              } else {
-                 instr.returnJson(res, profile._id);
+                 instructor.returnJson(res, profile._id);
              }
          }
     );
@@ -691,7 +689,6 @@ exports.deletePlacement = function(req, res) {
    var profile = req.profile,
         placement = req.placement;
 
-    
    Applicant.update(
         { _id: profile._id }, 
         { $pull: { 'placements': { '_id': placement._id } }  
@@ -701,7 +698,7 @@ exports.deletePlacement = function(req, res) {
                 message: 'Couldn\'t delete placement'
              });
           } else {
-              instr.returnJson(res, profile._id);
+              instructor.returnJson(res, profile._id);
           }
         }
    );
@@ -752,8 +749,7 @@ exports.listSkillCategories = function(req, res){
         } else {
             res.jsonp(skillCategories);
         }
-    });
-
+  });
 };
 
 exports.createSkillCategory = function(req, res){
@@ -766,7 +762,7 @@ exports.createSkillCategory = function(req, res){
          } else {
             res.jsonp(result); 
          }
-       });
+  });
 };
 
 exports.getSkillCategory = function(req, res){
@@ -785,8 +781,7 @@ exports.updateSkillCategory = function(req, res){
                 res.jsonp(req.skillCategory);
              }
          }
-    );
-
+  );
 };
 
 exports.listSkills = function(req, res){
@@ -798,7 +793,7 @@ exports.listSkills = function(req, res){
         } else {
             res.jsonp(skills);
         }
-    });
+  });
 };
 
 exports.listSkillsByCategory = function(req, res){
@@ -833,7 +828,7 @@ exports.deleteSkillCategory = function(req, res) {
                 message: 'Couldn\'t delete category'
             });
         } else {
-                  res.jsonp(category);
+            res.jsonp(category);
         }
     });
 };

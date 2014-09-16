@@ -14,7 +14,7 @@ module.exports = function(app) {
 	app.route('/users/:userId').get(users.read).put(users.adminUpdate);
 	app.route('/users/:userId/password').post(users.changePassword);
 	app.route('/users/accounts').delete(users.removeOAuthProvider);
-	app.route('/users/view').get(users.requiresLogin, users.appView);
+	app.route('/users/view').get(users.requiresLogin, users.applicantView);
 	app.route('/users/check/uniqueUsername').post(users.uniqueUsername);
 	
 	// Setting up the users api

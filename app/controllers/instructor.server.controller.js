@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * Module dependencies.
  */
@@ -10,7 +11,9 @@ var mongoose = require('mongoose'),
     SkillCategory = mongoose.model('SkillCategory'),
     Skill = mongoose.model('Skill'),
     _ = require('lodash');
+
 var users = require('../../app/controllers/users');
+
 var uuid = require('node-uuid'),
     multiparty = require('multiparty'),
     async = require('async');
@@ -24,7 +27,6 @@ var path = require('path'),
 */
 exports.returnJson = function(res, id) {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('skillSet.skill').exec(function(err, user) {
-        console.log(user);
        res.jsonp(user);
     });
 };
@@ -43,7 +45,6 @@ exports.jsonCamp = function(res, id) {
 */
 var jsonInstructor = function(res, id) {
     Instructor.findById(id).exec(function(err, instructor) {
-        console.log(instructor);
        res.jsonp(instructor);
     });
 };
@@ -202,7 +203,7 @@ exports.editFellowRating = function(req, res) {
                  },
                  function (err, changes) {
                      if (err) {
-                        res.send(500, { message: 'error occurred trying to update skill rating' });
+                         res.send(500, { message: 'error occurred trying to update skill rating' });
                      } else {
                          exports.returnJson(res, fellow._id);
                      }
@@ -240,7 +241,6 @@ exports.addSkills = function(req, res) {
         }
     });
 };
-
 
 /**
 * Show the current trainee/fellow
@@ -348,9 +348,9 @@ exports.updateInfo = function(req, res) {
                         {$set: { experience: experience } },
                           function (error) {
                              if (error) {
-                                res.send(500, { message: 'Error: save operation failed' });
+                                 res.send(500, { message: 'Error: save operation failed' });
                              } else {
-                                 exports.returnJson(res, person._id);
+                                 jsonInstructor(res, person._id);
                              }
                           }
                     );
@@ -377,11 +377,13 @@ exports.deletePhoto = function(req, res) {
              if (error) {
                  res.send(500, { message: 'Error: save operation failed' });
              } else {
-                 exports.returnJson(res, profile._id);
+                 jsonInstructor(res, profile._id);
              }
           }
     );
 };
+
+
 
 /***************************************   MIDDLEWARE   *****************************************/
 
@@ -428,3 +430,4 @@ exports.checkRights = function(req, res, next) {
         });
     }
 };
+
