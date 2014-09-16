@@ -4,7 +4,6 @@ angular.module('applicant').controller('ApplicantController', ['$scope', '$uploa
   function($scope, $upload, $http, Authentication, $stateParams, $location, Applicants, Users, Bootcamps){
       $scope.authentication = Authentication;
       $scope.user = Authentication.user;
-      //$scope.showLoader = false;
       $scope.isClicked = false;
       
       $scope.find = function() {
