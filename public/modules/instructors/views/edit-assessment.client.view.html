@@ -1,8 +1,8 @@
-<section data-ng-controller="InstructorsController">
+<section data-ng-controller="InstructorsController" class="pad">
     <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
-            <div class="col-md-offset-4 col-md-4">
+            <div class="col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
                 <form class="black-grey" data-ng-submit="updateAssessment()">
                     <fieldset>
                         <div class="form-group">

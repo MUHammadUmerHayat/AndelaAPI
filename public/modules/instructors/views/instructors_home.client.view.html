@@ -1,4 +1,4 @@
-<section data-ng-controller="InstructorsController">
+<section data-ng-controller="InstructorsController" class="pad">
     <div class="container" data-ng-init="instructorHome()"  data-ng-show="user.role === 'instructor'">
         
        <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
@@ -14,18 +14,12 @@
                     <a href="#"></a>
                     <span>Upload a new picture</span>
                 </div>                           
-            <ul class="list-group">
+                <ul class="list-group">
                     <li class="list-group-item">Name: <b data-ng-bind="user.firstName"></b>&nbsp;<b data-ng-bind="user.lastName"></b></li>
                     <li class="list-group-item">Username: <b data-ng-bind="user.username"></b></li>
                     <li class="list-group-item">Email: <b data-ng-bind="user.email"></b> </li>
                     <li class="list-group-item">Experience: <b data-ng-bind="user.experience"></b> </li>
                 </ul>
-                <!-- <ul data-ng-repeat="skillSet in user.skillSets" class="col-md-offset-2 col-md-8 list-group">
-                    <li><strong data-ng-bind="skillSet.skill"></strong></li>
-                    <li>Rating:<strong data-ng-bind="skillSet.rating"></strong></li>
-                    <li><a class="btn btn-success pull-right" data-ng-click="deleteSkill($index, skillSet)"><i class="glyphicon glyphicon-trash"></i></a></li> -->
-                    <!-- <p><a class="btn btn-success pull-right" href="/#!/instructors/trainees/{{trainee._id}}/{{assessment._id}}/edit" data-ng-click="editAssessment($index, assessment)"><i class="glyphicon glyphicon-ed1it"></i></a></p> -->
-                <!-- </ul> -->
             </div>
         </div>
     </div>

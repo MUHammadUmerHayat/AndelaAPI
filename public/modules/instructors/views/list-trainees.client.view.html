@@ -1,4 +1,4 @@
-<section data-ng-controller="InstructorsController" data-ng-init="listTrainees()">
+<section data-ng-controller="InstructorsController" data-ng-init="listTrainees()" class="pad">
     <div class="container"  data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
@@ -7,7 +7,7 @@
             </div>
 
             <div>
-                <table class="list">
+                <table class="list list-link">
                     <thead>
                       <tr>
                         <th>First Name</th>
@@ -18,10 +18,10 @@
                       </tr>
                     </thead>
                     <tbody class="capitalize">
-                        <tr data-ng-repeat="trainee in trainees" data-ng-href="/#!/instructors/trainees/{{trainee._id}}">
-                            <td data-ng-bind="trainee.firstName"></td>
-                            <td data-ng-bind="trainee.lastName"></td>
-                            <td data-ng-bind="trainee.email"></td>
+                        <tr data-ng-repeat="trainee in trainees">
+                            <td data-ng-bind="trainee.firstName" data-ng-href="/#!/instructors/trainees/{{trainee._id}}"></td>
+                            <td data-ng-bind="trainee.lastName" data-ng-href="/#!/instructors/trainees/{{trainee._id}}"></td>
+                            <td data-ng-bind="trainee.email" data-ng-href="/#!/instructors/trainees/{{trainee._id}}"></td>
                             <td><a class="btn btn-primary btn-xs" data-ng-href="/#!/instructors/trainees/{{trainee._id}}">view</a></td>
                         </tr>          
                     </tbody>

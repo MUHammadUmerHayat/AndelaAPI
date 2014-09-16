@@ -1,12 +1,12 @@
-<section data-ng-controller="InstructorsController" data-ng-init="listBootcamps()">
+<section data-ng-controller="InstructorsController" data-ng-init="listBootcamps()" class="pad">
     <div class="container"  data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
             <div class="page-header text-center">
-              <h1>Bootcamps</h1>
+              <h1>Bootcamps</h1>{{bootcamp[$index].applicants.length}}
             </div>
             <div>
-                <table class="list">
+                <table class="list list-link">
                     <thead>
                       <tr>
                         <th>Bootcamp Name</th>
@@ -17,11 +17,10 @@
                     </thead>
                     <tbody>
                         <tr data-ng-repeat="bootcamp in bootcamps">
-                            <td data-ng-bind="bootcamp.camp_name"></td>
-                            <td data-ng-bind="bootcamp.start_date | date"></td>
-                            <td data-ng-bind="bootcamp.end_date | date"></td>
-                            <td data-ng-bind="bootcamp.applicants.length"></td>
-                            <td><a class="btn btn-primary btn-xs" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}">view</a></td>
+                            <td data-ng-bind="bootcamp.camp_name" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></td>
+                            <td data-ng-bind="bootcamp.start_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></td>
+                            <td data-ng-bind="bootcamp.end_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></td>
+                            <td data-ng-bind="bootcamp.applicants.length" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></td>
                         </tr>               
                     </tbody>
                 </table>
