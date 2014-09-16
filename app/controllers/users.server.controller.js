@@ -300,7 +300,7 @@ exports.list = function(req, res) {
 };
 
 // viewing Applicants data page
-exports.appView = function(req, res, id) { 
+exports.applicantView = function(req, res, id) { 
     var user = req.user;
     var message = null;
     id = req.user._id;

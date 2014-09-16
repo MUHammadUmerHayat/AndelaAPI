@@ -16,7 +16,7 @@ var mongoose = require('mongoose'),
     path = require('path'),
     _ = require('lodash');
 
-var instr = require('../../app/controllers/instructor');
+var instructor = require('../../app/controllers/instructor');
 
 
 /**
@@ -62,10 +62,7 @@ exports.createUsers = function(req, res, next) {
 */
 exports.changeStatus = function(req, res) {
       var applicant = req.applicant;
-      // console.log('Status Change Init');
-      //  console.log('Applicant req init');
-      //  console.log('appt req: ' + req.applicant);
-      
+     
       if (req.body.status.name === 'rejected') { 
         if (!req.body.status.reason || req.body.status.reason.length === 0) {
            return res.send(400, {
@@ -100,7 +97,7 @@ exports.changeStatus = function(req, res) {
              if (err) {
                 return res.send(400, {message: err });
              } else {
-                 instr.returnJson(res, applicant._id);
+                 instructor.returnJson(res, applicant._id);
                  console.log('response');
                  console.log('res: ' + res.status);
                  //res.jsonp(appt);
@@ -124,7 +121,7 @@ exports.updateApplicantDetails = function(req, res) {
              if (err) {
                 return res.send(400, {message: err });
              } else {
-                 instr.returnJson(res, applicant._id);
+                 instructor.returnJson(res, applicant._id);
              }
           }
 
@@ -170,7 +167,7 @@ exports.changeRole = function(req, res) {
                     return res.send(400, { message: 'operation failed' });
                  } else {
                      //res.jsonp(appt);
-                     instr.returnJson(res, applicant._id);
+                     instructor.returnJson(res, applicant._id);
                  }
              }
           );
@@ -198,7 +195,7 @@ exports.changeInstrRole = function(req, res) {
                     return res.send(400, {message: 'error occurred while trying to change role' });
                  } else {
                      //res.jsonp(instructor);
-                     instr.returnJson(res, instructor._id);
+                     instructor.returnJson(res, instructor._id);
                  }
               }
           );
@@ -223,7 +220,7 @@ exports.deleteUser = function(req, res) {
                 });
             } else {
                 //res.jsonp(user);
-                instr.returnJson(res, person._id);
+                instructor.returnJson(res, person._id);
             }
         });
     }
@@ -284,7 +281,7 @@ exports.editCamp = function(req, res) {
                return res.send(400, {message: 'could not edit camp' });
             } else {
                //res.jsonp(user);
-               instr.jsonCamp(res, camp._id);
+               instructor.jsonCamp(res, camp._id);
             }
         }
     ); 
@@ -326,14 +323,14 @@ exports.read = function(req, res) {
 /**
  * Show the current applicant/trainee/fellow
  */
-exports.apptRead = function(req, res) {
+exports.applicantRead = function(req, res) {
     res.jsonp(req.applicant);
 };
 
 /**
  * Show the current instructor/admin
  */
-exports.instrRead = function(req, res) {
+exports.instructorRead = function(req, res) {
     res.jsonp(req.instructor);
 };
 
@@ -620,7 +617,7 @@ exports.placementStatus = function(req, res) {
                    return res.send(400, { message: 'Couldn\'t save placement status' });
                 } else {
                    //res.jsonp(fellow);
-                   instr.returnJson(res, profile._id);
+                   instructor.returnJson(res, profile._id);
                 }
           }
        ); 
@@ -653,7 +650,7 @@ exports.addPlacement = function(req, res) {
                       return res.send(400, {message: 'Couldn\'t save work history' });
                   } else {
                       // res.jsonp(user);
-                      instr.returnJson(res, profile._id);
+                      instructor.returnJson(res, profile._id);
                   }
               }
             );
@@ -690,7 +687,7 @@ exports.editPlacement = function(req, res) {
                 return res.send(400, { message: 'error occurred trying to update placement' });
              } else {
                  //res.jsonp(instructor);
-                 instr.returnJson(res, profile._id);
+                 instructor.returnJson(res, profile._id);
              }
          }
     );
@@ -725,7 +722,7 @@ exports.deletePlacement = function(req, res) {
             });
           } else {
               //res.jsonp(user);
-              instr.returnJson(res, profile._id);
+              instructor.returnJson(res, profile._id);
           }
         }
    );
@@ -871,7 +868,7 @@ exports.deleteSkillCategory = function(req, res) {
 /**
  * Applicant middleware
  */
-exports.apptByID = function(req, res, next, id)  {
+exports.applicantByID = function(req, res, next, id)  {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('placements').populate('skillSet.skill').exec(function(err, user) {
         if (err) return next(err);
         if (!user) return next(new Error('User is not an applicant'));
@@ -888,7 +885,7 @@ exports.apptByID = function(req, res, next, id)  {
 /**
  * Instructor middleware
  */
-exports.instrByID = function(req, res, next, id)  {
+exports.instructorByID = function(req, res, next, id)  {
      Instructor.findById(id).where({_type: 'Instructor'}).exec(function(err, user) {
          if (err) return next(err);
          if (!user) return next(new Error('User is not an instructor'));
@@ -937,7 +934,7 @@ exports.placementByID = function(req, res, next, id) {
 /**
  * Question middleware
  */
-exports.questByID = function(req, res, next, id) {
+exports.questionByID = function(req, res, next, id) {
     req.question = req.test.questions.id(id);
     next();
 };
