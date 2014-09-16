@@ -305,7 +305,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
         ],
         function(err, results) {
             if (err) {
-                res.send(400, { message: err });
+                res.send(500, { message: err });
             } else {
                 jsonInstructor(res, person._id);    
             }

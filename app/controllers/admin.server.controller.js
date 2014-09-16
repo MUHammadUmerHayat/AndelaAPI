@@ -13,22 +13,11 @@ var mongoose = require('mongoose'),
     Placement = mongoose.model('Placement'),
     SkillCategory = mongoose.model('SkillCategory'),
     Skill = mongoose.model('Skill'),
+    async = require('async'),
     path = require('path'),
     _ = require('lodash');
 
 var instructor = require('../../app/controllers/instructor');
-
-
-/**
-* Admin authorization middleware
-*/
-exports.checkPermission = function(req, res, next) {
-    if (req.user._type === 'Instructor' && req.user.role === 'admin') {
-        next();
-    } else { 
-        res.send(403, { message: 'You are not an Admin' });
-    }
-};
 
 /**
 * Create users
@@ -83,7 +72,6 @@ exports.changeStatus = function(req, res) {
           applicant.status.reason = '';
       }
 
-      
       applicant.status.name = req.body.status.name;
 
       Applicant.update(
@@ -277,24 +265,33 @@ exports.editCamp = function(req, res) {
 * Delete bootcamp
 */
 exports.deleteCamp = function(req, res) {
-    var camp = req.camp,
-        campId = camp._id;
+    var camp = req.camp;
 
-    camp.remove(function(err, bootCamp) {
+    async.waterfall([
+            function (callback) {
+                camp.remove(function(err, camp) { 
+                    if (err) {
+                        var message = 'Couldn\'t delete camp.';
+                        return callback(message);
+                    } 
+                    callback(null, camp);
+                });
+            },
+            function (camp, callback) { 
+                User.find().where({campId: camp._id}).remove(function(err, user) {
+                    if (err) {
+                        var message = 'Couldn\'t delete user.';
+                        return callback(message);
+                    }
+                    callback(null, camp);
+                });
+            }
+    ],
+    function(err, results) {
         if (err) {
-            res.send(500, {
-                message: 'Couldn\'t delete camp'
-            });
+            res.send(500, { message: err });
         } else {
-            User.find().where({campId: campId}).remove(function(err, user) {
-                 if (err) {
-                    res.send(500, {
-                        message: 'Couldn\'t delete user'
-                    });
-                 } else {
-                     res.jsonp(bootCamp);
-                 }
-            });
+            res.jsonp(results);    
         }
     });
 };
@@ -595,11 +592,11 @@ exports.placementStatus = function(req, res) {
                  }
           }, 
           function(err) {
-                if (err) {
-                   res.send(400, { message: 'Couldn\'t save placement status' });
-                } else {
-                   instructor.returnJson(res, profile._id);
-                }
+              if (err) {
+                 res.send(400, { message: 'Couldn\'t save placement status' });
+              } else {
+                 instructor.returnJson(res, profile._id);
+              }
           }
        ); 
     } else {
@@ -839,6 +836,18 @@ exports.deleteSkillCategory = function(req, res) {
 
 /****************************** MIDDLEWARE ******************************************/
 
+
+/**
+* Admin authorization middleware
+*/
+exports.checkPermission = function(req, res, next) {
+    if (req.user._type === 'Instructor' && req.user.role === 'admin') {
+        next();
+    } else { 
+        res.send(403, { message: 'You are not an Admin' });
+    }
+};
+
 /**
 * Applicant middleware
 */
@@ -872,7 +881,6 @@ exports.instructorByID = function(req, res, next, id)  {
 */
 exports.campByID = function(req, res, next, id) {
     Bootcamp.findById(id).populate('applicants').exec(function(err, camp) {
-      console.log('camp: ' + camp);
         if (err) return next(err);
         if (!camp) return next(new Error('Failed to load bootcamp ' + id));
         Applicant.populate(camp.applicants, { path:'status'},
@@ -924,6 +932,9 @@ exports.skillCategoryByID = function(req, res, next, id) {
     });
 };
 
+/**
+* SKill middleware
+*/
 exports.skillById = function(req, res, next, id) {
     Skill.findById(id).populate('category').exec(function(err, skill) {
         if (err) return next(err);
