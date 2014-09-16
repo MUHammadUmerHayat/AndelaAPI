@@ -9,75 +9,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
     $scope.weeks = 0;
 
-    $scope.choiceOne = [{id: 'choice1'},{id: 'choice2'}]; //answer to question one
-    $scope.choiceTwo = [{id: 'choice1'},{id: 'choice2'}]; //answer to question two
-    $scope.optionOne=[];  //options for question one
-    $scope.optionTwo=[]; //oprions for question two
-    $scope.questions=[];
-    $scope.selected = '';
-    $scope.testName = '';
-    $scope.answered = false;
-    $scope.answeredTwo = false;
-    $scope.camp_options = [];
-    $scope.formData = {};
-    $scope.data = {};
-
-    $scope.setShow = function(val) {
-        $scope.selected = val;
-    };
-
-    $scope.isSelected = function(val) {
-        return val === $scope.selected;
-    };
-
-    $scope.addNewChoice = function(num) {
-        var newItemNo;
-        if (num === 1) {
-            newItemNo = $scope.choiceOne.length+1;
-            $scope.choiceOne.push({id: 'choice'+newItemNo});
-        } else {
-            newItemNo = $scope.choiceTwo.length+1;
-            $scope.choiceTwo.push({id: 'choice'+newItemNo});
-        }
-    };
-
-    $scope.deleteChoice = function(index, num) {
-        if (num === 1) {
-            if (parseInt($scope.test.answerOne, 10) === $scope.choiceOne.length - 1) {
-                $scope.test.answerOne = $scope.test.answerOne-1;
-            }
-            doDelete($scope.choiceOne, $scope.optionOne, index);
-        } else {
-            if (parseInt($scope.test.answerTwo, 10) === $scope.choiceTwo.length - 1) {
-                $scope.test.answerTwo = $scope.test.answerTwo-1;
-            }
-            doDelete($scope.choiceTwo, $scope.optionTwo, index);
-        }
-    };
-
-    var doDelete = function(choiceArr, optionArr, index) {
-            choiceArr.splice(index, 1);
-            optionArr.splice(index, 1);
-
-            for (var i in choiceArr) {
-                choiceArr[i].id = 'choice' + i;
-            }
-        };
-
-    $scope.showAddChoice = function(choice, num) {
-        if (num === 1)
-            return choice.id === $scope.choiceOne[$scope.choiceOne.length-1].id;
-        else
-            return choice.id === $scope.choiceTwo[$scope.choiceTwo.length-1].id;
-    };
-
-    $scope.changeAnsVal = function(index, num) {
-        if (num === 1) {
-            $scope.answered = true;
-        } else {
-            $scope.answeredTwo = true;
-        }
-    };
 
 
     // Create new user
@@ -99,7 +30,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
             else{
                 $location.path('/admins');
             }
-          
         }).error(function(response) {
             $scope.error = response.message;
         });
@@ -118,7 +48,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
             }
         });
     };
-    
+
     $scope.viewcamp = function() {
         $http.get('/admin/camp/' + $stateParams.campId).success(function(response) {
           $scope.camp = response;
@@ -126,7 +56,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
           $scope.editorEnabled = false;
 
         // If successful show success message and clear form
-           
         }).error(function(response) {
             $scope.error = response.message;
 
@@ -140,16 +69,15 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         $scope.formData.editableLastName = $scope.camp.applicants[index].lastName;
         $scope.formData.editableEmail = $scope.camp.applicants[index].email;
     };
-          
     $scope.disableApplicantEditor = function() {
         $scope.editorEnabled = false;
     };
-    
+
     $scope.saveApplicant = function(index) {
         $scope.camp.applicants[index].firstName = $scope.formData.editableFirstName;
         $scope.camp.applicants[index].lastName = $scope.formData.editableLastName;
         $scope.camp.applicants[index].email = $scope.formData.editableEmail;
-        
+
         var url = 'users/' + $scope.camp.applicants[index]._id;
         var data = {
             firstName: $scope.formData.editableFirstName,
@@ -174,7 +102,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
             for(var i = 0; i < response.length; i++){
                 $scope.camp_options.push(response[i].camp_name);
             }
-         
+
         }).error(function(response) {
             $scope.error = response.message;
             $location.path('/admin/welcome');
@@ -189,7 +117,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
             $scope.role = [];
             $scope.success = true;
             $scope.trainees = response;
-          
+
         }).error(function(response) {
             $scope.error = response.message;
         });
@@ -203,7 +131,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
             $scope.applicants = response;
             console.log('Applicant Init');
             console.log('appt: ' + $scope.applicants);
-        
+
         }).error(function(response) {
             $scope.error = response.message;
         });
@@ -320,26 +248,11 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
             $scope.updatePlacement($scope.appt);
             $scope.disableCurrPlacementEditor('endDate');
           }
-          
         };
-        
-        console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
-
-    // $scope.updateApplicantDetails = function(apptId) {
-    //   $http.put('/admin/appt/' + apptId).success(function(response) {
-    //     console.log('Success - Done', response);
-    //   }).error(function(response) {
-    //     $scope.error = response.message;
-    //     console.log($scope.error);
-    //   });
-    // };
-
 
     $scope.updateSkill = function(appt, index) {
       $http.put('/admin/trainee/' + appt._id + '/rate/' + appt.skillSets[index]._id, appt.skillSets[index]).success(function(response) {
@@ -388,8 +301,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         console.log($scope.error);
         // console.log('Error - can not');
       });
-
-
     };
 
     $scope.deleteAdmin = function(userId, index) {
@@ -401,7 +312,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
@@ -411,14 +321,13 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
     $scope.deleteInstr = function(userId, index) {
       $scope.instructors.splice(index, 1);
-    
+
       $http.delete('/admin/user/' + userId).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
@@ -435,7 +344,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
@@ -450,7 +358,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
@@ -465,7 +372,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
@@ -480,7 +386,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
@@ -496,11 +401,9 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         // $scope.appt = response;
         console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log($scope.error);
-        
       });
     };
 
@@ -527,7 +430,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       $http.get('/admin/fellows').success(function(response) {
         // If successful show success message and clear form
         $scope.fellows = response;
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log('Error - can not');
@@ -559,7 +461,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         else{
           return "Now";
         }
-        
       }
       else{
         return "Now";
@@ -582,17 +483,17 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         return 0;
       }
     }
-     $scope.check_placement = function(placement, index){
+    $scope.check_placement = function(placement, index){
         if ($scope.get_fellow_work_days(placement) <= 0) {
           $scope.fellows[index].available = 'Needs Work';
           $scope.fellows[index].week = $scope.get_fellow_work_days(placement) ;
           console.log( $scope.fellows[index].week);
         }
         else{
-        $scope.fellows[index].available = 'Currently Placed';
-        console.log(' placed');
-        $scope.fellows[index].week = $scope.get_fellow_work_days(placement);
-       }
+            $scope.fellows[index].available = 'Currently Placed';
+            console.log(' placed');
+            $scope.fellows[index].week = $scope.get_fellow_work_days(placement);
+        }
 
     };
 
@@ -652,13 +553,10 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     }; 
 
     $scope.changeRoleToFellow = function(trainee_id, index) {
-      
       $scope.trainees.splice(index, 1);
-      
       $http.put('/admin/appt/' + trainee_id + '/role', {role: $scope.role[index]}).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
-        
       }).error(function(response) {
         $scope.error = response.message;
         console.log('Error - can not');
@@ -672,7 +570,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
           // If successful show success message and clear form
           $scope.success = true;
           $scope.camp.applicants[index].status.name = "Andela Fellow";
-          
         }).error(function(response) {
           $scope.error = response.message;
           console.log('Error - can not');
@@ -738,175 +635,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         if ($scope.error.type === 'date'){
           $scope.error = "Please follow the date pattern specified M/D/YY e.g (use 2/5/2014 for 5th Feb 2014)"
         }
-        console.log('Error - can not');
-      });
-    };
-
-    $scope.createTest = function() {
-      $http.post('/admin/test', {questions: $scope.questions, optionOne: $scope.optionOne, optionTwo: $scope.optionTwo, 
-                                  testName: $scope.testName, answerOne: $scope.test.answerOne, 
-                                  answerTwo: $scope.test.answerTwo}).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        console.log('Success - Done', response);
-        $location.path('/admin/test');
-        
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-
-    $scope.createQuestion = function() {
-      $http.post('/admin/test/' + $stateParams.testId, {question: $scope.question, option: $scope.optionOne, 
-                                  answer: $scope.test.answerOne}).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        console.log('Success - Done', response);
-        $location.path('/admin/test');
-        
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-
-    $scope.viewTests = function() {
-      $http.get('/admin/test').success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        $scope.tests = response;
-        console.log('Success - Done', response);        
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-
-    $scope.viewTest = function() {
-      $http.get('/admin/test/' + $stateParams.testId).success(function(response) {
-        $scope.test = response;
-
-        $scope.testNameEditorEnabled = false;
-        $scope.questionEditorEnabled = [];
-        $scope.editableQuestion = [];
-        $scope.optionEditorEnabled = [];
-        $scope.editableOption = [];
-        $scope.displayerrmsg = [];
-
-        for (var i in $scope.test.questions){
-          $scope.questionEditorEnabled[i] = false;
-          $scope.optionEditorEnabled[i] = [];
-          $scope.editableOption[i] = [];
-          for (var j in $scope.test.questions[i].questOptions) {
-            $scope.optionEditorEnabled[i][j] = false;
-            $scope.editableOption[i][j] = {};
-          }
-        }
-        
-        $scope.enableEditor = function(field, index, optionIndex) {
-          if (field === 'testName'){
-            $scope.testNameEditorEnabled = true; 
-            $scope.editabletestName = $scope.test.testName; 
-          }
-          if (field === 'question'){
-            $scope.questionEditorEnabled[index] = true; 
-            $scope.editableQuestion[index] = $scope.test.questions[index].question; 
-          }
-
-          if (field === 'option'){
-            $scope.optionEditorEnabled[index][optionIndex] = true; 
-            $scope.editableOption[index][optionIndex].option = 
-                                  $scope.test.questions[index].questOptions[optionIndex].option;
-          }
-        };
-        
-        $scope.disableEditor = function(field, index, optionIndex) {
-          if (field === 'testName'){
-            $scope.testNameEditorEnabled = false;
-          }
-          if (field === 'question'){
-            $scope.questionEditorEnabled[index] = false;
-          }
-          if (field === 'option'){
-            $scope.optionEditorEnabled[index][optionIndex] = false;
-          }
-        };
-        // Checks to see if all answers are set to same (false/true). 
-        // Returns true if all are the same
-        var checkAllanswers = function (questOptions) {
-          var firstOption = questOptions[0].answer
-          for (var i in questOptions) {
-            if (firstOption !== questOptions[i].answer){
-              return false
-            }
-          }
-          return true;
-        }
-
-        $scope.save = function(field, index, optionIndex) {
-          if (field === 'testName'){
-            $scope.test.testName = $scope.editabletestName;
-            $scope.changeTestName($scope.test);
-          }
-          if (field === 'question'){
-            $scope.test.questions[index].question = $scope.editableQuestion[index];
-            $scope.updateQuestion($scope.test, index);
-          }
-          if (field === 'option'){
-            $scope.test.questions[index].questOptions[optionIndex].option = 
-                                                    $scope.editableOption[index][optionIndex].option;
-            if ($scope.editableOption[index][optionIndex].answer === undefined ||
-                              $scope.editableOption[index][optionIndex].answer === 'undefined') {
-              $scope.editableOption[index][optionIndex].answer = false;
-            }
-
-            // if the option's answer field changes, then change others to it's oppossite
-            if ($scope.editableOption[index][optionIndex].answer === true){
-              for (var i in $scope.test.questions[index].questOptions) {
-                if (i === optionIndex) {continue;}
-                $scope.test.questions[index].questOptions[i].answer = false;
-              }
-            }
-            $scope.test.questions[index].questOptions[optionIndex].answer = 
-                                                    $scope.editableOption[index][optionIndex].answer;
-            
-            // Set error message if no answer is selected
-            if (checkAllanswers ($scope.test.questions[index].questOptions)){
-              $scope.displayerrmsg[index] = true;
-            }
-            else{
-              $scope.displayerrmsg[index] = false;
-            }
-            
-            
-            $scope.updateQuestion($scope.test, index);
-          }
-
-          $scope.disableEditor(field, index, optionIndex);
-        };
-
-        console.log('Success - Done', response);        
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-
-    $scope.changeTestName = function(test) {
-      $http.put('/admin/test/' + test._id, test).success(function(response) {
-        console.log('Success - Done', response);        
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-
-    $scope.updateQuestion = function(test, quesIndex) {
-      $http.put('/admin/test/' + test._id + '/' + test.questions[quesIndex]._id, test.questions[quesIndex]).success(function(response) {
-        console.log('Success - Done', response);        
-      }).error(function(response) {
-        $scope.error = response.message;
         console.log('Error - can not');
       });
     };
