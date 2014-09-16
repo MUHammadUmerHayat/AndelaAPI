@@ -16,7 +16,7 @@ var mongoose = require('mongoose'),
     path = require('path'),
     _ = require('lodash');
 
-var instr = require('../../app/controllers/instructor');
+var instructor = require('../../app/controllers/instructor');
 
 
 /**
@@ -60,7 +60,7 @@ exports.createUsers = function(req, res, next) {
 */
 exports.changeStatus = function(req, res) {
       var applicant = req.applicant;
-      
+
       if (req.body.status.name === 'rejected') { 
         if (!req.body.status.reason || req.body.status.reason.length === 0) {
            res.send(400, {
@@ -93,7 +93,9 @@ exports.changeStatus = function(req, res) {
              if (err) {
                 return res.send(500, {message: err });
              } else {
+                 
                  instr.returnJson(res, applicant._id);
+
              }
           }
 
@@ -114,7 +116,7 @@ exports.updateApplicantDetails = function(req, res) {
              if (err) {
                 res.send(500, { message: err });
              } else {
-                 instr.returnJson(res, applicant._id);
+                 instructor.returnJson(res, applicant._id);
              }
           }
     ); 
@@ -158,7 +160,9 @@ exports.changeRole = function(req, res) {
                  if (err) {
                     res.send(500, { message: 'operation failed' });
                  } else {
+
                      instr.returnJson(res, applicant._id);
+
                  }
              }
           );
@@ -185,7 +189,9 @@ exports.changeInstrRole = function(req, res) {
                  if (err) {
                     return res.send(500, { message: 'error occurred while trying to change role' });
                  } else {
-                     instr.returnJson(res, instructor._id);
+                     //res.jsonp(instructor);
+                     instructor.returnJson(res, instructor._id);
+
                  }
               }
           );
@@ -209,7 +215,9 @@ exports.deleteUser = function(req, res) {
                     message: 'could not delete user'
                 });
             } else {
-                instr.returnJson(res, person._id);
+                //res.jsonp(user);
+                instructor.returnJson(res, person._id);
+
             }
         });
     }
@@ -268,7 +276,8 @@ exports.editCamp = function(req, res) {
             if (err) {
                res.send(500, { message: 'could not edit camp' });
             } else {
-               instr.jsonCamp(res, camp._id);
+               //res.jsonp(user);
+               instructor.jsonCamp(res, camp._id);
             }
         }
     ); 
@@ -599,7 +608,10 @@ exports.placementStatus = function(req, res) {
                 if (err) {
                    res.send(400, { message: 'Couldn\'t save placement status' });
                 } else {
-                   instr.returnJson(res, profile._id);
+
+                   //res.jsonp(fellow);
+                   instructor.returnJson(res, profile._id);
+
                 }
           }
        ); 
@@ -632,7 +644,7 @@ exports.addPlacement = function(req, res) {
                       return res.send(400, {message: 'Couldn\'t save work history' });
                   } else {
                       // res.jsonp(user);
-                      instr.returnJson(res, profile._id);
+                      instructor.returnJson(res, profile._id);
                   }
               }
             );
@@ -668,7 +680,9 @@ exports.editPlacement = function(req, res) {
              if (err) {
                 res.send(500, { message: 'error occurred trying to update placement' });
              } else {
-                 instr.returnJson(res, profile._id);
+                 //res.jsonp(instructor);
+                 instructor.returnJson(res, profile._id);
+
              }
          }
     );
@@ -702,7 +716,10 @@ exports.deletePlacement = function(req, res) {
                 message: 'Couldn\'t delete placement'
              });
           } else {
-              instr.returnJson(res, profile._id);
+
+              //res.jsonp(user);
+              instructor.returnJson(res, profile._id);
+
           }
         }
    );
