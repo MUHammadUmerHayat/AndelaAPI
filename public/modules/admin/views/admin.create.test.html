@@ -1,5 +1,5 @@
 <section data-ng-controller="AdminController" class="pad">
-    <div class="container" data-ng-show="user.role === 'admin'">
+    <div class="container" data-ng-show="user.role === 'admin'" data-ng-controller="TestsController">
 
     <ng-include src='"/modules/admin/views/admin.sidebar.html"'></ng-include>
 

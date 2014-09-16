@@ -21,10 +21,10 @@ angular.module('admin').filter('range', function() {
 });
 
 //Articles service used for communicating with the articles REST endpoints
-angular.module('articles').factory('Articles', ['$resource',
+angular.module('admin').factory('Tests', ['$resource',
     function($resource) {
-        return $resource('articles/:articleId', {
-            articleId: '@_id'
+        return $resource('admin/test/testId', {
+            testId: '@_id'
         }, {
             update: {
                 method: 'PUT'

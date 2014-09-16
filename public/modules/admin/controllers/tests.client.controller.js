@@ -138,17 +138,17 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
 
 			    $scope.enableEditor = function(field, index, optionIndex) {
 			      if (field === 'testName'){
-			        $scope.testNameEditorEnabled = true; 
-			        $scope.editabletestName = $scope.test.testName; 
+			        $scope.testNameEditorEnabled = true;
+			        $scope.editabletestName = $scope.test.testName;
 			      }
 			      if (field === 'question'){
-			        $scope.questionEditorEnabled[index] = true; 
-			        $scope.editableQuestion[index] = $scope.test.questions[index].question; 
+			        $scope.questionEditorEnabled[index] = true;
+			        $scope.editableQuestion[index] = $scope.test.questions[index].question;
 			      }
 
 			      if (field === 'option'){
-			        $scope.optionEditorEnabled[index][optionIndex] = true; 
-			        $scope.editableOption[index][optionIndex].option = 
+			        $scope.optionEditorEnabled[index][optionIndex] = true;
+			        $scope.editableOption[index][optionIndex].option =
 			                              $scope.test.questions[index].questOptions[optionIndex].option;
 			      }
 			    };
