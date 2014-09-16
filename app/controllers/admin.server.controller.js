@@ -631,7 +631,6 @@ exports.addPlacement = function(req, res) {
                   if (error) {
                       return res.send(400, {message: 'Couldn\'t save work history' });
                   } else {
-                      // res.jsonp(user);
                       instr.returnJson(res, profile._id);
                   }
               }
