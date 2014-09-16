@@ -320,7 +320,6 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 
         // upload file
 		$scope.create = function() {
-			console.log($scope.details + $scope.details.exp);
 			$scope.success = null;
 			$scope.error = null;
 			$scope.upload = $upload.upload({
@@ -329,11 +328,10 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 	            data: $scope.details,
 	            file: $scope.file
 	        }).success(function(response) {
-	        	// $scope.instr = response;
+	        	$scope.user.photo = response.photo;
 	            $scope.success = 'Your details have been updated successfully';
 	        }).error(function(err) {
-	        	$scope.error = err.message;
-	            console.log('Error uploading file: ' + err.message || err);
+	        	$scope.error = err.message || err;
 	        });
 		};
 

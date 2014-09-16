@@ -159,7 +159,6 @@ var ApplicantSchema = UserSchema.extend({
     },
     cvPath: {
         type: String
-        // required: 'A vaild CV is required'
     },
     photo_path: String,
     role: {

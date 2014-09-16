@@ -47,7 +47,7 @@ exports.createUsers = function(req, res, next) {
            instructor.password = undefined;
            instructor.salt = undefined;
            if (err) {
-               res.send(400, { message: 'error: could not create user' });
+               res.send(400, { message: err });
            } else {
                res.jsonp(instructor);
            }
@@ -224,7 +224,7 @@ exports.createBootCamp = function(req, res) {
     camp.save(function(err) {
         if (err) {
             res.send(500, {
-                message: err
+                message: 'bootcamp could not be created at this time'
             });
         } else {
             res.jsonp(camp);
@@ -266,7 +266,7 @@ exports.editCamp = function(req, res) {
         }, 
         function(err) {
             if (err) {
-               res.send(500, {message: 'could not edit camp' });
+               res.send(500, { message: 'could not edit camp' });
             } else {
                instr.jsonCamp(res, camp._id);
             }
@@ -333,8 +333,7 @@ var doListing = function(req, res, schema, whichRole) {
                 function(err, data) {
                    res.jsonp(users);
                 }
-            );
-            
+            );  
          }
      });
   } else {
@@ -560,26 +559,24 @@ exports.deleteOption = function(req, res) {
 
     var option = question.questOptions.id(id);
     if (question.questOptions.length === 2) {
-        return res.send(400, { 
+        res.send(400, { 
           message: 'A question can only have a minimum of two options'
         });
-    } else {
-        if (option.answer === true) {
+    } else if (option.answer === true) {
             res.send(400, { 
                 message: 'This option is the answer to the question. Change the answer before deleting it'
             });
-        } else {
-             option.remove();
-             test.save(function(err, test) {
-               if (err) {
-                    return res.send(400, {
+    } else {
+          option.remove();
+          test.save(function(err, test) {
+              if (err) {
+                    res.send(500, {
                         message: 'Couldn\'t delete option'
                     });
-               } else {
+              } else {
                     res.jsonp(test);
-               }
-             });
-        }
+              }
+          });
     }
 };
 
@@ -590,26 +587,24 @@ exports.placementStatus = function(req, res) {
     var profile = req.profile;
     
     if (profile.role === 'fellow') {
-
        Applicant.update({_id: profile._id}, 
           {$set: { 'currPlacement':
-                  { 'status': req.body.status,
+                   { 'status': req.body.status,
                      'startDate': req.body.startDate,
                      'endDate': req.body.endDate
-                  }
+                   }
                  }
           }, 
-          function(err, fellow) {
+          function(err) {
                 if (err) {
-                   return res.send(400, { message: 'Couldn\'t save placement status' });
+                   res.send(400, { message: 'Couldn\'t save placement status' });
                 } else {
-                   //res.jsonp(fellow);
                    instr.returnJson(res, profile._id);
                 }
           }
        ); 
     } else {
-        return res.send(400, { message: 'Only a fellow\'s placement status can be updated' });
+        res.send(400, { message: 'Only a fellow\'s placement status can be updated' });
     }
 };
 
@@ -654,7 +649,7 @@ exports.addPlacement = function(req, res) {
  * Admin edits fellow's work history
  */
 exports.editPlacement = function(req, res) {
-   var placement = req.placement,
+    var placement = req.placement,
         profile = req.profile;
 
     placement = _.extend(placement, req.body);
@@ -671,9 +666,8 @@ exports.editPlacement = function(req, res) {
          },
          function (err) {
              if (err) {
-                return res.send(400, { message: 'error occurred trying to update placement' });
+                res.send(500, { message: 'error occurred trying to update placement' });
              } else {
-                 //res.jsonp(instructor);
                  instr.returnJson(res, profile._id);
              }
          }
@@ -684,11 +678,11 @@ exports.editPlacement = function(req, res) {
  * A particular work history extracted from the whole set 
  */
 exports.getPlacement = function(req, res)  {
-   res.jsonp(req.placement);
+    res.jsonp(req.placement);
 }
 
 exports.getPlacements = function(req, res)  {
-  res.jsonp(req.profile.placements);
+    res.jsonp(req.profile.placements);
 }
 
 /**
@@ -704,11 +698,10 @@ exports.deletePlacement = function(req, res) {
         { $pull: { 'placements': { '_id': placement._id } }  
         }, function (err) {
           if (err) {
-            return res.send(400, {
-              message: 'Couldn\'t delete placement'
-            });
+             res.send(500, {
+                message: 'Couldn\'t delete placement'
+             });
           } else {
-              //res.jsonp(user);
               instr.returnJson(res, profile._id);
           }
         }
@@ -732,7 +725,7 @@ exports.download = function(req, res) {
 exports.listTests = function(req, res) {
     Test.find().sort('-created').exec(function(err, tests) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list test'
             });
         } else {
@@ -754,7 +747,7 @@ exports.testRead = function(req, res) {
 exports.listSkillCategories = function(req, res){
   SkillCategory.find().sort('-created').exec(function(err, skillCategories) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list skillCategories'
             });
         } else {
@@ -768,7 +761,7 @@ exports.createSkillCategory = function(req, res){
   var skillCategory = new SkillCategory(req.body);
   skillCategory.save(function(err, result) {
          if (err) {
-              return res.send(400, {
+              res.send(500, {
                   message: 'Couldn\'t create skillCategory'
               });
          } else {
@@ -787,7 +780,7 @@ exports.updateSkillCategory = function(req, res){
          {$set: {name: req.body.name}},
          function (err) {
              if (err) {
-                return res.send(400, { message: 'error occurred trying to update skill category' });
+                res.send(500, { message: 'error occurred trying to update skill category' });
              } else {
                 req.skillCategory.name = req.body.name;
                 res.jsonp(req.skillCategory);
@@ -800,7 +793,7 @@ exports.updateSkillCategory = function(req, res){
 exports.listSkills = function(req, res){
   Skill.find().populate('category').exec(function(err, skills) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list skillCategories'
             });
         } else {
@@ -812,7 +805,7 @@ exports.listSkills = function(req, res){
 exports.listSkillsByCategory = function(req, res){
   Skill.find().where('category').equals(req.skillCategory._id).exec(function(err, skills){
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'could not list skills'
             });
         } else {
@@ -825,7 +818,7 @@ exports.createSkill = function(req, res){
   var skill = new Skill({name: req.body.name, category: req.skillCategory._id});
   skill.save(function(err, result) {
      if (err) {
-          return res.send(400, {
+          res.send(500, {
               message: 'Couldn\'t create skill'
           });
      } else {
@@ -837,7 +830,7 @@ exports.createSkill = function(req, res){
 exports.deleteSkillCategory = function(req, res) {
     SkillCategory.remove(function(err, category) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: 'Couldn\'t delete category'
             });
         } else {
@@ -855,17 +848,16 @@ exports.deleteSkillCategory = function(req, res) {
 /**
  * Applicant middleware
  */
-exports.apptByID = function(req, res, next, id)  {
+exports.applicantByID = function(req, res, next, id)  {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('placements').populate('skillSet.skill').exec(function(err, user) {
         if (err) return next(err);
         if (!user) return next(new Error('User is not an applicant'));
         Placement.populate(user.placements, { path:'placement'},
-          function(err, data) {
-            req.applicant = user;
-            next();
-          }
-        );
-        
+            function(err, data) {
+                req.applicant = user;
+                next();
+            }
+        );    
     });
 };
 
