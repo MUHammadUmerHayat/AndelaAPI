@@ -2,6 +2,9 @@
     <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
+             <div class="col-sm-12 col-lg-12" data-ng-show="user">
+                <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
+            </div>
             <div class="col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
                 <form class="black-grey" data-ng-submit="updateAssessment()">
                     <fieldset>

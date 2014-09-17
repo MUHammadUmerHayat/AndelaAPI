@@ -35,7 +35,6 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		// for bootcamps
 		$scope.listBootcamps = function() {
 
-			$scope.appl_length= 0;
 		  	$http.get('/instructor/bootcamps').success(function(response) {
 		    	$scope.success = true;
 		    	$scope.bootcamps = response;
