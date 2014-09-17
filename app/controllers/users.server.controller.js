@@ -49,42 +49,50 @@ var getErrorMessage = function(err) {
 *   CV Upload
 *
 */
+<<<<<<< HEAD
 
 var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
+=======
+var uploadCV = function(req, res, contentType, tmpPath, destPath) {
+>>>>>>> 9406d78931bdf0c5f6ef22b08148bcf3b0056c5a
     // Server side file type checker.
     if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
         fs.unlink(tmpPath);
         res.send(415, { message: 'Unsupported file type. Only support .pdf and .docx'});
     }
     async.waterfall([
-            function (callback){
+            function (callback) {
                 fs.readFile(tmpPath , function(err, data){
-                    if(err){
+                    if (err) {
                         var message = 'tmpPath doesn\'t exist.';
                         return callback(message);
                     }
-                    callback(data);
+                    callback(null, data);
                 });             
             },
+<<<<<<< HEAD
             function (data, user, callback){
+=======
+            function (data, callback) {
+>>>>>>> 9406d78931bdf0c5f6ef22b08148bcf3b0056c5a
                 fs.writeFile(destPath, data, function(err) {
                     if (err) {
-                        var message = 'Destination psth doesn\'t exists';
+                        var message = 'Destination path doesn\'t exists';
                         return callback(message);
                     }
                     user.cvPath = destPath;
                     callback();
                 });
             },
-            function (callback){
+            function (callback) {
                 fs.unlink(tmpPath);
             }
         ],
-        function (err, results){
-                    if (err){
-                        throw err;
-                    }
-                }
+        function (err, results) {
+            if (err) {
+                res.send(500, { message: err });
+            }
+        }
     );
 };
 
@@ -101,8 +109,7 @@ var userSignup = function (req, res, user) {
         user.status.name = 'pending';
         user.status.reason = '';
 
-        return user;
-                
+        return user;    
      }
 };
 
@@ -145,10 +152,12 @@ exports.signup = function(req, res) {
                 user.save(function(err) {
                 if (err) {
                     res.send(408, {
+
                         message: err
                     });
                 } 
                 else {
+                    
                     uploadCV(req, res, contentType, tmpPath, destPath, user);
                     req.login(user, function(err) {
                         if (err) {
@@ -199,14 +208,13 @@ exports.signin = function(req, res, next) {
  * Check unique username
  */
 exports.uniqueUsername = function(req, res) {
-    console.log(req.body);
     User.find().where({username: req.body.username}).exec(function(err, user) {
          if (err) {
-             return res.send(401, {
+             res.send(500, {
                 message: err
              });
          } else if (!user) {
-              return res.send(401, {
+             res.send(401, {
                 message: 'unknown user'
              });
          } else {
@@ -234,13 +242,13 @@ exports.update = function(req, res) {
 
         user.save(function(err) {
             if (err) {
-                return res.send(400, {
+                return res.send(500, {
                     message: getErrorMessage(err)
                 });
             } else {
                 req.login(user, function(err) {
                     if (err) {
-                        res.send(400, err);
+                        res.send(500, err);
                     } else {
                         res.jsonp(user);
                     }
@@ -248,8 +256,8 @@ exports.update = function(req, res) {
             }
         });
     } else {
-        res.send(400, {
-            message: 'User is not signed in'
+        res.send(401, {
+            message: 'Unknown user'
         });
     }
 };
@@ -272,7 +280,7 @@ exports.adminUpdate = function(req, res) {
 
         user.save(function(err) {
             if (err) {
-                return res.send(400, {
+                res.send(400, {
                     message: getErrorMessage(err)
                 });
             } else {
@@ -287,18 +295,17 @@ exports.adminUpdate = function(req, res) {
 };
 
 
- exports.getCamp = function(req, res) {
+exports.getCamp = function(req, res) {
     res.jsonp(req.camp);
- };
+};
 
 exports.getCamps = function(req, res) {  
     Bootcamp.find().sort('-start_date').exec(function(err, bootcamps) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: getErrorMessage(err)
             });
         } else {
-            console.log(bootcamps);
             res.jsonp(bootcamps);
         }
     });
@@ -307,7 +314,7 @@ exports.getCamps = function(req, res) {
 exports.list = function(req, res) { 
     Applicant.find().where({role: 'fellow'}).populate('user', 'displayName').exec(function(err, fellows) {
         if (err) {
-            return res.send(400, {
+            res.send(500, {
                 message: getErrorMessage(err)
             });
         } else {
@@ -325,13 +332,13 @@ exports.applicantView = function(req, res, id) {
     if (user) {
             User.findById(id).populate('user', 'displayName').exec(function(err, users) {
             if (err) {
-                return res.send(400, {
+                res.send(500, {
                     message: getErrorMessage(err)
                 });
             } else {
                     req.login(user, function(err) {
                         if (err) {
-                            res.send(400, err);
+                            res.send(500, err);
                         } else {
                             res.jsonp(users);
                         }
@@ -463,7 +470,6 @@ exports.requiresLogin = function(req, res, next) {
             message: 'User is not logged in'
         });
     }
-
     next();
 };
 
