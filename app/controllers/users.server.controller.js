@@ -50,7 +50,7 @@ var getErrorMessage = function(err) {
 *
 */
 
-var uploadCV = function(req, res, contentType, tmpPath, destPath) {
+var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
     // Server side file type checker.
     if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
         fs.unlink(tmpPath);
@@ -66,12 +66,13 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath) {
                     callback(data);
                 });             
             },
-            function (data, callback){
+            function (data, user, callback){
                 fs.writeFile(destPath, data, function(err) {
                     if (err) {
                         var message = 'Destination psth doesn\'t exists';
                         return callback(message);
                     }
+                    user.cvPath = destPath;
                     callback();
                 });
             },
@@ -87,87 +88,87 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath) {
     );
 };
 
+var userSignup = function (req, res, user) {
+
+     if (user.role === 'applicant') {
+        user = new Applicant(user);
+        user.campId = req.camp._id;    
+
+        var message = null;
+        user.provider = 'local';
+        req.camp.applicants.push(user);
+
+        user.status.name = 'pending';
+        user.status.reason = '';
+
+        return user;
+                
+     }
+};
 
 exports.signup = function(req, res) {
-    console.log('Request from Applicant');
-    console.log('req: ' + req);
-        //Parse Form
-       var form = new multiparty.Form();
-        form.parse(req, function(err, fields, files) {
-            if(err){
-                console.log('error parsing form');
-                console.log(err);
+    
+    //Parse Form
+   var form = new multiparty.Form();
+    form.parse(req, function(err, fields, files) {
+        if(err){
+             res.send(500, {
+                message: err
+            });
+        } 
+
+         if(files.file[0]){
+
+            //if there is a file do upload
+            var file = files.file[0];
+            var contentType = file.headers['content-type'];
+            var tmpPath = file.path;
+            var extIndex = tmpPath.lastIndexOf('.');
+            var extension = (extIndex < 0) ? '' : tmpPath.substr(extIndex);
+            var destPath =  path.resolve('public/modules/core/img/server' + tmpPath);           
+        }
+
+    var user = { firstName: fields.firstName[0], lastName: fields.lastName[0], 
+                 password: fields.password[0], email: fields.email[0], 
+                 username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0] };
+
+    userSignup(req, res, user);
+
+    req.camp.save(function(err) {
+            if (err) {
+                 res.send(408, {
+                    message: err
+                });
             } 
+            else {
 
-            var user = { firstName: fields.firstName[0], lastName: fields.lastName[0], 
-                             password: fields.password[0], email: fields.email[0], 
-                             username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0]  }
-
-
-            console.log('test score:'+ fields.testScore[0]);
-            console.log('role:' + fields.type[0]);
-            
-
-        if (user.role === 'applicant') {
-            user = new Applicant(user);
-            
-            user.campId = req.camp._id;
-            console.log(user.campId);
-
-            if(files.file[0]){
-                    //if there is a file do upload
-                    console.log(files);
-                    var file = files.file[0];
-                    console.log(file);
-                    var contentType = file.headers['content-type'];
-                    var tmpPath = file.path;
-                    var extIndex = tmpPath.lastIndexOf('.');
-                    var extension = (extIndex < 0) ? '' : tmpPath.substr(extIndex);
-                    var destPath =  path.resolve('public/modules/core/img/server' + tmpPath);           
-            }
-        
-
-            var message = null;
-            user.provider = 'local';
-            console.log(req.camp);
-            console.log(typeof req.camp);
-            req.camp.applicants.push(user);
-
-            user.cvPath = destPath;
-                user.status.name = 'pending';
-                user.status.reason = '';
-                
-            req.camp.save(function(err) {
+                user.save(function(err) {
                 if (err) {
-                    return res.send(400, {
+                    res.send(408, {
                         message: err
                     });
                 } 
                 else {
                     uploadCV(req, res, contentType, tmpPath, destPath, user);
-                    user.save(function(err) {
-                    if (err) {
-                        console.log('Error');
-                    } 
-                    else {
-                        req.login(user, function(err) {
-                            if (err) {
-                                res.send(400, err);
-                            } 
-                            else {
-                                user.password = undefined;
-                                user.salt = undefined;
-                                res.jsonp(user);
+                    req.login(user, function(err) {
+                        if (err) {
+                            res.send(400, err);
+                        } 
+                        else {
+                            user.password = undefined;
+                            user.salt = undefined;
+                            user.cvPath = destPath;
+                            res.jsonp(user);
 
-                            }
-                       });
-                    }
-                });
+                        }
+                   });
                 }
             });
-         }
-      });
-    
+            }
+        });
+
+  });  
+
 };
 
 /**
