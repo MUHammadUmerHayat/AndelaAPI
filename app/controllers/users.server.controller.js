@@ -49,7 +49,7 @@ var getErrorMessage = function(err) {
 *   CV Upload
 *
 */
-var uploadCV = function(req, res, contentType, tmpPath, destPath) {
+var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
     // Server side file type checker.
     if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
         fs.unlink(tmpPath);
@@ -65,12 +65,14 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath) {
                     callback(null, data);
                 });             
             },
-            function (data, callback) {
+            function (data, user, callback){
+
                 fs.writeFile(destPath, data, function(err) {
                     if (err) {
                         var message = 'Destination path doesn\'t exists';
                         return callback(message);
                     }
+                    user.cvPath = destPath;
                     callback();
                 });
             },
@@ -86,84 +88,87 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath) {
     );
 };
 
+var userSignup = function (req, res, user) {
 
-/**
-* Sign up
-*
-*/
-exports.signup = function (req, res) {
-        // Parse Form
-        var form = new multiparty.Form();
-        form.parse(req, function(err, fields, files) {
+     if (user.role === 'applicant') {
+        user = new Applicant(user);
+        user.campId = req.camp._id;    
+
+        var message = null;
+        user.provider = 'local';
+        req.camp.applicants.push(user);
+
+        user.status.name = 'pending';
+        user.status.reason = '';
+
+        return user;    
+     }
+};
+
+exports.signup = function(req, res) {
+    
+    //Parse Form
+   var form = new multiparty.Form();
+    form.parse(req, function(err, fields, files) {
+        if(err){
+             res.send(500, {
+                message: err
+            });
+        } 
+
+         if(files.file[0]){
+
+            //if there is a file do upload
+            var file = files.file[0];
+            var contentType = file.headers['content-type'];
+            var tmpPath = file.path;
+            var extIndex = tmpPath.lastIndexOf('.');
+            var extension = (extIndex < 0) ? '' : tmpPath.substr(extIndex);
+            var destPath =  path.resolve('public/modules/core/img/server' + tmpPath);           
+        }
+
+    var user = { firstName: fields.firstName[0], lastName: fields.lastName[0], 
+                 password: fields.password[0], email: fields.email[0], 
+                 username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0] };
+
+    userSignup(req, res, user);
+
+    req.camp.save(function(err) {
             if (err) {
-                res.send(500, { message: err });
+                 res.send(408, {
+                    message: err
+                });
             } 
+            else {
 
-            var user = { firstName: fields.firstName[0], lastName: fields.lastName[0], 
-                         password: fields.password[0], email: fields.email[0], 
-                         username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0]  
-            };
-            
-        if (user.role === 'applicant') {
-            user = new Applicant(user);
-            user.campId = req.camp._id;
-
-            // if there is a file do upload
-            if (files.file[0]) {
-                var file = files.file[0];;
-                var contentType = file.headers['content-type'];
-                var tmpPath = file.path;
-                var extIndex = tmpPath.lastIndexOf('.');
-                var extension = (extIndex < 0) ? '' : tmpPath.substr(extIndex);
-
-                // uuid is for generating unique filenames. 
-                var fileName = uuid.v4() + extension;
-                var destPath =  'public/modules/core/img/server/Temp/' + fileName;           
-            }
-        
-            console.log(destPath);
-            var message = null;
-            user.provider = 'local';
-            req.camp.applicants.push(user);
-
-            user.cvPath = destPath;
-            user.status.name = 'pending';
-            user.status.reason = '';
-                
-            req.camp.save(function(err) {
+                user.save(function(err) {
                 if (err) {
-                    res.send(500, {
+                    res.send(408, {
+
                         message: err
                     });
                 } 
                 else {
+                    
                     uploadCV(req, res, contentType, tmpPath, destPath, user);
-                    user.save(function(err) {
+                    req.login(user, function(err) {
                         if (err) {
-                            res.send(500, {
-                                message: err
-                            });
+                            res.send(400, err);
                         } 
                         else {
-                            req.login(user, function(err) {
-                                if (err) {
-                                    res.send(500, {
-                                        message: err
-                                    });
-                                } 
-                                else {
-                                    user.password = undefined;
-                                    user.salt = undefined;
-                                    res.jsonp(user);
-                                }
-                           });
+                            user.password = undefined;
+                            user.salt = undefined;
+                            res.jsonp(user);
+
                         }
-                    });
+                   });
                 }
             });
-         }
-      });
-    
+            }
+        });
+
+  });  
+
 };
 
 /**

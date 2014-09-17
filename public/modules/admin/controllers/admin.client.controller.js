@@ -335,48 +335,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       });
     };
 
-    $scope.deleteTest = function(testId, index) {
-      $scope.tests.splice(index, 1);
     
-      $http.delete('/admin/test/' + testId).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
-
-    $scope.deleteQuestion = function(testId, questionId, index) {
-      $scope.test.questions.splice(index, 1);
-      $http.delete('/admin/test/' + testId + '/' + questionId).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
-
-    $scope.deleteOption = function(testId, questionId, optionId, queIndex, index) {
-      $scope.test.questions[queIndex].questOptions.splice(index, 1);
-      $http.delete('/admin/test/' + testId + '/' + questionId + '/' + optionId).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
 
     $scope.deleteCamp = function(campId, index) {
       $scope.camps.splice(index, 1);
