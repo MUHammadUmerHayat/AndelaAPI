@@ -28,7 +28,7 @@
             <td><a ng-href="/#!/admin/test/{{test._id}}">{{test.testName}}</a></td>
             <td><a ng-href="/#!/admin/test/{{test._id}}">{{test.created | date : longDate}}</a></td>
             <td><a ng-href="/#!/admin/test/{{test._id}}">{{test.questions.length}}</a></td>
-            <td><a class="fixbtn btn btn-danger btn-xs" ng-click="deleteTest(test._id, $index)">Delete Test</a></td>
+            <td><a class="fixbtn btn btn-danger btn-xs" ng-click="deleteTest(test, $index)">Delete Test</a></td>
             </td>
           </tr>
         </tbody>
