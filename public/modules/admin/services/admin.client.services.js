@@ -20,10 +20,10 @@ angular.module('admin').filter('range', function() {
     };
 });
 
-//Articles service used for communicating with the articles REST endpoints
+//Test service for communicating with the test api endpoint
 angular.module('admin').factory('Tests', ['$resource',
     function($resource) {
-        return $resource('admin/test/testId', {
+        return $resource('admin/test/:testId', {
             testId: '@_id'
         }, {
             update: {
