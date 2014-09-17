@@ -49,12 +49,7 @@ var getErrorMessage = function(err) {
 *   CV Upload
 *
 */
-<<<<<<< HEAD
-
 var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
-=======
-var uploadCV = function(req, res, contentType, tmpPath, destPath) {
->>>>>>> 9406d78931bdf0c5f6ef22b08148bcf3b0056c5a
     // Server side file type checker.
     if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
         fs.unlink(tmpPath);
@@ -70,11 +65,8 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath) {
                     callback(null, data);
                 });             
             },
-<<<<<<< HEAD
             function (data, user, callback){
-=======
-            function (data, callback) {
->>>>>>> 9406d78931bdf0c5f6ef22b08148bcf3b0056c5a
+
                 fs.writeFile(destPath, data, function(err) {
                     if (err) {
                         var message = 'Destination path doesn\'t exists';
@@ -166,7 +158,6 @@ exports.signup = function(req, res) {
                         else {
                             user.password = undefined;
                             user.salt = undefined;
-                            user.cvPath = destPath;
                             res.jsonp(user);
 
                         }
