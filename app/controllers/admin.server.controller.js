@@ -279,7 +279,7 @@ exports.deleteCamp = function(req, res) {
                 });
             },
             function (camp, callback) { 
-                User.find().where({campId: camp._id}).exec(function(err, user) {
+                Applicant.find().where({campId: camp._id}).exec(function(err, user) {
                     if (err) {
                         var message = 'Couldn\'t delete user.';
                         return callback(message);
@@ -292,8 +292,8 @@ exports.deleteCamp = function(req, res) {
                             if (fs.existsSync(user[i].photo_path)) {
                                fs.unlink(user[i].photo_path);
                             }
+                            user[i].remove();
                         }
-                        user.remove();
                         callback(null, camp);
                     }
                 });
