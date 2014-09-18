@@ -1,7 +1,10 @@
-<div data-ng-controller="InstructorsController">
-<div class="container" data-ng-show="user.role === 'instructor'">
+<div data-ng-controller="InstructorsController" class="pad">
+    <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
-        <div class="admin-view">
+        <div class="admin-view" data-ng-controller="ProfileController">
+            <div class="col-sm-12 col-lg-12" data-ng-show="user">
+                <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
+            </div>
             <div data-ng-show='user.photo'>
                 <div>
                     <img class="profile_image" data-ng-src="{{showImage(user.photo)}}" />
@@ -44,7 +47,8 @@
                         </div>
                     </fieldset>
                 </form>
-            <div data-ng-controller="InstructorsController">   
+            </div>
+            <div data-ng-controller="ProfileController">   
                 <form name="update" class="basic-grey" data-ng-submit="create()">
                     <fieldset>
                         <div data-ng-show="error" class="alert alert-danger">
@@ -62,7 +66,7 @@
                          <div class="form-group">
                             <label class="control-label">Upload Image</label>
                             <input type="file" data-ng-file-select="onFileSelect($files)" name="upload" accept="image/png, image/jpeg">
-                             <span class="text text-danger" data-ng-show="file && !correctFormat">Please only jpeg and png formats are allowed</span> 
+                             <span class="text text-danger" data-ng-show="file && !correctFormat">Please only jpeg and png 
                         </div>
                         <div class="form-group">
                             <input type="submit" class="btn btn-default" data-ng-disabled="file && !correctFormat">
@@ -72,12 +76,12 @@
             </div>
         </div>
     </div>
-</div>
-<div data-ng-show="user.role !== 'instructor'">
-    <div class="row">
-        <div class="alert alert-danger col-md-offset-2 col-md-6">
-            <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-            <span><h4>You are not permitted to view this page</h4></span>
+    <div data-ng-show="user.role !== 'instructor'">
+        <div class="row">
+            <div class="alert alert-danger col-md-offset-2 col-md-6">
+                <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
+                <span><h4>You are not permitted to view this page</h4></span>
+            </div>
         </div>
     </div>
 </div>
