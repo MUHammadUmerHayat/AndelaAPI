@@ -121,7 +121,6 @@ exports.signup = function (req, res) {
                 var destPath =  'public/modules/core/img/server/Temp/' + fileName;           
             }
         
-            console.log(destPath);
             var message = null;
             user.provider = 'local';
             req.camp.applicants.push(user);

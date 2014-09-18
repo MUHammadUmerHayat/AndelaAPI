@@ -76,9 +76,8 @@ var UserSchema = new Schema({
 }, { collection : 'users', discriminatorKey : '_type' });
 
 /**
- * Skillset Schema
+ * SkillCategory Schema
  */
-
 var SkillCategorySchema = new Schema({
     name: {
         type: String,
@@ -86,6 +85,9 @@ var SkillCategorySchema = new Schema({
     }
 });
 
+/**
+ * Skill Schema
+ */
 var SkillSchema = new Schema({
     name: {
         type: String
@@ -125,7 +127,7 @@ var AssessmentSchema = new Schema({
  });
 
 /**
- * Work History Schema
+ * Placement Schema
  */
 var PlacementSchema = new Schema({
     company: {
