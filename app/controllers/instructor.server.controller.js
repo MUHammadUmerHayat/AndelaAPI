@@ -10,16 +10,13 @@ var mongoose = require('mongoose'),
     Bootcamp = mongoose.model('Bootcamp'),
     SkillCategory = mongoose.model('SkillCategory'),
     Skill = mongoose.model('Skill'),
-    _ = require('lodash');
-
-var users = require('../../app/controllers/users');
-
-var uuid = require('node-uuid'),
+    _ = require('lodash'),
+    uuid = require('node-uuid'),
     multiparty = require('multiparty'),
-    async = require('async');
-
-var path = require('path'),
-    fs = require('fs');
+    async = require('async'),
+    path = require('path'),
+    fs = require('fs'),
+    users = require('../../app/controllers/users');
 
 
 /*
@@ -44,7 +41,7 @@ exports.jsonCamp = function(res, id) {
 * Return json object of instructor
 */
 var jsonInstructor = function(res, id) {
-    Instructor.findById(id).exec(function(err, instructor) {
+    Instructor.findById(id).exec(function(err, instructor) { console.log(instructor);
        res.jsonp(instructor);
     });
 };
@@ -109,7 +106,7 @@ exports.deleteAssmt = function(req, res) {
     Applicant.update(
         { '_id': trainee._id }, 
         { $pull: { 'assessments': { '_id': assessment._id } }  
-        }, function (err) {
+        }, function(err) {
             if (err) {
                 res.send(500, {
                     message: 'error occurred while trying to delete assessment'
@@ -166,7 +163,7 @@ var validateAndChangeRating = function (req, res, fellow, skillSummary) {
                           'skillSummary':  skillSummary
                         } 
                  },
-                 function (err, changes) {
+                 function(err) {
                      if (err) {
                          res.send(500, { message: 'error occurred trying to update skill rating' });
                      } else {
@@ -184,12 +181,13 @@ exports.editFellowRating = function(req, res) {
     var skill = {skill: req.skill, rating: req.body.rating},
         fellow = req.trainee;
 
-    SkillCategory.find().exec(function(err, data){
+    SkillCategory.find().exec(function(err, data) {
         var categories = data;
         var categoriesLength = categories.length;
         var skillSummary = {};
 
-        for(var i = 0; i < categoriesLength; i++){
+        for (var i = 0; i < categoriesLength; i++) {
+
             // find all skills with category and calculate average
             var averageRating = 0,
                 sumRating     = 0,
@@ -227,7 +225,7 @@ exports.addSkills = function(req, res) {
                 { _id: user._id }, 
                 { $push: { 'skillSet':  skill }
                 }, 
-                function (err) {
+                function(err) {
                     if (err) {
                         res.send(500, {
                             message: 'Error: Couldn\'t add skill'
@@ -256,6 +254,7 @@ exports.readTrainee = function(req, res) {
  * Upload image
 */
 var uploadImage = function(req, res, contentType, tmpPath, destPath, person, experience) {
+    
     // Server side file type checker.
     if (contentType !== 'image/png' && contentType !== 'image/jpeg') {
         fs.unlink(tmpPath);
@@ -264,8 +263,8 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
         });
     } else {
         async.waterfall([
-            function (callback) {
-                fs.readFile(tmpPath , function (err, data) { 
+            function(callback) {
+                fs.readFile(tmpPath , function(err, data) { 
                     if (err) {
                         var message = 'temp path doesn\'t exist.';
                         return callback(message);
@@ -273,7 +272,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
                     callback(null, data);
                 });
             },
-            function (data, callback) { 
+            function(data, callback) { 
                 fs.writeFile(destPath, data, function(err, data) {
                     if (err) {
                         var message = 'Destination path doesn\'t exist.';
@@ -282,7 +281,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
                     callback();
                 });
             },
-            function (callback) {
+            function(callback) {
                 fs.unlink(tmpPath);
                 var path =  person.photo;
 
@@ -293,7 +292,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
                 Instructor.update(
                      {_id: person._id},
                      {$set: { photo: destPath, experience: experience } },
-                      function (err, user) {
+                      function (err) {
                          if (err) {
                             var message = 'Error: save operation failed';
                             return callback(message);
@@ -306,7 +305,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
         function(err, results) {
             if (err) {
                 res.send(500, { message: err });
-            } else {
+            } else { console.log(person._id);
                 jsonInstructor(res, person._id);    
             }
         });
@@ -317,6 +316,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
 * Instructor updates experience and photo
 */
 exports.updateInfo = function(req, res) {
+    
     // Parse Form
     var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
@@ -331,9 +331,9 @@ exports.updateInfo = function(req, res) {
                 if (fields.exp) {
                     experience = fields.exp[0];
                 } 
-        
+                
+                // if there is a file do upload
                 if (files.file) {
-                    // if there is a file do upload
                     var file = files.file[0],     
                         contentType = file.headers['content-type'],
                         tmpPath = file.path,      
@@ -349,7 +349,7 @@ exports.updateInfo = function(req, res) {
                     Instructor.update(
                          {_id: person._id},
                         {$set: { experience: experience } },
-                          function (error) {
+                          function(error) {
                              if (error) {
                                  res.send(500, { message: 'Error: save operation failed' });
                              } else {
@@ -376,7 +376,7 @@ exports.deletePhoto = function(req, res) {
     Instructor.update(
          {_id: profile._id},
          {$set: { photo: '' } },
-          function (error) {
+          function(error) {
              if (error) {
                  res.send(500, { message: 'Error: save operation failed' });
              } else {
@@ -393,7 +393,7 @@ exports.deletePhoto = function(req, res) {
 /**
 * Particular trainee middleware
 */
-exports.traineeByID = function(req, res, next, id){   
+exports.traineeByID = function(req, res, next, id) {   
     Applicant.findById(id).where({_type: 'Applicant'}).populate('campId').populate('skillSet.skill').exec(function(err, trainee) {
         if (err) return next(err);
         if (!trainee) return next(new Error('Failed to load trainee ' + id));
@@ -406,7 +406,7 @@ exports.traineeByID = function(req, res, next, id){
 /**
 * Particular assessment middleware
 */
-exports.assessmentByID = function(req, res, next, id){   
+exports.assessmentByID = function(req, res, next, id) {   
     req.assessment = req.trainee.assessments.id(id);
     next();
 };
@@ -414,7 +414,7 @@ exports.assessmentByID = function(req, res, next, id){
 /**
 * Check if he is the creator of the assessment middleware
 */
-exports.isCreator = function(req, res, next){ 
+exports.isCreator = function(req, res, next) { 
     if (req.assessment.instructorId.toString() !== req.user.id) {
        res.send(400, { message: 'You are not the creator of the assessment' }); 
     }

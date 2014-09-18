@@ -3,7 +3,7 @@
 
 var ProfileController = function($scope, $upload, $stateParams, $location) {
 
- // Upload Image
+    // Upload Image
     $scope.onFileSelect = function($file) {
 		$scope.file = $file;
 		if ($scope.file) { 
@@ -35,6 +35,7 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
             data: $scope.details,
             file: $scope.file
         }).success(function(response) {
+        	user.photo = response.photo;
             $scope.success = 'Your details have been updated successfully';
         }).error(function(err) {
         	$scope.error = err.message;
@@ -46,7 +47,7 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
 		$scope.photo = $scope.user.photo;
 		$scope.user.photo = "";
 		$http.delete('/instructor/' + $scope.user._id + '/deletePhoto').success(function(response){
-			 $scope.success = true;
+			$scope.success = true;
 	 		$scope.photo = response;
 
 	 		$scope.upload_new=true;
@@ -63,7 +64,6 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
            img = img.substring(6);
         	return img;
 	 	}
-        
     };
 
 

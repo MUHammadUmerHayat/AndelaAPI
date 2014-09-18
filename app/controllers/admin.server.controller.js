@@ -15,9 +15,8 @@ var mongoose = require('mongoose'),
     Skill = mongoose.model('Skill'),
     async = require('async'),
     path = require('path'),
-    _ = require('lodash');
-
-var instructor = require('../../app/controllers/instructor');
+    _ = require('lodash'),
+    instructor = require('../../app/controllers/instructor');
 
 /**
 * Create users
@@ -32,6 +31,7 @@ exports.createUsers = function(req, res, next) {
        });
    } else {
         instructor.save(function(err) {
+
            // Remove sensitive data before login
            instructor.password = undefined;
            instructor.salt = undefined;
@@ -141,7 +141,7 @@ exports.changeRole = function(req, res) {
                       'status': { name: applicant.status.name, reason: applicant.status.reason }
                     }
              },
-             function (err) {
+             function(err) {
                  if (err) {
                      res.send(500, { message: 'operation failed' });
                  } else {
@@ -158,7 +158,7 @@ exports.changeRole = function(req, res) {
 exports.changeInstrRole = function(req, res) {
       var instructor = req.instructor;
       
-      if (req.body.role !== 'instructor' && req.body.role !== 'admin'){
+      if (req.body.role !== 'instructor' && req.body.role !== 'admin') {
           res.send(400, {
                 message: 'user\'s role can only be changed to admin or instructor'
           });
@@ -168,7 +168,7 @@ exports.changeInstrRole = function(req, res) {
           Instructor.update(
              {_id: instructor._id},
              {$set: {'role': instructor.role } },
-              function (err) {
+              function(err) {
                  if (err) {
                      res.send(500, { message: 'error occurred while trying to change role' });
                  } else {
@@ -223,7 +223,7 @@ exports.createBootCamp = function(req, res) {
 * List all Bootcamps
 */
 exports.bootCamps = function(req, res) {
-     Bootcamp.find().sort('-start_date').exec(function(err, camps){
+     Bootcamp.find().sort('-start_date').exec(function(err, camps) {
          if (err) {
             res.send(500, {
                 message: 'Could not find bootcamps'
@@ -461,11 +461,12 @@ exports.updateQuestion = function(req, res) {
 * Add question to already existing test
 */
 exports.addQuestion = function(req, res) {
-     var quest = req.body.question;
-     var test = req.test;
-     var options = req.body.option;
-     
-     var optionArr = [], answerArr = [];
+     var quest = req.body.question,
+         test = req.test,
+         options = req.body.option,
+         optionArr = [], 
+         answerArr = [];
+
      for (var j = 0; j < options.length; j++) {
            if (j === parseInt(req.body.answer, 10)) {
                 answerArr[j] = true;
@@ -608,8 +609,8 @@ exports.placementStatus = function(req, res) {
 * Admin adds fellow's work history
 */
 exports.addPlacement = function(req, res) {
-    var profile = req.profile;
-    var company = req.body.company; 
+    var profile = req.profile,
+        company = req.body.company; 
     
     if (profile.role === 'fellow') {
        var placement = new Placement(req.body);
@@ -680,11 +681,11 @@ exports.getPlacements = function(req, res)  {
 }
 
 /**
-* Admin deletes fellow's work history
+* Admin deletes a particular work placement from the whole set
 */
 exports.deletePlacement = function(req, res) {
    var profile = req.profile,
-        placement = req.placement;
+       placement = req.placement;
 
    Applicant.update(
         { _id: profile._id }, 
@@ -737,7 +738,7 @@ exports.testRead = function(req, res) {
 /**
 * Skills
 */
-exports.listSkillCategories = function(req, res){
+exports.listSkillCategories = function(req, res) {
   SkillCategory.find().sort('-created').exec(function(err, skillCategories) {
         if (err) {
             res.send(500, {
@@ -749,7 +750,7 @@ exports.listSkillCategories = function(req, res){
   });
 };
 
-exports.createSkillCategory = function(req, res){
+exports.createSkillCategory = function(req, res) {
   var skillCategory = new SkillCategory(req.body);
   skillCategory.save(function(err, result) {
          if (err) {
@@ -762,11 +763,11 @@ exports.createSkillCategory = function(req, res){
   });
 };
 
-exports.getSkillCategory = function(req, res){
+exports.getSkillCategory = function(req, res) {
   res.jsonp(req.skillCategory);
 };
 
-exports.updateSkillCategory = function(req, res){
+exports.updateSkillCategory = function(req, res) {
   SkillCategory.update(
          {_id: req.skillCategory._id},
          {$set: {name: req.body.name}},
@@ -781,7 +782,7 @@ exports.updateSkillCategory = function(req, res){
   );
 };
 
-exports.listSkills = function(req, res){
+exports.listSkills = function(req, res) {
   Skill.find().populate('category').exec(function(err, skills) {
         if (err) {
             res.send(500, {
@@ -793,8 +794,8 @@ exports.listSkills = function(req, res){
   });
 };
 
-exports.listSkillsByCategory = function(req, res){
-  Skill.find().where('category').equals(req.skillCategory._id).exec(function(err, skills){
+exports.listSkillsByCategory = function(req, res) {
+  Skill.find().where('category').equals(req.skillCategory._id).exec(function(err, skills) {
         if (err) {
             res.send(500, {
                 message: 'could not list skills'
@@ -805,7 +806,7 @@ exports.listSkillsByCategory = function(req, res){
   });
 };
 
-exports.createSkill = function(req, res){
+exports.createSkill = function(req, res) {
   var skill = new Skill({name: req.body.name, category: req.skillCategory._id});
   skill.save(function(err, result) {
      if (err) {
