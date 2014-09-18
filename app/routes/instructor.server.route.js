@@ -57,14 +57,8 @@ module.exports = function(app) {
         .delete(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.deleteAssmt);
 
 
-    // Finish by binding the trainee middleware
+    // Finish by binding all the necessary middlewares
     app.param('traineeId', instructor.traineeByID);
-
-    
-    // Finish by binding the assessment middleware
     app.param('assmtId', instructor.assessmentByID);
-
-    
-    // Finish by binding the skillset middleware
     app.param('skillId', admin.skillById);
 };
