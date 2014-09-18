@@ -831,9 +831,6 @@ exports.deleteSkillCategory = function(req, res) {
 };
 
 
-
-
-
 /****************************** MIDDLEWARE ******************************************/
 
 

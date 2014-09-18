@@ -165,38 +165,14 @@ module.exports = function(app) {
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteOption);
 
 
-    // Finish by binding the applicant middleware
+    // Finish by binding all the necessary middlewares
     app.param('applicantId', admin.applicantByID);
-
-    
-    // Finish by binding the instructor middleware
     app.param('instructorId', admin.instructorByID);
-
-   
-    // Finish by binding the user middleware
     app.param('userId', users.userByID);
-
-    
-    // Finish by binding the bootcamp middleware
     app.param('campId', admin.campByID);
-
-    
-    // Finish by binding the test middleware
     app.param('testId', admin.testByID);
-
-    
-    // Finish by binding the question middleware
     app.param('questionId', admin.questionByID);
-
-    
-    // Finish by binding the placement middleware
     app.param('placementId', admin.placementByID);
-
-    
-    // Finish by binding the skill category middleware
     app.param('skillCategoryId', admin.skillCategoryByID);
-
-    
-    // Finish by binding the skill middleware
     app.param('skillId', admin.skillById);
 };

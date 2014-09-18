@@ -65,7 +65,6 @@ exports.createAssmt = function(req, res){
       },
       function(err) {
           if (err) {
-
              res.send(500, { message: err });
           } else {
              exports.returnJson(res, req.trainee._id);
