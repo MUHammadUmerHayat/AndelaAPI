@@ -115,14 +115,13 @@ exports.signup = function(req, res) {
     //Parse Form
    var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
-        if(err){
+        if (err) {
              res.send(500, {
                 message: err
             });
         } 
 
-         if(files.file[0]){
-
+        if (files.file[0]) {
             //if there is a file do upload
             var file = files.file[0];
             var contentType = file.headers['content-type'];
@@ -141,38 +140,33 @@ exports.signup = function(req, res) {
         return;
     req.camp.save(function(err) {
             if (err) {
-                 res.send(408, {
+                 res.send(500, {
                     message: err
-                });
+                 });
             } 
             else {
-                console.log(user);
                 user.save(function(err) {
                 if (err) {
-                    res.send(408, {
-
+                    res.send(500, {
                         message: err
                     });
                 } 
                 else {
-                    
                     uploadCV(req, res, contentType, tmpPath, destPath, user);
                     req.login(user, function(err) {
                         if (err) {
-                            res.send(400, err);
+                            res.send(500, err);
                         } 
                         else {
                             user.password = undefined;
                             user.salt = undefined;
                             res.jsonp(user);
-
                         }
                    });
                 }
             });
             }
         });
-
   });  
 
 };
@@ -277,7 +271,7 @@ exports.adminUpdate = function(req, res) {
 
         user.save(function(err) {
             if (err) {
-                res.send(400, {
+                res.send(500, {
                     message: getErrorMessage(err)
                 });
             } else {
@@ -285,7 +279,7 @@ exports.adminUpdate = function(req, res) {
             }
         });
     } else {
-        res.send(400, {
+        res.send(500, {
             message: 'User update failed'
         });
     }
