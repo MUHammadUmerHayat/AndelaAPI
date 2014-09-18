@@ -50,6 +50,12 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         });
     };
 
+    // download CV
+    $scope.download = function(path) {
+        var fullPath = '/admin/download?file=' + path;
+        window.open(fullPath, '_parent');
+    };
+
     $scope.viewcamp = function() {
         $http.get('/admin/camp/' + $stateParams.campId).success(function(response) {
           $scope.camp = response;
