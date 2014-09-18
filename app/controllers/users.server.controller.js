@@ -74,7 +74,6 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
                         var message = 'Destination path doesn\'t exists';
                         return callback(message);
                     }
-                    user.cvPath = destPath;
                     callback();
                 });
             },
@@ -90,11 +89,12 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
     );
 };
 
-var userSignup = function (req, res, user) {
+var userSignup = function (req, res, user, destPath) {
 
      if (user.role === 'applicant') {
         user = new Applicant(user);
-        user.campId = req.camp._id;    
+        user.campId = req.camp._id;  
+        user.cvPath = destPath;  
 
         var message = null;
         user.provider = 'local';
@@ -122,20 +122,24 @@ exports.signup = function(req, res) {
         } 
 
         if (files.file[0]) {
+
             //if there is a file do upload
             var file = files.file[0];
             var contentType = file.headers['content-type'];
             var tmpPath = file.path;
             var extIndex = tmpPath.lastIndexOf('.');
             var extension = (extIndex < 0) ? '' : tmpPath.substr(extIndex);
-            var destPath =  path.resolve('public/modules/core/img/server' + tmpPath);           
+
+            // uuid is for generating unique filenames. 
+            var fileName = uuid.v4() + extension,
+                destPath =  'public/modules/core/img/server/Temp/' + fileName;         
         }
 
     var user = { firstName: fields.firstName[0], lastName: fields.lastName[0], 
                  password: fields.password[0], email: fields.email[0], 
                  username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0] };
 
-    user = userSignup(req, res, user);
+    user = userSignup(req, res, user, destPath);
     if(!user)
         return;
     req.camp.save(function(err) {

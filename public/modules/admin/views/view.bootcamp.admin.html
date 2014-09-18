@@ -16,6 +16,7 @@
                 <th>Email</th>
                 <th>Score</th>
                 <th>Date Applied</th>
+                <th>CV</th>
                 <th>Status</th>
                 <th ng-hide="editorEnabled"></th>
                 <th ng-hide="editorEnabled"></th>
@@ -45,6 +46,7 @@
                 </td>
                 <td><a ng-href="/#!/admin/appt/{{applicant._id}}">{{applicant.testScore}}</a></td>
                 <td><a ng-href="/#!/admin/appt/{{applicant._id}}">{{applicant.created | date : longDate}}</a></td>
+                <td><a ng-href="#" data-ng-click="download(applicant.cvPath)"><i class="glyphicon glyphicon-file"></i></a></td>
 
                 <td style="text-transform: capitalize">
                   <a ng-href="/#!/admin/appt/{{applicant._id}}">{{applicant.status.name}}

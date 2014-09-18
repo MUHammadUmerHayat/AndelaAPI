@@ -15,6 +15,7 @@ var mongoose = require('mongoose'),
     Skill = mongoose.model('Skill'),
     async = require('async'),
     path = require('path'),
+    fs = require('fs'),
     _ = require('lodash'),
     instructor = require('../../app/controllers/instructor');
 
@@ -278,12 +279,23 @@ exports.deleteCamp = function(req, res) {
                 });
             },
             function (camp, callback) { 
-                User.find().where({campId: camp._id}).remove(function(err, user) {
+                User.find().where({campId: camp._id}).exec(function(err, user) {
                     if (err) {
                         var message = 'Couldn\'t delete user.';
                         return callback(message);
+                    } else {
+                        for (var i in user) {
+                            if (fs.existsSync(user[i].cvPath)) {
+                               fs.unlink(user[i].cvPath);
+                            }
+
+                            if (fs.existsSync(user[i].photo_path)) {
+                               fs.unlink(user[i].photo_path);
+                            }
+                        }
+                        user.remove();
+                        callback(null, camp);
                     }
-                    callback(null, camp);
                 });
             }
     ],
@@ -312,7 +324,7 @@ exports.applicantRead = function(req, res) {
 
 /**
 * Show the current instructor/admin
-*/
+*/ 
 exports.instructorRead = function(req, res) {
     res.jsonp(req.instructor);
 };
