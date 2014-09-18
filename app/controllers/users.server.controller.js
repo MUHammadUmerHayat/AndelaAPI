@@ -53,8 +53,10 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
     // Server side file type checker.
     if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
         fs.unlink(tmpPath);
-        res.send(415, { message: 'Unsupported file type. Only support .pdf and .docx'});
-    }
+        res.send(415, { 
+            message: 'Unsupported file type. Only support .pdf and .docx'
+        });
+    } else
     async.waterfall([
             function (callback) {
                 fs.readFile(tmpPath , function(err, data){
@@ -65,7 +67,7 @@ var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
                     callback(null, data);
                 });             
             },
-            function (data, user, callback){
+            function ( data, callback){
 
                 fs.writeFile(destPath, data, function(err) {
                     if (err) {
@@ -101,8 +103,11 @@ var userSignup = function (req, res, user) {
         user.status.name = 'pending';
         user.status.reason = '';
 
-        return user;    
+        console.log(user);
+
+        return user;
      }
+     return false;
 };
 
 exports.signup = function(req, res) {
@@ -130,8 +135,9 @@ exports.signup = function(req, res) {
                  password: fields.password[0], email: fields.email[0], 
                  username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0] };
 
-    userSignup(req, res, user);
-
+    user = userSignup(req, res, user);
+    if(!user)
+        return;
     req.camp.save(function(err) {
             if (err) {
                  res.send(500, {

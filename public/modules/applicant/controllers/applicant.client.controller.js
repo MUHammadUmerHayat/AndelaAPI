@@ -86,7 +86,7 @@ angular.module('applicant').controller('ApplicantController', ['$scope', '$uploa
       };
      
      // cv upload
-     $scope.onFileSelect = function($files) { 
+     $scope.onFileSelect = function($files) {
           $scope.files = $files;
           if($scope.files) {
             if ($scope.files[0].type === 'application/pdf' || $scope.files[0].type === 'application/msword' 
