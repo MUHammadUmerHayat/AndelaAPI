@@ -2,57 +2,56 @@
 'use strict';
 
 // Lists controller
-angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'Authentication', '$stateParams', '$location', '$modal', '$log', 'Bootcamps',
-    function($scope, $http, Authentication, $stateParams, $location, $modal, $log, Bootcamps){
+angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'Authentication', '$stateParams', '$location', '$modal', '$log', 'Bootcamp',
+    function($scope, $http, Authentication, $stateParams, $location, $modal, $log, Bootcamp){
 
         $scope.user = Authentication.user;
 
 
         // Create Bootcamp
         $scope.createCamp = function() {
-            $http.post('/admin/camp', $scope.credentials).success(function(response){
+            var bootcamp = new Bootcamp($scope.credentials);
+            bootcamp.$save(function success (response) {
                 $location.path('/admin/camps');
-            }).error(function(response) {
-                $scope.error = response.message;
-                if ($scope.error.type === 'date'){
-                    $scope.error = 'Please follow the date pattern specified M/D/YY e.g (use 2/5/2014 for 5th Feb 2014)';
+            }, function (error) {
+                if (error){
+                    $scope.error = 'Something went wrong. Please try again and check your input';
                 }
             });
         };
 
         // View a particular Bootcamp
         $scope.viewcamp = function() {
-            $http.get('/admin/camp/' + $stateParams.campId).success(function(response) {
-              $scope.camp = response;
-              $scope.editorEnabled = false;
-            }).error(function(response) {
-                $scope.error = response.message;
-
+            Bootcamp.get({
+                campId: $stateParams.campId
+            }, function success(response) {
+                $scope.camp = response;
+                $scope.editorEnabled = false;
+            }, function (error) {
+                $scope.error = error.message;
             });
-
         };
 
         // List all Bootcamps
         $scope.listcamps = function() {
-            $http.get('/admin/camp').success(function(response) {
+            Bootcamp.query(function success(response) {
                 $scope.camps = response;
                 for(var i = 0; i < response.length; i++){
                     $scope.camp_options.push(response[i].camp_name);
                 }
-            }).error(function(response) {
-                $scope.error = response.message;
+            }, function (error) {
+                $scope.error = error.data.message;
                 $location.path('/admin/welcome');
-
             });
         };
 
 
-        $scope.deleteCamp = function(campId, index) {
-          $scope.camps.splice(index, 1);
-          $http.delete('/admin/camp/' + campId).success(function(response) {
-          }).error(function(response) {
-            $scope.error = response.message;
-          });
+        $scope.deleteCamp = function(camp, index) {
+            $scope.camps.splice(index, 1);
+            camp.$remove(function success(response){}, function(error){
+                    $scope.error = error.data.message;
+                }
+            );
         };
 
         $scope.enableApplicantEditor = function(index) {
