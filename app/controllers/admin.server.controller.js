@@ -82,7 +82,7 @@ exports.changeStatus = function(req, res) {
              if (err) {
                 res.send(500, { message: err });
              } else {
-                 instr.returnJson(res, applicant._id);
+                 instructor.returnJson(res, applicant._id);
              }
           }
       );  
@@ -146,7 +146,7 @@ exports.changeRole = function(req, res) {
                  if (err) {
                      res.send(500, { message: 'operation failed' });
                  } else {
-                     instr.returnJson(res, applicant._id);
+                     instructor.returnJson(res, applicant._id);
                  }
              }
           );
@@ -640,7 +640,7 @@ exports.addPlacement = function(req, res) {
                   if (error) {
                       res.send(400, {message: 'Couldn\'t save work history' });
                   } else {
-                      instr.returnJson(res, profile._id);
+                      instructor.returnJson(res, profile._id);
                   }
                }
             );

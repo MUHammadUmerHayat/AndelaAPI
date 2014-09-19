@@ -385,33 +385,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       });
     };
 
-    $scope.changeApplicantStatusInline = function(apptId, index){
-
-      if($scope.data.status.name === 'fellow'){
-        $http.put('/admin/appt/' + apptId + '/role', {role: 'fellow'}).success(function(response) {
-          // If successful show success message and clear form
-          $scope.success = true;
-          $scope.camp.applicants[index].status.name = "Andela Fellow";
-        }).error(function(response) {
-          $scope.error = response.message;
-        });
-      }
-      else{
-        $http.put('/admin/appt/' + apptId, $scope.data).success(function(response) {
-  
-          // If successful show success message and clear form
-          $scope.success = true;
-          $scope.camp.applicants[index].status.name = $scope.data.status.name;
-          $scope.camp.applicants[index].status.reason = $scope.data.status.reason;
-          $scope.data.status.name = '';
-
-        }).error(function(response) {
-          $scope.error = response.message;
-        });
-      }
-
-    } 
-
     $scope.viewInstructor = function(instrId) {
       $http.get('/admin/appt/' + instrId).success(function(response) {
         // If successful show success message and clear form
