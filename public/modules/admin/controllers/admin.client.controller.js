@@ -12,6 +12,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     $scope.formData = {};
     $scope.data = {};
 
+
     // Create new user
     $scope.create = function(role) {
         if (role === 'admin'){
@@ -20,7 +21,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         if (role === 'inst'){
             $scope.credentials.role = 'instructor';
         }
-        // console.log('createInstructor called', $scope.credentials);
         $http.post('/admin/create', $scope.credentials).success(function(response) {
             // If successful show success message and clear form
             $scope.success = true;
@@ -36,87 +36,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         });
     };
 
-    /**
-    * Create camp
-    */
-    $scope.createCamp = function() {
-        $http.post('/admin/camp', $scope.credentials).success(function(response){
-            $location.path('/admin/camps');
-        }).error(function(response) {
-            $scope.error = response.message;
-            if ($scope.error.type === 'date'){
-                $scope.error = 'Please follow the date pattern specified M/D/YY e.g (use 2/5/2014 for 5th Feb 2014)';
-            }
-        });
-    };
-
-    // download CV
-    $scope.download = function(path) {
-        var fullPath = '/admin/download?file=' + path;
-        window.open(fullPath, '_parent');
-    };
-
-    $scope.viewcamp = function() {
-        $http.get('/admin/camp/' + $stateParams.campId).success(function(response) {
-          $scope.camp = response;
-
-          $scope.editorEnabled = false;
-
-        // If successful show success message and clear form
-        }).error(function(response) {
-            $scope.error = response.message;
-
-        });
-
-    };
-
-    $scope.enableApplicantEditor = function(index) {
-        $scope.editorEnabled = true;
-        $scope.formData.editableFirstName = $scope.camp.applicants[index].firstName;
-        $scope.formData.editableLastName = $scope.camp.applicants[index].lastName;
-        $scope.formData.editableEmail = $scope.camp.applicants[index].email;
-    };
-    $scope.disableApplicantEditor = function() {
-        $scope.editorEnabled = false;
-    };
-
-    $scope.saveApplicant = function(index) {
-        $scope.camp.applicants[index].firstName = $scope.formData.editableFirstName;
-        $scope.camp.applicants[index].lastName = $scope.formData.editableLastName;
-        $scope.camp.applicants[index].email = $scope.formData.editableEmail;
-
-        var url = 'users/' + $scope.camp.applicants[index]._id;
-        var data = {
-            firstName: $scope.formData.editableFirstName,
-            lastName: $scope.formData.editableLastName,
-            email: $scope.formData.editableEmail
-        };
-        $http.put(url, data).success(function(response){
-            console.log('success');
-        }).error(function(response) {
-            $scope.error = response.message;
-        });
-        $scope.disableApplicantEditor();
-    };
-
-
-    $scope.listcamps = function() {
-        $http.get('/admin/camp').success(function(response) {
-
-          // If successful show success message and clear form
-            $scope.camps = response;
-            for(var i = 0; i < response.length; i++){
-                $scope.camp_options.push(response[i].camp_name);
-            }
-
-        }).error(function(response) {
-            $scope.error = response.message;
-            $location.path('/admin/welcome');
-
-        });
-    };
-
-
     $scope.viewTrainees = function() {
         $http.get('/admin/trainees').success(function(response) {
           // If successful show success message and clear form
@@ -130,13 +49,10 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     };
 
     $scope.listApplicants = function() {
-        // $scope.statusInit = 'pending';
         $http.get('/admin/applicants').success(function(response) {
           // If successful show success message and clear form
             $scope.success = true;
             $scope.applicants = response;
-            console.log('Applicant Init');
-            console.log('appt: ' + $scope.applicants);
 
         }).error(function(response) {
             $scope.error = response.message;
@@ -262,19 +178,15 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
     $scope.updateSkill = function(appt, index) {
       $http.put('/admin/trainee/' + appt._id + '/rate/' + appt.skillSets[index]._id, appt.skillSets[index]).success(function(response) {
-        console.log('Success - Done', response);
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
 
     $scope.updatePlacement = function(appt) {
       $http.put('/admin/fellow/' + appt._id + '/placement', appt.currPlacement).success(function(response) {
-        console.log('Success - Done', response);
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
 
@@ -286,26 +198,18 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         // If successful show success message and clear form
         $scope.success = true;
 
-        // $scope.appt = response;
-        console.log('Edit bootcamp done', response);
-        
+
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
-        // console.log('Error - can not');
       });
     
       $http.delete('/admin/user/' + userId).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
 
-        // $scope.appt = response;
-        console.log('Success - Done', response);
         
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
-        // console.log('Error - can not');
       });
     };
 
@@ -316,12 +220,8 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         // If successful show success message and clear form
         $scope.success = true;
 
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
-        // console.log('Error - can not');
       });
     };
 
@@ -332,30 +232,11 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         // If successful show success message and clear form
         $scope.success = true;
 
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
-        // console.log('Error - can not');
       });
     };
 
-    
-
-    $scope.deleteCamp = function(campId, index) {
-      $scope.camps.splice(index, 1);
-      $http.delete('/admin/camp/' + campId).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function(response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
 
     $scope.deleteFellow = function(userId, index) {
       $scope.fellows.splice(index, 1);
@@ -364,11 +245,8 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         // If successful show success message and clear form
         $scope.success = true;
 
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
 
@@ -397,7 +275,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         $scope.fellows = response;
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
@@ -437,7 +314,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       if ((fellow.placements && fellow.placements.length > 0)) {
         var curr_date = new Date();
         var fellowavailabilityweeks = Math.ceil(new Date(fellow.placements[0].end_date).getTime() - curr_date.getTime())/(oneday *7);
-        console.log(Math.ceil(fellowavailabilityweeks));
         if (fellowavailabilityweeks <= 0) {
           return 0;
         } else {
@@ -452,25 +328,19 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         if ($scope.get_fellow_work_days(placement) <= 0) {
           $scope.fellows[index].available = 'Needs Work';
           $scope.fellows[index].week = $scope.get_fellow_work_days(placement) ;
-          console.log( $scope.fellows[index].week);
         }
         else{
             $scope.fellows[index].available = 'Currently Placed';
-            console.log(' placed');
             $scope.fellows[index].week = $scope.get_fellow_work_days(placement);
         }
-
     };
 
     $scope.listInstructors = function() {
       $http.get('/admin/instructors').success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
@@ -479,11 +349,8 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         // If successful show success message and clear form
         $scope.admins = response;
         $scope.success = true;
-        console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
@@ -492,28 +359,19 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         // If successful show success message and clear form
         $scope.instructors = response;
         $scope.success = true;
-        console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
     $scope.changeStatus = function() {
-      console.log('Data Init');
-      console.log($scope.data);
       $http.put('/admin/appt/' + $stateParams.apptId, $scope.data).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('response: ' + response.status.name);
-        // $location.path('admin/appt/' + response._id);
-        console.log('Success - Done', response);
         $location.path('/admin/camps/' + $stateParams.bootcampId);
 
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     }; 
 
@@ -524,7 +382,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         $scope.success = true;
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
@@ -537,7 +394,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
           $scope.camp.applicants[index].status.name = "Andela Fellow";
         }).error(function(response) {
           $scope.error = response.message;
-          console.log('Error - can not');
         });
       }
       else{
@@ -551,7 +407,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
         }).error(function(response) {
           $scope.error = response.message;
-          console.log('Error - can not');
         });
       }
 
@@ -561,11 +416,9 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       $http.get('/admin/appt/' + instrId).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('Success - Done', response);
         
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
@@ -575,16 +428,13 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       $http.put(url, {rating: newRating}).success(function(response) {
         $scope.success = true;
         $scope.appt = response;
-        console.log('Success - Done', response);
         
       }).error(function(response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
 
     $scope.addPlacement = function() {
-      console.log($stateParams.apptId);
       $http.post('/admin/fellow/' + $stateParams.apptId + '/placements', $scope.data).success(function(response) {
         
         // If successful show success message and clear form
@@ -594,13 +444,11 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         $scope.data.end_date = '';
 
         $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function(response) {
         $scope.error = response.message;
         if ($scope.error.type === 'date'){
           $scope.error = "Please follow the date pattern specified M/D/YY e.g (use 2/5/2014 for 5th Feb 2014)"
         }
-        console.log('Error - can not');
       });
     };
 
@@ -649,19 +497,13 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
     /*DELETE CATEGORY*/
     $scope.deleteSkillCategory = function(catId, index) {
-      console.log('message: ' + $scope.skills);
       $scope.skills.splice(index, 1);
-      console.log('after delete: ' + $scope.skills);
       $http.delete('/admin/skillCategories/' + catId).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
 
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-        
       }).error(function(response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
 

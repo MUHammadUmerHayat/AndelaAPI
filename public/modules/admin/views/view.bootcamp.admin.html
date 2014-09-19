@@ -1,5 +1,5 @@
-<section data-ng-controller="AdminController" data-ng-init="viewcamp()" class="pad">
-    <div class="container" data-ng-show="user.role === 'admin'">
+<section data-ng-controller="AdminController" class="pad">
+    <div class="container" data-ng-show="user.role === 'admin'" data-ng-controller="BootcampsController" data-ng-init="viewcamp()">
       <ng-include src='"/modules/admin/views/admin.sidebar.html"'></ng-include>
 
       <div class="admin-view">
