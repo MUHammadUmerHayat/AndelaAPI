@@ -1,5 +1,5 @@
-<section data-ng-controller="AdminController" data-ng-init="listcamps()" class="pad">
-    <div class="container" data-ng-show="user.role === 'admin'">
+<section data-ng-controller="AdminController" class="pad">
+    <div class="container" data-ng-show="user.role === 'admin'" data-ng-controller="BootcampsController" data-ng-init="listcamps()">
 
     <ng-include src='"/modules/admin/views/admin.sidebar.html"'></ng-include>
 
@@ -10,13 +10,13 @@
         <div class="pull-right">
             <a class="btn btn-xs btn-primary"href="/#!/admin/create/camp">Create Bootcamp</a>
         </div>
-      
+
         <div>
             <table class="list list-link">
                 <thead>
                   <tr>
                     <th>Camp Name</th>
-                    <th>Start Date</th>                   
+                    <th>Start Date</th>
                     <th>Applicants</th>
                     <th></th>
                   </tr>
@@ -24,14 +24,14 @@
                 <tbody>
                       <tr data-ng-repeat="camp in camps">
                         <td><a ng-href="/#!/admin/camps/{{camp._id}}">{{camp.camp_name}}</a></td>
-                        <td data-ng-bind="camp.start_date | date"></td>                      
+                        <td data-ng-bind="camp.start_date | date"></td>
                         <td data-ng-bind="camp.applicants.length"></td>
                         <td>
                             <a class="fixbtn btn btn-danger btn-xs" data-ng-click="deleteCamp(camp._id, $index)">
                                 Delete
                             </a>
                         </td>
-                    </tr>               
+                    </tr>
                 </tbody>
             </table>
         </div>
