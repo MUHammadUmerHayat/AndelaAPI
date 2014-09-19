@@ -707,8 +707,8 @@ a.tooltips span {
   visibility: hidden;
   border-radius: 4px;
   top: -20px;
-  font-size: 13px;
-  padding: 0 10px;
+  font-size: 12px;
+  padding-top: 1px;
 }
 a.tooltips span:after {
   content: '';
@@ -736,4 +736,4 @@ a:hover.tooltips span {
 .clearfix { display: inline-block; }
  
 html[xmlns] .clearfix { display: block; }
-* html .clearfix { height: 1%; }1px;
+* html .clearfix { height: 1%; }
