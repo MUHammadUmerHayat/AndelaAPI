@@ -60,7 +60,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     };
 
     $scope.viewApplicant = function() {
-      $http.get('/admin/appt/' + $stateParams.apptId).success(function(response) {
+      $http.get('/admin/applicant/' + $stateParams.apptId).success(function(response) {
         // If successful show success message and clear form
         $scope.data = {};
         $scope.success = true;
@@ -81,7 +81,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
         $scope.skillScoreEditorEnabled = [];
         $scope.editableSkillName = [];
         $scope.editableSkillScore = [];
-        $score.editableDetails = [];
+        $scope.editableDetails = [];
 
         for (var i in $scope.appt.skillSet){
           $scope.skillNameEditorEnabled[i] = false;
@@ -365,7 +365,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     };
 
     $scope.changeStatus = function() {
-      $http.put('/admin/appt/' + $stateParams.apptId, $scope.data).success(function(response) {
+      $http.put('/admin/applicant/' + $stateParams.apptId, $scope.data).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
         $location.path('/admin/camps/' + $stateParams.bootcampId);
@@ -377,7 +377,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
 
     $scope.changeRoleToFellow = function(trainee_id, index) {
       $scope.trainees.splice(index, 1);
-      $http.put('/admin/appt/' + trainee_id + '/role', {role: $scope.role[index]}).success(function(response) {
+      $http.put('/admin/applicant/' + trainee_id + '/role', {role: $scope.role[index]}).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
       }).error(function(response) {
@@ -386,7 +386,7 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     };
 
     $scope.viewInstructor = function(instrId) {
-      $http.get('/admin/appt/' + instrId).success(function(response) {
+      $http.get('/admin/applicant/' + instrId).success(function(response) {
         // If successful show success message and clear form
         $scope.success = true;
         
