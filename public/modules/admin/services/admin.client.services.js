@@ -34,10 +34,12 @@ angular.module('admin')
     }
 ])
 
-.factory('Bootcamps', ['$resource',
+
+//Bootcamp service for communicating with the bootcamp api
+.factory('Bootcamp', ['$resource',
     function($resource) {
-        return $resource('/admin/camp/:bootCampId', {
-            bootCampId: '@_id'
+        return $resource('admin/camp/:campId', {
+            campId: '@_id'
         }, {
             update: {
                 method: 'PUT'
