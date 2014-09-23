@@ -126,13 +126,8 @@ exports.changeRole = function(req, res) {
              applicant.status.reason = '';
           }
 
-          if (role === 'trainee') {
+          if (role === 'trainee' || role === 'fellow') {
              applicant.status.name = 'selected for bootcamp';
-             applicant.status.reason = '';
-          }
-
-          if (role === 'fellow') {
-             applicant.status.name = 'Andela Fellow';
              applicant.status.reason = '';
           }
           
@@ -197,7 +192,7 @@ exports.deleteUser = function(req, res) {
                     message: 'could not delete user'
                 });
             } else {
-                instructor.returnJson(res, person._id);
+                res.jsonp(user);
             }
         });
     }
@@ -303,7 +298,7 @@ exports.deleteCamp = function(req, res) {
         if (err) {
             res.send(500, { message: err });
         } else {
-            res.jsonp(results);    
+            res.jsonp(req.camp);    
         }
     });
 };
@@ -880,7 +875,7 @@ exports.applicantByID = function(req, res, next, id)  {
 exports.instructorByID = function(req, res, next, id)  {
      Instructor.findById(id).where({_type: 'Instructor'}).exec(function(err, user) {
          if (err) return next(err);
-         if (!user) return next(new Error('User is not an instructor'));
+         if (!user) return next(new Error('User is not an instructor or admin'));
          req.instructor = user;
          next();
      });

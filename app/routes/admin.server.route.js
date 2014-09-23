@@ -53,13 +53,17 @@ module.exports = function(app) {
 
     /*** Setting up status and role Api ***/
 
-    // change applicant's status and edit applicant's information
+    // edit applicant's personal information
     app.route('/admin/applicant/:applicantId')
         .get(users.requiresLogin, admin.checkPermission, admin.applicantRead) 
-        .put(users.requiresLogin, admin.checkPermission, admin.changeStatus) 
         .put(users.requiresLogin, admin.checkPermission, admin.updateApplicantDetails);
 
     
+    // change applicant's application status 
+    app.route('/admin/applicant/:applicantId/status') 
+        .put(users.requiresLogin, admin.checkPermission, admin.changeStatus) 
+
+
     // change applicant/fellow/trainee role
     app.route('/admin/applicant/:applicantId/role')
         .put(users.requiresLogin, admin.checkPermission, admin.changeRole);
