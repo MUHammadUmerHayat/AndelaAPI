@@ -153,7 +153,7 @@ module.exports = function(app) {
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteTest);
 
 
-    // update and delete a question
+    // update/delete a question, update an option
     app.route('/admin/test/:testId/:questionId')
         .put(users.requiresLogin, admin.checkPermission, admin.updateQuestion)
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteQuestion);

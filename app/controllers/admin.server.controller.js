@@ -447,7 +447,7 @@ exports.updateTestName = function(req, res) {
 };
 
 /**
-* Update Question
+* Update Question and Option
 */
 exports.updateQuestion = function(req, res) {
     var question = req.question;

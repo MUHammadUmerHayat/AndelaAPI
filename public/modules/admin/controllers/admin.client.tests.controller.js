@@ -55,7 +55,7 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
 	            for (var i in choiceArr) {
 	                choiceArr[i].id = 'choice' + i;
 	            }
-	        };
+	    };
 
 	    $scope.showAddChoice = function(choice, num) {
 	        if (num === 1)
@@ -222,7 +222,8 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
         };
 
 		$scope.updateQuestion = function(test, quesIndex) {
-		    $http.put('/admin/test/' + test._id + '/' + test.questions[quesIndex]._id, test.questions[quesIndex]).success(function(response) {
+            var question = test.questions[quesIndex];
+		    $http.put('/admin/test/' + test._id + '/' + test.questions[quesIndex]._id, question).success(function(response) {
 		    }).error(function(response) {
     		    $scope.error = response.message;
 		    });
