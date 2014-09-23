@@ -133,7 +133,7 @@ module.exports = function(app) {
     
     
     // edit a fellow's skill rating
-    app.route('/admin/trainee/:traineeId/skills/:skillId')
+    app.route('/admin/fellow/:traineeId/skills/:skillId')
         .put(users.requiresLogin, admin.checkPermission, instructor.editFellowRating);
 
     

@@ -759,13 +759,13 @@ exports.listSkillCategories = function(req, res) {
 
 exports.createSkillCategory = function(req, res) {
   var skillCategory = new SkillCategory(req.body);
-  skillCategory.save(function(err, result) {
+  skillCategory.save(function(err, category) {
          if (err) {
               res.send(500, {
                   message: 'Couldn\'t create skillCategory'
               });
          } else {
-            res.jsonp(result); 
+            res.jsonp(category); 
          }
   });
 };
@@ -815,25 +815,25 @@ exports.listSkillsByCategory = function(req, res) {
 
 exports.createSkill = function(req, res) {
   var skill = new Skill({name: req.body.name, category: req.skillCategory._id});
-  skill.save(function(err, result) {
+  skill.save(function(err, skill) {
      if (err) {
           res.send(500, {
               message: 'Couldn\'t create skill'
           });
      } else {
-        res.jsonp(result); 
+        res.jsonp(skill); 
      }
   });
 };
 
 exports.deleteSkillCategory = function(req, res) {
-    SkillCategory.remove(function(err, category) {
+    SkillCategory.remove(function(err, skillCategory) {
         if (err) {
             res.send(500, {
                 message: 'Couldn\'t delete category'
             });
         } else {
-            res.jsonp(category);
+            res.jsonp(skillCategory);
         }
     });
 };
@@ -859,7 +859,7 @@ exports.checkPermission = function(req, res, next) {
 exports.applicantByID = function(req, res, next, id)  {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('placements').populate('skillSet.skill').exec(function(err, user) {
         if (err) return next(err);
-        if (!user) return next(new Error('User is not an applicant'));
+        if (!user) return next(new Error('User is not an applicant, trainee or fellow'));
         Placement.populate(user.placements, { path:'placement'},
             function(err, data) {
                 req.applicant = user;
