@@ -371,17 +371,6 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
       });
     };
 
-    $scope.changeStatus = function() {
-      $http.put('/admin/applicant/' + $stateParams.apptId, $scope.data).success(function(response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        $location.path('/admin/camps/' + $stateParams.bootcampId);
-
-      }).error(function(response) {
-        $scope.error = response.message;
-      });
-    }; 
-
     $scope.changeRoleToFellow = function(trainee_id, index) {
       $scope.trainees.splice(index, 1);
       $http.put('/admin/applicant/' + trainee_id + '/role', {role: $scope.role[index]}).success(function(response) {
