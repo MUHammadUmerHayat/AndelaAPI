@@ -41,7 +41,7 @@ exports.jsonCamp = function(res, id) {
 * Return json object of instructor
 */
 var jsonInstructor = function(res, id) {
-    Instructor.findById(id).exec(function(err, instructor) { console.log(instructor);
+    Instructor.findById(id).exec(function(err, instructor) { 
        res.jsonp(instructor);
     });
 };
@@ -294,7 +294,7 @@ var uploadImage = function(req, res, contentType, tmpPath, destPath, person, exp
                      {$set: { photo: destPath, experience: experience } },
                       function (err) {
                          if (err) {
-                            var message = 'Error: save operation failed';
+                            var message = 'Error: update operation failed';
                             return callback(message);
                          } 
                          callback();
@@ -328,8 +328,8 @@ exports.updateInfo = function(req, res) {
                res.send(500, { message: 'Failed to load User ' + person._id });
             } else {
                 var experience = '';
-                if (fields.exp) {
-                    experience = fields.exp[0];
+                if (fields.experience) {
+                    experience = fields.experience[0];
                 } 
                 
                 // if there is a file do upload
@@ -351,7 +351,7 @@ exports.updateInfo = function(req, res) {
                         {$set: { experience: experience } },
                           function(error) {
                              if (error) {
-                                 res.send(500, { message: 'Error: save operation failed' });
+                                 res.send(500, { message: 'Error: update operation failed' });
                              } else {
                                  jsonInstructor(res, person._id);
                              }
@@ -378,7 +378,7 @@ exports.deletePhoto = function(req, res) {
          {$set: { photo: '' } },
           function(error) {
              if (error) {
-                 res.send(500, { message: 'Error: save operation failed' });
+                 res.send(500, { message: 'Error: delete operation failed' });
              } else {
                  jsonInstructor(res, profile._id);
              }

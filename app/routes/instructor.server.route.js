@@ -11,7 +11,7 @@ module.exports = function(app) {
     /*** Instructor Routes ***/
 
     // list all trainees
-    app.route('/instructor')
+    app.route('/instructor/trainees')
         .get(users.requiresLogin, instructor.checkRights, admin.listTrainees);
 
 

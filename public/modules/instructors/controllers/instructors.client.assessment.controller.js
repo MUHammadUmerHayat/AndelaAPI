@@ -12,11 +12,8 @@ var AssessmentController = function($scope, $rootScope, $stateParams, $location,
 			score: this.score
 		});
 
-
 		$http.post('/instructor/trainee/'+ $stateParams.applicantId, $scope.assessment).success(function(response) {
-			
 			$location.path('/instructors/trainees/' + $stateParams.applicantId);
-			
 		}, function(errorResponse) {
 			$scope.error = errorResponse.data.message;
 		});
@@ -33,17 +30,19 @@ var AssessmentController = function($scope, $rootScope, $stateParams, $location,
 	};
 
 	
+	// edit trainee assessment record
 	$scope.updateAssessment = function() {
 		$http.put('/instructor/trainee/' + $scope.assessment.applicantId + '/' + $scope.assessment._id,  $scope.assessment).success(function(response) {
 	   
-	    // If successful show success message and clear form
-	    $location.path('/instructors/trainees/' + $scope.assessment.applicantId);
+	        // If successful show success message and clear form
+	        $location.path('/instructors/trainees/' + $scope.assessment.applicantId);
 	  	}).error(function(response) {
-	    $scope.error = response.message;
+	        $scope.error = response.message;
 	  	});	
 	};
 
-
+    
+    // delete trainee assessment record
 	$scope.deleteAssessment = function(index, assessment) {
 		$scope.assessments.splice(index, 1);
 	  	$http.delete('/instructor/trainee/'+ $stateParams.applicantId +'/'+ assessment._id).success(function(response) {
@@ -67,7 +66,7 @@ var AssessmentController = function($scope, $rootScope, $stateParams, $location,
 	};
 
 
-	  // Disable weekend selection
+	// Disable weekend selection
 	$scope.disabled = function(date, mode) {
 	    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
 	};

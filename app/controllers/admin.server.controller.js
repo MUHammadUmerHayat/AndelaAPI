@@ -58,9 +58,9 @@ exports.changeStatus = function(req, res) {
            });
         }
       } 
-
+         
       if (req.body.status.name === 'selected for bootcamp') {
-          applicant.role = 'trainee';
+          applicant.role = 'trainee'; 
       }
 
       if (applicant.role === 'trainee' && req.body.status.name !== 'selected for bootcamp' ) {
@@ -330,8 +330,8 @@ var doListing = function(req, res, schema, whichRole) {
          if (err) {
             res.send(400, {
                 message: 'No ' + whichRole + ' found'
-            });
-         } else {
+            }); 
+         } else { 
             Placement.populate(users.placements, { path:'placement'},
                 function(err, data) {
                    res.jsonp(users);

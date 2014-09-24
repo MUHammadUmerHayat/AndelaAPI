@@ -7,7 +7,6 @@ angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'A
 
         $scope.user = Authentication.user;
 
-
         // Create Bootcamp
         $scope.createCamp = function() {
             var bootcamp = new Bootcamp($scope.credentials);
@@ -93,7 +92,7 @@ angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'A
                 });
             }
             else{
-                $http.put('/admin/applicant/' + apptId, $scope.data).success(function(response) {
+                $http.put('/admin/applicant/' + apptId + '/status', $scope.data).success(function(response) {
                     // If successful show success message and clear form
                     $scope.camp.applicants[index].status.name = $scope.data.status.name;
                     $scope.camp.applicants[index].status.reason = $scope.data.status.reason;

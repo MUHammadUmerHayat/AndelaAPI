@@ -5,13 +5,14 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 	function($scope, $rootScope, $upload, $stateParams, $location, Authentication, $http) {
 		$scope.user = Authentication.user;
 
-
 		// instructor sigin 
 		$scope.instructor_signin = function() {
 			$http.post('/auth/signin', $scope.credentials).success(function(response) {
-				//If successful we assign the response to the global user model
+
+				// If successful we assign the response to the global user model
 				$scope.user = response;
-				//And redirect to the right page
+
+				// And redirect to the right page
 				if ($scope.user.role === 'instructor') {
 					$location.path('/instructors/home');	
 				}
@@ -24,26 +25,27 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 			});
 		};
 
-
+        
+        // instructor's home page
 		$scope.instructorHome = function(){
 			if (!$scope.user) {
-					$location.path('/');
+				$location.path('/');
 			}
 		};
 
 
-		// for bootcamps
+		// list all bootcamps
 		$scope.listBootcamps = function() {
-
 		  	$http.get('/instructor/bootcamps').success(function(response) {
 		    	$scope.success = true;
 		    	$scope.bootcamps = response;
 		  	}).error(function(response) {
-		    $scope.error = response.message;
+		        $scope.error = response.message;
 		  	});
 		};
 
 
+        // viewing only a particular bootcamp
 		$scope.viewBootcamp = function() {
 			if ($stateParams.bootcampId.length < 20) {
 				$location.path('/');
@@ -60,9 +62,9 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 
 
 
-		// for trainees
+		// list all trainees
 		$scope.listTrainees = function() {
-		  	$http.get('/instructor').success(function(response) {
+		  	$http.get('/instructor/trainees').success(function(response) {
 		    	$scope.success = true;
 		    	$scope.trainees = response;																		
 		  }).error(function(response) {
@@ -70,7 +72,8 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		  	});
 		};
 
-				
+		
+		// view a particular trainee		
 		$rootScope.viewTrainee = function() {
 			if ($stateParams.applicantId.length < 20) {
 				$location.path('/');
@@ -90,18 +93,18 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 		};
 
 
-		// for fellows
+		// list all fellows
 		$scope.listFellows = function() {
 		  	$http.get('/instructor/fellows').success(function(response) {
 		    	$scope.success = true;
 		    	$scope.fellows = response;
 		  	}).error(function(response) {
-		    $scope.error = response.message;
-
+		        $scope.error = response.message;
 		 	});
 		};
 
-
+        
+        // view a particular fellow
 		$scope.viewFellow = function() {
 			if ($stateParams.fellowId.length < 20) {
 				$location.path('/');
@@ -113,7 +116,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
 			    		$scope.skillSets = skillSets;  
 			    	}); 	
 			  	}).error(function(response) {
-			    $scope.error = response.message;
+			        $scope.error = response.message;
 			  	});
 			}
 		};

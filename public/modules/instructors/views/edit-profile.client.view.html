@@ -61,12 +61,12 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label">Experience</label>
-                            <textarea name="experience" data-ng-model="details.exp"></textarea>
+                            <textarea name="experience" data-ng-model="details.experience"></textarea>
                         </div>
                          <div class="form-group">
                             <label class="control-label">Upload Image</label>
                             <input type="file" data-ng-file-select="onFileSelect($files)" name="upload" accept="image/png, image/jpeg">
-                             <span class="text text-danger" data-ng-show="file && !correctFormat">Please only jpeg and png 
+                             <span class="text text-danger" data-ng-show="file && !correctFormat">Please only jpeg and png formats are allowed
                         </div>
                         <div class="form-group">
                             <input type="submit" class="btn btn-default" data-ng-disabled="file && !correctFormat">
