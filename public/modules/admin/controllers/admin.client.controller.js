@@ -13,6 +13,13 @@ angular.module('admin').controller('AdminController', ['$scope', '$http', 'Authe
     $scope.data = {};
 
 
+    // download CV
+    $scope.download = function(path) {
+       var fullPath = '/admin/download?file=' + path;
+       window.open(fullPath, '_parent');
+    }
+
+
     // Create new user
     $scope.create = function(role) {
         if (role === 'admin'){
