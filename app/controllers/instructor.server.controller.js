@@ -24,7 +24,7 @@ var mongoose = require('mongoose'),
 */
 exports.returnJson = function(res, id) {
     Applicant.findById(id).where({_type: 'Applicant'}).populate('skillSet.skill').exec(function(err, user) {
-       res.jsonp(user);
+        res.jsonp(user);
     });
 };
 
@@ -33,7 +33,7 @@ exports.returnJson = function(res, id) {
 */
 exports.jsonCamp = function(res, id) {
     Bootcamp.findById(id).exec(function(err, camp) {
-       res.jsonp(camp);
+        res.jsonp(camp);
     });
 };
 
@@ -42,7 +42,7 @@ exports.jsonCamp = function(res, id) {
 */
 var jsonInstructor = function(res, id) {
     Instructor.findById(id).exec(function(err, instructor) { 
-       res.jsonp(instructor);
+        res.jsonp(instructor);
     });
 };
 
@@ -82,7 +82,7 @@ exports.updateAssmt = function(req, res) {
         {$set: 
             {  'assessments.$.assessment_name' : assessment.assessment_name,
                'assessments.$.assessment_date' : assessment.assessment_date, 
-               'assessments.$.score ': req.body.score
+               'assessments.$.score': req.body.score
             }
         }, 
         function(err) {
@@ -339,7 +339,7 @@ exports.updateInfo = function(req, res) {
                         extIndex = tmpPath.lastIndexOf('.'),
                         extension = (extIndex < 0) ? '' : tmpPath.substr(extIndex);
 
-                    // uuid is for generating unique filenames. 
+                    // uuid is for generating unique filenames
                     var fileName = uuid.v4() + extension,
                         destPath =  'public/modules/core/img/server/Temp/' + fileName;
                          
@@ -411,11 +411,11 @@ exports.assessmentByID = function(req, res, next, id) {
 };
 
 /**
-* Check if he is the creator of the assessment middleware
+* Check if instructor is the creator of the assessment middleware
 */
 exports.isCreator = function(req, res, next) { 
     if (req.assessment.instructorId.toString() !== req.user.id) {
-       res.send(400, { message: 'You are not the creator of the assessment' }); 
+        res.send(400, { message: 'You are not the creator of the assessment' }); 
     }
     next();
 };

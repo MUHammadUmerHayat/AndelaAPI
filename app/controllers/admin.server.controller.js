@@ -23,10 +23,10 @@ var mongoose = require('mongoose'),
 * Create users
 */
 exports.createUsers = function(req, res, next) {
-   var instructor = new Instructor(req.body);
-   instructor.provider ='local';
+    var instructor = new Instructor(req.body);
+    instructor.provider ='local';
    
-   if (req.body.role !== 'instructor' && req.body.role !== 'admin') {
+    if (req.body.role !== 'instructor' && req.body.role !== 'admin') {
         res.send(400, {
             message: 'Error: Only admin or instructors can be created'
         });
@@ -63,7 +63,7 @@ exports.changeStatus = function(req, res) {
         applicant.role = 'trainee'; 
     }
 
-    if (applicant.role === 'trainee' && req.body.status.name !== 'selected for bootcamp' ) {
+    if (applicant.role === 'trainee' && req.body.status.name !== 'selected for bootcamp') {
         applicant.role = 'applicant';
     }
 
@@ -135,7 +135,7 @@ exports.changeRole = function(req, res) {
             {_id: applicant._id},
             {$set: { 'role': applicant.role, 
                      'status': { name: applicant.status.name, reason: applicant.status.reason }
-                   }
+                }
             },
             function(err) {
                 if (err) {
@@ -245,13 +245,12 @@ exports.editCamp = function(req, res) {
               'start_date': camp.start_date,
               'end_date': camp.end_date
             }
-
         }, 
         function(err) {
             if (err) {
-               res.send(500, { message: 'could not edit camp' });
+                res.send(500, { message: 'could not edit camp' });
             } else {
-               instructor.jsonCamp(res, camp._id);
+                instructor.jsonCamp(res, camp._id);
             }
         }
     ); 
@@ -264,35 +263,35 @@ exports.deleteCamp = function(req, res) {
     var camp = req.camp;
 
     async.waterfall([
-            function (callback) {
-                camp.remove(function(err, camp) { 
-                    if (err) {
-                        var message = 'Couldn\'t delete camp.';
-                        return callback(message);
-                    } 
-                    callback(null, camp);
-                });
-            },
-            function (camp, callback) { 
-                Applicant.find().where({campId: camp._id}).exec(function(err, user) {
-                    if (err) {
-                        var message = 'Couldn\'t delete user.';
-                        return callback(message);
-                    } else {
-                        for (var i in user) {
-                            if (fs.existsSync(user[i].cvPath)) {
-                               fs.unlink(user[i].cvPath);
-                            }
-
-                            if (fs.existsSync(user[i].photo_path)) {
-                               fs.unlink(user[i].photo_path);
-                            }
-                            user[i].remove();
+        function (callback) {
+            camp.remove(function(err, camp) { 
+                if (err) {
+                    var message = 'Couldn\'t delete camp.';
+                    return callback(message);
+                } 
+                callback(null, camp);
+            });
+        },
+        function (camp, callback) { 
+            Applicant.find().where({campId: camp._id}).exec(function(err, user) {
+                if (err) {
+                    var message = 'Couldn\'t delete user.';
+                    return callback(message);
+                } else {
+                    for (var i in user) {
+                        if (fs.existsSync(user[i].cvPath)) {
+                            fs.unlink(user[i].cvPath);
                         }
-                        callback(null, camp);
+
+                        if (fs.existsSync(user[i].photo_path)) {
+                            fs.unlink(user[i].photo_path);
+                        }
+                        user[i].remove();
                     }
-                });
-            }
+                    callback(null, camp);
+                }
+            });
+        }
     ],
     function(err, results) {
         if (err) {
@@ -329,11 +328,11 @@ var doListing = function(req, res, schema, whichRole) {
         Applicant.find().where({role: whichRole}).populate('campId').populate('placements').exec(function (err, users) {
             if (err) {
                 res.send(400, {
-                   message: 'No ' + whichRole + ' found'
+                    message: 'No ' + whichRole + ' found'
                 }); 
             } else { 
                 Placement.populate(users.placements, { path:'placement'}, function(err, data) {
-                   res.jsonp(users);
+                    res.jsonp(users);
                 });  
             }
         });
@@ -341,7 +340,7 @@ var doListing = function(req, res, schema, whichRole) {
         Instructor.find().where({role: whichRole}).exec(function (err, users) {
             if (err) {
                 res.send(500, {
-                   message: 'No ' + whichRole + ' found'
+                    message: 'No ' + whichRole + ' found'
                 });
             } else {
                 res.jsonp(users);
@@ -354,35 +353,35 @@ var doListing = function(req, res, schema, whichRole) {
 * List applicants
 */
 exports.listApplicants = function(req, res) {
-   doListing(req, res, 'Applicant', 'applicant');
+    doListing(req, res, 'Applicant', 'applicant');
 };
 
 /**
 * List fellows
 */
 exports.listFellows = function(req, res) {
-   doListing(req, res, 'Applicant', 'fellow');
+    doListing(req, res, 'Applicant', 'fellow');
 };
 
 /**
 * List Trainees
 */
 exports.listTrainees = function(req, res) {
-   doListing(req, res, 'Applicant', 'trainee');
+    doListing(req, res, 'Applicant', 'trainee');
 };
 
 /**
 * List Instructors
 */
 exports.listInstructors = function(req, res) {
-   doListing(req, res, 'Instructor', 'instructor');
+    doListing(req, res, 'Instructor', 'instructor');
 };
 
 /**
 * List Admins
 */
 exports.listAdmins = function(req, res) {
-   doListing(req, res, 'Instructor', 'admin');
+    doListing(req, res, 'Instructor', 'admin');
 };
 
 /**
@@ -592,9 +591,9 @@ exports.placementStatus = function(req, res) {
     if (profile.role === 'fellow') {
         Applicant.update({_id: profile._id}, 
            {$set: { 'currPlacement':
-                   { 'status': req.body.status,
-                     'startDate': req.body.startDate,
-                     'endDate': req.body.endDate
+                    { 'status': req.body.status,
+                      'startDate': req.body.startDate,
+                      'endDate': req.body.endDate
                     }
                 }
             }, 
@@ -619,7 +618,7 @@ exports.addPlacement = function(req, res) {
         company = req.body.company; 
     
     if (profile.role === 'fellow') {
-       var placement = new Placement(req.body);
+        var placement = new Placement(req.body);
 
         placement.save(function(err, result) {
             if (err) {
@@ -679,20 +678,20 @@ exports.editPlacement = function(req, res) {
 */
 exports.getPlacement = function(req, res)  {
     res.jsonp(req.placement);
-}
+};
 
 exports.getPlacements = function(req, res)  {
     res.jsonp(req.profile.placements);
-}
+};
 
 /**
 * Admin deletes a particular work placement from the whole set
 */
 exports.deletePlacement = function(req, res) {
-   var profile = req.profile,
-     placement = req.placement;
+    var profile = req.profile,
+      placement = req.placement;
 
-   Applicant.update(
+    Applicant.update(
         { _id: profile._id }, 
         { $pull: { 'placements': { '_id': placement._id } }  
         }, function (err) {
@@ -705,7 +704,7 @@ exports.deletePlacement = function(req, res) {
             }
         }
     );
-}
+};
 
 /**
 * Download CV
