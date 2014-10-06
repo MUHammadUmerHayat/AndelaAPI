@@ -3,14 +3,14 @@
 /**
  * Module dependencies.
  */
-var mongoose        = require('mongoose'),
-    passport        = require('passport'),
-    User            = mongoose.model('User'),
-    Applicant       = mongoose.model('Applicant'),
-    Bootcamp        = mongoose.model('Bootcamp'),
-    Placement       = mongoose.model('Placement'),
-    Test            = mongoose.model('Test'),
-    _               = require('lodash');
+var mongoose = require('mongoose'),
+    passport = require('passport'),
+    User = mongoose.model('User'),
+    Applicant = mongoose.model('Applicant'),
+    Bootcamp = mongoose.model('Bootcamp'),
+    Placement = mongoose.model('Placement'),
+    Test = mongoose.model('Test'),
+    _ = require('lodash');
 
 var admin = require('../../app/controllers/admin');
 
@@ -46,55 +46,57 @@ var getErrorMessage = function(err) {
 };
 
 /**
-*   CV Upload
-*
-*/
+ *   CV Upload
+ *
+ */
 var uploadCV = function(req, res, contentType, tmpPath, destPath, user) {
     // Server side file type checker.
     if (contentType !== 'application/msword' && contentType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && contentType !== 'application/pdf') {
         fs.unlink(tmpPath);
-        res.send(415, { 
+        res.send(415, {
             message: 'Unsupported file type. Only support .pdf and .docx'
         });
     } else
-    async.waterfall([
-            function (callback) {
-                fs.readFile(tmpPath , function(err, data){
-                    if (err) {
-                        var message = 'tmpPath doesn\'t exist.';
-                        return callback(message);
-                    }
-                    callback(null, data);
-                });             
-            },
-            function ( data, callback){
+        async.waterfall([
+                function(callback) {
+                    fs.readFile(tmpPath, function(err, data) {
+                        if (err) {
+                            var message = 'tmpPath doesn\'t exist.';
+                            return callback(message);
+                        }
+                        callback(null, data);
+                    });
+                },
+                function(data, callback) {
 
-                fs.writeFile(destPath, data, function(err) {
-                    if (err) {
-                        var message = 'Destination path doesn\'t exists';
-                        return callback(message);
-                    }
-                    callback();
-                });
-            },
-            function (callback) {
-                fs.unlink(tmpPath);
+                    fs.writeFile(destPath, data, function(err) {
+                        if (err) {
+                            var message = 'Destination path doesn\'t exists';
+                            return callback(message);
+                        }
+                        callback();
+                    });
+                },
+                function(callback) {
+                    fs.unlink(tmpPath);
+                }
+            ],
+            function(err, results) {
+                if (err) {
+                    res.send(500, {
+                        message: err
+                    });
+                }
             }
-        ],
-        function (err, results) {
-            if (err) {
-                res.send(500, { message: err });
-            }
-        }
-    );
+        );
 };
 
-var userSignup = function (req, res, user, destPath) {
+var userSignup = function(req, res, user, destPath) {
 
-     if (user.role === 'applicant') {
+    if (user.role === 'applicant') {
         user = new Applicant(user);
-        user.campId = req.camp._id;  
-        user.cvPath = destPath;  
+        user.campId = req.camp._id;
+        user.cvPath = destPath;
 
         var message = null;
         user.provider = 'local';
@@ -106,20 +108,20 @@ var userSignup = function (req, res, user, destPath) {
         console.log(user);
 
         return user;
-     }
-     return false;
+    }
+    return false;
 };
 
 exports.signup = function(req, res) {
-    
+
     //Parse Form
-   var form = new multiparty.Form();
+    var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
         if (err) {
-             res.send(500, {
+            res.send(500, {
                 message: err
             });
-        } 
+        }
 
         if (files.file[0]) {
 
@@ -132,46 +134,49 @@ exports.signup = function(req, res) {
 
             // uuid is for generating unique filenames. 
             var fileName = uuid.v4() + extension,
-                destPath =  'public/modules/core/img/server/Temp/' + fileName;         
+                destPath = 'public/modules/core/img/server/Temp/' + fileName;
         }
 
-    var user = { firstName: fields.firstName[0], lastName: fields.lastName[0], 
-                 password: fields.password[0], email: fields.email[0], 
-                 username: fields.username[0], testScore: fields.testScore[0], role: fields.type[0] };
+        var user = {
+            firstName: fields.firstName[0],
+            lastName: fields.lastName[0],
+            password: fields.password[0],
+            email: fields.email[0],
+            username: fields.username[0],
+            testScore: fields.testScore[0],
+            role: fields.type[0]
+        };
 
-    user = userSignup(req, res, user, destPath);
-    if(!user)
-        return;
-    req.camp.save(function(err) {
+        user = userSignup(req, res, user, destPath);
+        if (!user)
+            return;
+        req.camp.save(function(err) {
             if (err) {
-                 res.send(500, {
+                res.send(500, {
                     message: err
-                 });
-            } 
-            else {
+                });
+            } else {
                 user.save(function(err) {
-                if (err) {
-                    res.send(500, {
-                        message: err
-                    });
-                } 
-                else {
-                    uploadCV(req, res, contentType, tmpPath, destPath, user);
-                    req.login(user, function(err) {
-                        if (err) {
-                            res.send(500, err);
-                        } 
-                        else {
-                            user.password = undefined;
-                            user.salt = undefined;
-                            res.jsonp(user);
-                        }
-                   });
-                }
-            });
+                    if (err) {
+                        res.send(500, {
+                            message: err
+                        });
+                    } else {
+                        uploadCV(req, res, contentType, tmpPath, destPath, user);
+                        req.login(user, function(err) {
+                            if (err) {
+                                res.send(500, err);
+                            } else {
+                                user.password = undefined;
+                                user.salt = undefined;
+                                res.jsonp(user);
+                            }
+                        });
+                    }
+                });
             }
         });
-  });  
+    });
 
 };
 
@@ -203,19 +208,21 @@ exports.signin = function(req, res, next) {
  * Check unique username
  */
 exports.uniqueUsername = function(req, res) {
-    User.find().where({username: req.body.username}).exec(function(err, user) {
-         if (err) {
-             res.send(500, {
+    User.find().where({
+        username: req.body.username
+    }).exec(function(err, user) {
+        if (err) {
+            res.send(500, {
                 message: err
-             });
-         } else if (!user) {
-             res.send(401, {
+            });
+        } else if (!user) {
+            res.send(401, {
                 message: 'unknown user'
-             });
-         } else {
-             res.jsonp(user);
-         }
-       });
+            });
+        } else {
+            res.jsonp(user);
+        }
+    });
 };
 
 /**
@@ -294,7 +301,7 @@ exports.getCamp = function(req, res) {
     res.jsonp(req.camp);
 };
 
-exports.getCamps = function(req, res) {  
+exports.getCamps = function(req, res) {
     Bootcamp.find().sort('-start_date').exec(function(err, bootcamps) {
         if (err) {
             res.send(500, {
@@ -306,8 +313,10 @@ exports.getCamps = function(req, res) {
     });
 };
 
-exports.list = function(req, res) { 
-    Applicant.find().where({role: 'fellow'}).populate('user', 'displayName').exec(function(err, fellows) {
+exports.list = function(req, res) {
+    Applicant.find().where({
+        role: 'fellow'
+    }).populate('user', 'displayName').exec(function(err, fellows) {
         if (err) {
             res.send(500, {
                 message: getErrorMessage(err)
@@ -319,24 +328,24 @@ exports.list = function(req, res) {
 };
 
 // viewing Applicants data page
-exports.applicantView = function(req, res, id) { 
+exports.applicantView = function(req, res, id) {
     var user = req.user;
     var message = null;
     id = req.user._id;
 
     if (user) {
-            User.findById(id).populate('user', 'displayName').exec(function(err, users) {
+        User.findById(id).populate('user', 'displayName').exec(function(err, users) {
             if (err) {
                 res.send(500, {
                     message: getErrorMessage(err)
                 });
             } else {
-                    req.login(user, function(err) {
-                        if (err) {
-                            res.send(500, err);
-                        } else {
-                            res.jsonp(users);
-                        }
+                req.login(user, function(err) {
+                    if (err) {
+                        res.send(500, err);
+                    } else {
+                        res.jsonp(users);
+                    }
                 });
             }
         });
@@ -444,13 +453,15 @@ exports.userByID = function(req, res, next, id) {
     Applicant.findById(id).populate('placements').sort('-placements.end_date').exec(function(err, user) {
         if (err) return next(err);
         if (!user) return next(new Error('Failed to load User ' + id));
-        Placement.populate(user.placements, { path:'placement'},
+        Placement.populate(user.placements, {
+                path: 'placement'
+            },
             function(err, data) {
                 req.profile = user;
                 next();
             }
         );
-        
+
     });
 };
 

@@ -2,20 +2,20 @@
 
 // Admin service for admin variables
 angular.module('admin')
-.factory('Users', ['$resource',
-    function($resource) {
-        return $resource('admin', {}, {
-            update: {
-                method: 'PUT'
-            }
-        });
-    }
-])
+    .factory('Users', ['$resource',
+        function($resource) {
+            return $resource('admin', {}, {
+                update: {
+                    method: 'PUT'
+                }
+            });
+        }
+    ])
 
 .filter('range', function() {
-    return function(input, total, start){
+    return function(input, total, start) {
         total = parseInt(total);
-        for (var i=start; i<total; i++)
+        for (var i = start; i < total; i++)
             input.push(i);
         return input;
     };

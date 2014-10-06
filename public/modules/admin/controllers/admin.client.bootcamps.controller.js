@@ -1,19 +1,18 @@
-
 'use strict';
 
 // Lists controller
 angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'Authentication', '$stateParams', '$location', '$modal', '$log', 'Bootcamp',
-    function($scope, $http, Authentication, $stateParams, $location, $modal, $log, Bootcamp){
+    function($scope, $http, Authentication, $stateParams, $location, $modal, $log, Bootcamp) {
 
         $scope.user = Authentication.user;
 
         // Create Bootcamp
         $scope.createCamp = function() {
             var bootcamp = new Bootcamp($scope.credentials);
-            bootcamp.$save(function success (response) {
+            bootcamp.$save(function success(response) {
                 $location.path('/admin/camps');
-            }, function (error) {
-                if (error){
+            }, function(error) {
+                if (error) {
                     $scope.error = 'Something went wrong. Please try again and check your input';
                 }
             });
@@ -26,7 +25,7 @@ angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'A
             }, function success(response) {
                 $scope.camp = response;
                 $scope.editorEnabled = false;
-            }, function (error) {
+            }, function(error) {
                 $scope.error = error.message;
             });
         };
@@ -35,10 +34,10 @@ angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'A
         $scope.listcamps = function() {
             Bootcamp.query(function success(response) {
                 $scope.camps = response;
-                for(var i = 0; i < response.length; i++){
+                for (var i = 0; i < response.length; i++) {
                     $scope.camp_options.push(response[i].camp_name);
                 }
-            }, function (error) {
+            }, function(error) {
                 $scope.error = error.data.message;
                 $location.path('/admin/welcome');
             });
@@ -47,10 +46,9 @@ angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'A
 
         $scope.deleteCamp = function(camp, index) {
             $scope.camps.splice(index, 1);
-            camp.$remove(function success(response){}, function(error){
-                    $scope.error = error.data.message;
-                }
-            );
+            camp.$remove(function success(response) {}, function(error) {
+                $scope.error = error.data.message;
+            });
         };
 
         $scope.enableApplicantEditor = function(index) {
@@ -75,23 +73,23 @@ angular.module('admin').controller('BootcampsController', ['$scope', '$http', 'A
                 lastName: $scope.formData.editableLastName,
                 email: $scope.formData.editableEmail
             };
-            $http.put(url, data).success(function(response){
-            }).error(function(response) {
+            $http.put(url, data).success(function(response) {}).error(function(response) {
                 $scope.error = response.message;
             });
             $scope.disableApplicantEditor();
         };
 
-        $scope.changeApplicantStatusInline = function(apptId, index){
-            if($scope.data.status.name === 'fellow'){
-                $http.put('/admin/applicant/' + apptId + '/role', {role: 'fellow'}).success(function(response) {
+        $scope.changeApplicantStatusInline = function(apptId, index) {
+            if ($scope.data.status.name === 'fellow') {
+                $http.put('/admin/applicant/' + apptId + '/role', {
+                    role: 'fellow'
+                }).success(function(response) {
                     // If successful show success message and clear form
                     $scope.camp.applicants[index].status.name = 'Andela Fellow';
                 }).error(function(response) {
                     $scope.error = response.message;
                 });
-            }
-            else{
+            } else {
                 $http.put('/admin/applicant/' + apptId + '/status', $scope.data).success(function(response) {
                     // If successful show success message and clear form
                     $scope.camp.applicants[index].status.name = $scope.data.status.name;
