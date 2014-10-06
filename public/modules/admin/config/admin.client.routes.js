@@ -41,10 +41,6 @@ angular.module('admin').config(['$stateProvider',
       url: '/admin/appt/:apptId',
       templateUrl: 'modules/admin/views/edit.applicant.admin.html'
     }).
-    state('editAppt', {
-      url: '/admin/editappt/:bootcampId/:apptId',
-      templateUrl: 'modules/admin/views/edit.appt.form.admin.html'
-    }).
     state('listTrainees', {
       url: '/admin/trainees',
       templateUrl: 'modules/admin/views/list.trainees.admin.html'

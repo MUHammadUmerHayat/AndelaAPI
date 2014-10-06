@@ -1,5 +1,5 @@
-<section data-ng-controller="AdminController" data-ng-init="viewTest()" class="pad">
-  <div class="container" data-ng-show="user.role === 'admin'">
+<section data-ng-controller="AdminController" class="pad">
+  <div class="container" data-ng-show="user.role === 'admin'" data-ng-controller="TestsController" data-ng-init="viewTest()">
     <ng-include src='"/modules/admin/views/admin.sidebar.html"'></ng-include>
 
     <div class="admin-view">
@@ -8,7 +8,7 @@
         <div ng-hide="testNameEditorEnabled">
           <h3 class="testName">Test Name: {{test.testName}} <a ng-href="" ng-click="enableEditor('testName')">Edit</a></h3>
         </div>
-          
+
         <div ng-show="testNameEditorEnabled">
           <input type="text" ng-model="editabletestName" ng-show="testNameEditorEnabled">
           <a href="" ng-click="save('testName')">Save</a>
@@ -19,7 +19,7 @@
         <ul data-ng-repeat="question in test.questions">
           <li id="questions1">
             <i ng-hide="questionEditorEnabled[$index]">Question {{$index + 1}}: <b data-ng-bind="question.question"></b> <a href="" ng-click="enableEditor('question', $index)">Edit</a> </i>
-            
+
             <div ng-show="questionEditorEnabled[$index]">
               <textarea style="width: 650px" data-ng-model="editableQuestion[$index]" ng-show="questionEditorEnabled[$index]"></textarea>
               <a href="" ng-click="save('question', $index)">Save</a>
@@ -33,11 +33,11 @@
                 </b>
                 <a style="text-align: right; margin-left: 10px;" ng-click="deleteOption(test._id, question._id, option._id, $parent.$index, $index)">(Delete Option)</a>
                 <div ng-show="optionEditorEnabled[$parent.$index][$index]">
-                  <input type="text" data-ng-model="editableOption[$parent.$index][$index].option" ng-show="optionEditorEnabled[$index]">
-                  <input type="checkbox" data-ng-model="editableOption[$parent.$index][$index].answer" value="" id="answer"><label for="answer">Set as answer</label>
-                  <a href="" ng-click="save('option', $parent.$index, $index)">Save</a>
-                  or
-                  <a href="" ng-click="disableEditor('option', $parent.$index, $index)">Cancel</a>.
+                    <input type="text" data-ng-model="editableOption[$parent.$index][$index].option" ng-show="optionEditorEnabled[$index]">
+                    <input type="checkbox" data-ng-model="editableOption[$parent.$index][$index].answer" value="" id="answer"><label for="answer">Set as answer</label>
+                    <a href="" ng-click="save('option', $parent.$index, $index)">Save</a>
+                    or
+                    <a href="" ng-click="disableEditor('option', $parent.$index, $index)">Cancel</a>.
                 </div>
               </li>
             </ol>

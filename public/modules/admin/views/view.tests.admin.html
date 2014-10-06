@@ -1,5 +1,5 @@
-<section data-ng-controller="AdminController" data-ng-init="viewTests()" class="pad">
-  <div class="container" data-ng-show="user.role === 'admin'">
+<section data-ng-controller="AdminController" class="pad">
+  <div class="container" data-ng-show="user.role === 'admin'" data-ng-controller="TestsController" data-ng-init="viewTests()">
     <div class="col-sm-12 col-lg-12" data-ng-show="user">
         <a class="btn btn-xs btn-primary pull-right" href="/#!/admin/welcome">Back To Admin Home</a>
     </div>
@@ -28,9 +28,9 @@
             <td><a ng-href="/#!/admin/test/{{test._id}}">{{test.testName}}</a></td>
             <td><a ng-href="/#!/admin/test/{{test._id}}">{{test.created | date : longDate}}</a></td>
             <td><a ng-href="/#!/admin/test/{{test._id}}">{{test.questions.length}}</a></td>
-            <td><a class="fixbtn btn btn-danger btn-xs" ng-click="deleteTest(test._id, $index)">Delete Test</a></td>
+            <td><a class="fixbtn btn btn-danger btn-xs" ng-click="deleteTest(test, $index)">Delete Test</a></td>
             </td>
-          </tr>               
+          </tr>
         </tbody>
       </table>
     </div>

@@ -692,6 +692,45 @@ a:hover { text-decoration: underline; }
 
 #friendslist li a img { float: left; margin-right: 5px; }
 
+a.tooltips {
+  position: relative;
+  display: inline;
+}
+a.tooltips span {
+  position: absolute;
+  width:100px;
+  color: #FFFFFF;
+  background: #000000;
+  height: 23px;
+  line-height: 20px;
+  text-align: center;
+  visibility: hidden;
+  border-radius: 4px;
+  top: -20px;
+  font-size: 12px;
+  padding-top: 1px;
+}
+a.tooltips span:after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+  width: 0; 
+  height: 0;
+  border-top: 8px solid #000000;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+a:hover.tooltips span {
+  visibility: visible;
+  opacity: 0.8;
+  bottom: 30px;
+  left: 50%;
+  margin-left: -50px;
+  z-index: 999;
+}
+
 /** clearfix **/
 .clearfix:after { content: "."; display: block; clear: both; visibility: hidden; line-height: 0; height: 0; }
 .clearfix { display: inline-block; }
