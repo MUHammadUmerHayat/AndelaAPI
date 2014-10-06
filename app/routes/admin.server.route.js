@@ -53,13 +53,17 @@ module.exports = function(app) {
 
     /*** Setting up status and role Api ***/
 
-    // change applicant's status and edit applicant's information
+    // edit applicant's personal information
     app.route('/admin/applicant/:applicantId')
         .get(users.requiresLogin, admin.checkPermission, admin.applicantRead) 
-        .put(users.requiresLogin, admin.checkPermission, admin.changeStatus) 
         .put(users.requiresLogin, admin.checkPermission, admin.updateApplicantDetails);
 
     
+    // change applicant's application status 
+    app.route('/admin/applicant/:applicantId/status') 
+        .put(users.requiresLogin, admin.checkPermission, admin.changeStatus) 
+
+
     // change applicant/fellow/trainee role
     app.route('/admin/applicant/:applicantId/role')
         .put(users.requiresLogin, admin.checkPermission, admin.changeRole);
@@ -129,7 +133,7 @@ module.exports = function(app) {
     
     
     // edit a fellow's skill rating
-    app.route('/admin/trainee/:traineeId/skills/:skillId')
+    app.route('/admin/fellow/:traineeId/skills/:skillId')
         .put(users.requiresLogin, admin.checkPermission, instructor.editFellowRating);
 
     
@@ -149,7 +153,7 @@ module.exports = function(app) {
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteTest);
 
 
-    // update and delete a question
+    // update/delete a question, update an option
     app.route('/admin/test/:testId/:questionId')
         .put(users.requiresLogin, admin.checkPermission, admin.updateQuestion)
         .delete(users.requiresLogin, admin.checkPermission, admin.deleteQuestion);

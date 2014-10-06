@@ -10,7 +10,7 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
 			if ($scope.file[0].type === 'image/jpeg' || $scope.file[0].type === 'image/png') {
 			    $scope.correctFormat = true; 
 			} else {
-			   $scope.correctFormat = false; 
+			    $scope.correctFormat = false; 
 		    }
 		}
     };
@@ -48,23 +48,18 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
 		$scope.user.photo = "";
 		$http.delete('/instructor/' + $scope.user._id + '/deletePhoto').success(function(response){
 			$scope.success = true;
-	 		$scope.photo = response;
-
-	 		$scope.upload_new=true;
+	 		$scope.photo = response.photo;
+	 		$scope.upload_new = true;
 		}).error(function(response) {
 		   	$scope.error = response.message;
-
 		});
-
 	};
 
 
 	$scope.showImage = function(img) {
 	 	if (img) {
-           img = img.substring(6);
+            img = img.substring(6);
         	return img;
 	 	}
     };
-
-
 };

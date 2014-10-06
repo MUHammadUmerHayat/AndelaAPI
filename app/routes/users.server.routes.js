@@ -10,9 +10,9 @@ module.exports = function(app) {
 	var users = require('../../app/controllers/users');
 	var admin = require('../../app/controllers/admin');
 	app.route('/users/me').get(users.me);
-	app.route('/users').get(users.list).put(users.update);
-	app.route('/users/:userId').get(users.read).put(users.adminUpdate);
-	app.route('/users/:userId/password').post(users.changePassword);
+	app.route('/users').get(users.requiresLogin, users.list).put(users.requiresLogin, users.update);
+	app.route('/users/:userId').get(users.requiresLogin, users.read).put(users.requiresLogin, users.adminUpdate);
+	app.route('/users/:userId/password').post(users.requiresLogin, users.changePassword);
 	app.route('/users/accounts').delete(users.removeOAuthProvider);
 	app.route('/users/view').get(users.requiresLogin, users.applicantView);
 	app.route('/users/check/uniqueUsername').post(users.uniqueUsername);

@@ -21,9 +21,7 @@ angular.module('applicant').controller('ApplicantController', ['$scope', '$uploa
             Bootcamps.query().$promise.then(
               //success
                   function(value) {
-                      console.log(value);
                       $scope.camp = value[0]._id;
-                       console.log($scope.camp);
                   },
                   //error
                   function(err){
@@ -76,10 +74,9 @@ angular.module('applicant').controller('ApplicantController', ['$scope', '$uploa
                  for ( var i = 0; i < $scope.options.length; i++){
                       if (test === $scope.options[i].question){
                           $scope.options[i].answer = option;
-                          console.log($scope.options[i]);
                       }
                       else {
-                             $scope.options.push({question: test, answer: option});
+                          $scope.options.push({question: test, answer: option});
                       }
                  };
          };          
@@ -114,7 +111,7 @@ angular.module('applicant').controller('ApplicantController', ['$scope', '$uploa
               };
           }; 
 
-          $scope.testScore = ($scope.correctAnswers /  $scope.questions.questions.length) * 100;  
+          $scope.testScore = Math.round(($scope.correctAnswers /  $scope.questions.questions.length) * 100);  
 
           $scope.user.type = 'applicant';
           $scope.user.testScore = $scope.testScore;
@@ -204,7 +201,6 @@ angular.module('applicant').directive('ensureUnique', ['$http', function($http) 
           url: '/users/check/uniqueUsername',
           data: {'username': newValue}
         }).success(function(data, status, headers, cfg) {
-          console.log(data);
           if (data.length>0) {
              c.$setValidity('unique', false);
           } else {

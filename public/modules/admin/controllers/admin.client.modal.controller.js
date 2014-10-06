@@ -22,7 +22,6 @@ var ModalInstanceCtrl = function ($http, $scope, $route, $modalInstance, categor
             $scope.categories.push(response);
             $scope.createCategory = false;
             $scope.data.name = '';
-          
         }).error(function(response) {
             $scope.error = response.message;
         });
