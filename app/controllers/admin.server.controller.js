@@ -54,7 +54,7 @@ exports.changeStatus = function(req, res) {
     if (req.body.status.name === 'rejected') { 
         if (!req.body.status.reason || req.body.status.reason.length === 0) {
             res.send(400, {
-               message: 'Please give reason why applicant was rejected'
+                message: 'Please give reason why applicant was rejected'
             });
         }
     } 
@@ -508,9 +508,9 @@ exports.addOption = function(req, res) {
     question.questOptions.push(new Options({option: option, answer: false}));
     test.save(function(err, test) {
         if (err) {
-           res.send(500, { message: err });
+            res.send(500, { message: err });
         } else {
-           res.jsonp(test);
+            res.jsonp(test);
         }
     });
 };
@@ -562,7 +562,7 @@ exports.deleteOption = function(req, res) {
     var option = question.questOptions.id(id);
     if (question.questOptions.length === 2) {
         res.send(400, { 
-          message: 'A question can only have a minimum of two options'
+            message: 'A question can only have a minimum of two options'
         });
     } else if (option.answer === true) {
         res.send(400, { 
@@ -623,7 +623,7 @@ exports.addPlacement = function(req, res) {
         placement.save(function(err, result) {
             if (err) {
                 res.send(400, {
-                   message: 'Couldn\'t add placement'
+                    message: 'Couldn\'t add placement'
                 });
             } else {
                 Applicant.update(
@@ -695,10 +695,10 @@ exports.deletePlacement = function(req, res) {
         { _id: profile._id }, 
         { $pull: { 'placements': { '_id': placement._id } }  
         }, function (err) {
-           if (err) {
-               res.send(500, {
-                  message: 'Couldn\'t delete placement'
-               });
+            if (err) {
+                res.send(500, {
+                    message: 'Couldn\'t delete placement'
+                });
             } else {
                 instructor.returnJson(res, profile._id);
             }
@@ -815,7 +815,7 @@ exports.createSkill = function(req, res) {
     skill.save(function(err, skill) {
         if (err) {
             res.send(500, {
-               message: 'Couldn\'t create skill'
+                message: 'Couldn\'t create skill'
             });
         } else {
             res.jsonp(skill); 

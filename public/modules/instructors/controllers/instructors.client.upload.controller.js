@@ -49,22 +49,17 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
 		$http.delete('/instructor/' + $scope.user._id + '/deletePhoto').success(function(response){
 			$scope.success = true;
 	 		$scope.photo = response.photo;
-
 	 		$scope.upload_new = true;
 		}).error(function(response) {
 		   	$scope.error = response.message;
-
 		});
-
 	};
 
 
 	$scope.showImage = function(img) {
 	 	if (img) {
-           img = img.substring(6);
+            img = img.substring(6);
         	return img;
 	 	}
     };
-
-
 };
