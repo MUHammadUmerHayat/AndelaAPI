@@ -53,6 +53,7 @@ module.exports = function(app) {
     
     // update and delete a particular assessment record of a trainee
     app.route('/instructor/trainee/:traineeId/:assmtId')
+        .get(users.requiresLogin, instructor.checkRights, instructor.getAssessment)
         .put(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.updateAssmt)
         .delete(users.requiresLogin, instructor.checkRights, instructor.isCreator, instructor.deleteAssmt);
 

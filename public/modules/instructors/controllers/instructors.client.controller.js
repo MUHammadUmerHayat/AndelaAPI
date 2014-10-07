@@ -1,11 +1,11 @@
 'use strict';
 
 // Instructors controller
-angular.module('instructors').controller('InstructorsController', ['$scope', '$rootScope', '$upload', '$stateParams', '$location', 'Authentication', '$http',
-    function($scope, $rootScope, $upload, $stateParams, $location, Authentication, $http) {
+angular.module('instructors').controller('InstructorsController', ['$scope', 'Assessment', '$rootScope', '$upload', '$stateParams', '$location', 'Authentication', '$http',
+    function($scope, Assessment, $rootScope, $upload, $stateParams, $location, Authentication, $http) {
         $scope.user = Authentication.user;
 
-        // instructor sigin 
+        // instructor signin 
         $scope.instructor_signin = function() {
             $http.post('/auth/signin', $scope.credentials).success(function(response) {
 
@@ -25,14 +25,12 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
             });
         };
 
-        
         // instructor's home page
         $scope.instructorHome = function(){
             if (!$scope.user) {
                 $location.path('/');
             }
         };
-
 
         // list all bootcamps
         $scope.listBootcamps = function() {
@@ -43,7 +41,6 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
                 $scope.error = response.message;
             });
         };
-
 
         // viewing only a particular bootcamp
         $scope.viewBootcamp = function() {
@@ -60,38 +57,36 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
             }
         };
 
-
-
         // list all trainees
         $scope.listTrainees = function() {
             $http.get('/instructor/trainees').success(function(response) {
                 $scope.success = true;
                 $scope.trainees = response;                                                                     
-          }).error(function(response) {
-            $scope.error = response.message;
+            }).error(function(response) {
+                $scope.error = response.message;
             });
         };
 
-        
         // view a particular trainee        
-        $rootScope.viewTrainee = function() {
-            if ($stateParams.applicantId.length < 20) {
-                $location.path('/');
-            }else{
-                $rootScope.traineeId = $stateParams.applicantId;
-                $http.get('/instructor/trainee/' + $rootScope.traineeId).success(function(response) {
-                    $scope.success = true;
-                    $rootScope.trainee = response;
-                    $rootScope.assessments = $rootScope.trainee.assessments;            
-                    angular.forEach($rootScope.trainee.assessments, function(assessment, key){
-                        $rootScope.assessment = assessment; 
-                    });
-                }).error(function(response) {
-                    $scope.error = response.message;
-                });
+        $scope.viewTrainee = function() {
+            if ($stateParams.applicantId === "") {
+                $scope.error = true;
+            } else {
+                Assessment.get({
+                        traineeId: $stateParams.applicantId
+                    },  
+                    function success(response) {
+                        $scope.success = true;
+                        $scope.error = false;
+                        $scope.trainee = response; console.log(response);
+                        $scope.assessments = $scope.trainee.assessments;  
+                    },  
+                    function(error) {
+                        $scope.error = true; 
+                    }
+                );
             }
         };
-
 
         // list all fellows
         $scope.listFellows = function() {
@@ -102,7 +97,6 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
                 $scope.error = response.message;
             });
         };
-
         
         // view a particular fellow
         $scope.viewFellow = function() {
@@ -111,15 +105,37 @@ angular.module('instructors').controller('InstructorsController', ['$scope', '$r
             }else {
                 $http.get('/instructor/trainee/' + $stateParams.fellowId).success(function(response) {
                     $scope.success = true;
-                    $scope.fellow = response;
-                    angular.forEach($scope.fellow.skillSets, function(skillSets, key){
-                        $scope.skillSets = skillSets;  
-                    });     
+                    $scope.fellow = response;   
                 }).error(function(response) {
                     $scope.error = response.message;
                 });
             }
         };
+
+        // show instructor profile picture
+        $scope.showImage = function(img) {
+            if (img) {
+                img = img.substring(6);
+                return img;
+            } else {
+                return 'http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png';
+            }
+        };
+
+        // get assessment
+        $scope.getAssessment = function() { 
+            Assessment.get({
+                    traineeId: $stateParams.applicantId,
+                    assmtId: $stateParams.assessmentId
+                },  
+                function success(response) {
+                    $scope.assessment = response; 
+                },  
+                function(error) {
+                    $scope.error = 'Assessment could not be found';
+                }
+            );
+        };
     }   
 ]);
-
+ 

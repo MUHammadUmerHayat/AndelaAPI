@@ -7,9 +7,9 @@
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="title col-md-offset-4 col-md-4">
-                <h1>Assess Trainee</h1>
+                <h1>Assessment</h1>
             </div>
-            <div class="col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
+            <div class="assessment col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
                 <form class="basic-grey" data-ng-submit="createAssessment()">
                     <fieldset>
                         <div class="form-group">
@@ -37,7 +37,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <input type="submit" class="btn btn-large btn-success myButton">
+                            <input type="submit" class="btn btn-large btn-default myButton">
                         </div>
         				<div data-ng-show="error" class="text-danger">
         					<strong data-ng-bind="error"></strong>

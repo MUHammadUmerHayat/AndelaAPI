@@ -5,21 +5,23 @@
             <div class="col-sm-12 col-lg-12" data-ng-show="user">
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
-            <div data-ng-show='user.photo'>
+            <div>
                 <div>
                     <img class="profile_image" data-ng-src="{{showImage(user.photo)}}" />
                 </div>
                 <div>
-                    <a class="btn btn-success" data-ng-click="deletePhoto($index, photo)"><i class="glyphicon glyphicon-trash"></i></a>
+                    <a class="btn btn-success" data-ng-show="user.photo" data-ng-click="deletePhoto()"><i class="glyphicon glyphicon-trash"></i></a>
                 </div>
-            </div>
-            <div class="alert alert-danger" data-ng-show ='!user.photo'>
-                <a href="#"></a>
-                <span>Upload a new picture</span>
-            </div>           
+            </div>         
             <div data-ng-controller="SettingsController">
                 <form data-ng-submit="updateUserProfile()" class="basic-grey" autocomplete="off">
                     <fieldset>
+                         <div data-ng-show="success" class="text-center text-success alert alert-success">
+                            <strong>Profile Saved Successfully</strong>
+                        </div>
+                        <div data-ng-show="error" class="text-center text-danger alert alert-danger">
+                            <strong data-ng-bind="error"></strong>
+                        </div>
                         <div class="form-group">
                             <label for="firstName">First Name</label>
                             <input type="text" id="firstName" name="firstName" class="form-control" data-ng-model="user.firstName" placeholder="First Name">
@@ -38,12 +40,6 @@
                         </div>
                         <div class="text-center form-group">
                             <button type="submit" class="btn btn-large btn-primary">Save Profile</button>
-                        </div>
-                        <div data-ng-show="success" class="text-center text-success">
-                            <strong>Profile Saved Successfully</strong>
-                        </div>
-                        <div data-ng-show="error" class="text-center text-danger">
-                            <strong data-ng-bind="error"></strong>
                         </div>
                     </fieldset>
                 </form>

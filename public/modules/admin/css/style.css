@@ -6,7 +6,6 @@ table.list{
 
 table.list {
   line-height: 1.0;
-  /*text-shadow: 1px 0 0 #ddd;*/
   margin:5px 0; background: #fafafa;
   border:#ccc 1px solid;
 }
