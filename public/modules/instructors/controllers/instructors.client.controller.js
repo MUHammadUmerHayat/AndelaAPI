@@ -1,9 +1,9 @@
 'use strict';
 
 // Instructors controller
-angular.module('instructors').controller('InstructorsController', ['$scope', 'Assessment', '$rootScope', '$upload', '$stateParams', '$location', 'Authentication', '$http',
-    function($scope, Assessment, $rootScope, $upload, $stateParams, $location, Authentication, $http) {
-        $scope.user = Authentication.user;
+angular.module('instructors').controller('InstructorsController', ['$scope', 'Assessment', '$upload', '$stateParams', '$location', 'Authentication', '$http',
+    function($scope, Assessment, $upload, $stateParams, $location, Authentication, $http) {
+        $scope.user = Authentication.user; 
 
         // instructor signin 
         $scope.instructor_signin = function() {
@@ -16,7 +16,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', 'As
                 if ($scope.user.role === 'instructor') {
                     $location.path('/instructors/home');    
                 }
-                else{
+                else {
                     $location.path('/');
                 }
             }).error(function(response) {
@@ -78,7 +78,7 @@ angular.module('instructors').controller('InstructorsController', ['$scope', 'As
                     function success(response) {
                         $scope.success = true;
                         $scope.error = false;
-                        $scope.trainee = response; console.log(response);
+                        $scope.trainee = response;
                         $scope.assessments = $scope.trainee.assessments;  
                     },  
                     function(error) {
@@ -124,15 +124,20 @@ angular.module('instructors').controller('InstructorsController', ['$scope', 'As
 
         // get assessment
         $scope.getAssessment = function() { 
+            $scope.error = false; 
             Assessment.get({
                     traineeId: $stateParams.applicantId,
                     assmtId: $stateParams.assessmentId
                 },  
-                function success(response) {
-                    $scope.assessment = response; 
+                function success(response) { 
+                    if (response._id) {
+                        $scope.assessment = response;
+                    } else {
+                        $scope.error = true;
+                    }
                 },  
                 function(error) {
-                    $scope.error = 'Assessment could not be found';
+                    $scope.error = true; 
                 }
             );
         };

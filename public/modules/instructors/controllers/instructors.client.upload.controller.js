@@ -1,7 +1,8 @@
 'use strict';
 
 
-var ProfileController = function($scope, $http, $upload, $stateParams, $location) {
+var ProfileController = function($scope, $http, $upload, $stateParams, $location, Authentication) {
+    $scope.user = Authentication.user;
 
     // Upload Image
     $scope.onFileSelect = function($file) {
@@ -15,7 +16,6 @@ var ProfileController = function($scope, $http, $upload, $stateParams, $location
 		}
     };
 
-
     $scope.removeAlert = function(message) {
         if (message === "error") {
             $scope.error = null;
@@ -24,7 +24,6 @@ var ProfileController = function($scope, $http, $upload, $stateParams, $location
         }
     };
 
-
     // upload file
 	$scope.create = function() {
 		$scope.success = null;
@@ -32,16 +31,16 @@ var ProfileController = function($scope, $http, $upload, $stateParams, $location
 		$scope.upload = $upload.upload({
             url: '/instructor/updateInfo',
             method: 'POST',
-            data: $scope.details,
+            data: $scope.user,
             file: $scope.file
         }).success(function(response) {
-        	user.photo = response.photo;
+        	$scope.user.photo = response.photo;
+        	Authentication.user = response;
             $scope.success = 'Your details have been updated successfully';
         }).error(function(err) {
         	$scope.error = err.message;
         });
 	};
-
 
 	// delete profile picture
 	$scope.deletePhoto = function($index, photo) {
@@ -52,7 +51,6 @@ var ProfileController = function($scope, $http, $upload, $stateParams, $location
 		});
 	};
 
-
     // show instructor's profile photo
 	$scope.showImage = function(img) {
 	 	if (img) {
@@ -62,4 +60,4 @@ var ProfileController = function($scope, $http, $upload, $stateParams, $location
 	 		return 'http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png';
 	 	}
     };
-};
+}

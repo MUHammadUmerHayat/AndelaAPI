@@ -16,9 +16,6 @@
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
-                        <th>Skills Summary</th>
-                        <th>Placement Status</th>
-                        <th>Needs work</th>
                       </tr>
                     </thead>
                     <tbody class="capitalize">
@@ -26,17 +23,7 @@
                             <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}">{{$index + 1}}</a></td>
                             <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.firstName"></a></td>
                             <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.lastName"></a></td>
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.email"></a></td>
-                            <td>
-                                <a ng-repeat="(key, val) in fellow.skillSummary">
-                                    <svg height="45px" width= "45px" viewBox="0 0 32 32" tooltip="{{key + ', ' + getSkillLevel(val) | uppercase}}">
-                                        <use class="{{getSkillLevel(val)}}" xlink:href="{{ '#' + key}}"></use>
-                                    </svg>
-                                </a>
-                            </td>
-                            <td data-ng-bind="fellow.available"><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}"></a></td>
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}">{{get_availability_date(fellow) | date}}</a></td>
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow."></a></td>      
+                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.email"></a></td>    
                         </tr>               
                     </tbody>
                 </table>

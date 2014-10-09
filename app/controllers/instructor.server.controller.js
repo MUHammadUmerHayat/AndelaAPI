@@ -335,7 +335,7 @@ exports.updateInfo = function(req, res) {
             } else {
                 var experience = '';
                 if (fields.experience) {
-                    experience = fields.experience[0];
+                    experience = fields.experience[0]; 
                 } 
                 
                 // if there is a file do upload
