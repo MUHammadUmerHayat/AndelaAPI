@@ -6,6 +6,7 @@ var ApplicationConfiguration = function () {
     var applicationModuleVendorDependencies = [
         'ngResource',
         'ngCookies',
+        'Mac',
         'ngAnimate',
         'ngTouch',
         'ngSanitize',
@@ -88,9 +89,6 @@ angular.module('admin').config([
     }).state('editApplicant', {
       url: '/admin/appt/:apptId',
       templateUrl: 'modules/admin/views/edit.applicant.admin.html'
-    }).state('editAppt', {
-      url: '/admin/editappt/:bootcampId/:apptId',
-      templateUrl: 'modules/admin/views/edit.appt.form.admin.html'
     }).state('listTrainees', {
       url: '/admin/trainees',
       templateUrl: 'modules/admin/views/list.trainees.admin.html'
@@ -128,7 +126,7 @@ angular.module('admin').config([
   }
 ]);'use strict';
 // Lists controller
-angular.module('admin').controller('AdminController', [
+angular.module('admin').controller('BootcampsController', [
   '$scope',
   '$http',
   'Authentication',
@@ -136,121 +134,46 @@ angular.module('admin').controller('AdminController', [
   '$location',
   '$modal',
   '$log',
-  function ($scope, $http, Authentication, $stateParams, $location, $modal, $log) {
+  'Bootcamp',
+  function ($scope, $http, Authentication, $stateParams, $location, $modal, $log, Bootcamp) {
     $scope.user = Authentication.user;
-    $scope.weeks = 0;
-    $scope.choiceOne = [
-      { id: 'choice1' },
-      { id: 'choice2' }
-    ];
-    //answer to question one
-    $scope.choiceTwo = [
-      { id: 'choice1' },
-      { id: 'choice2' }
-    ];
-    //answer to question two
-    $scope.optionOne = [];
-    //options for question one
-    $scope.optionTwo = [];
-    //oprions for question two
-    $scope.questions = [];
-    $scope.selected = '';
-    $scope.testName = '';
-    $scope.answered = false;
-    $scope.answeredTwo = false;
-    $scope.camp_options = [];
-    $scope.formData = {};
-    $scope.data = {};
-    $scope.setShow = function (val) {
-      $scope.selected = val;
-    };
-    $scope.isSelected = function (val) {
-      return val === $scope.selected;
-    };
-    $scope.addNewChoice = function (num) {
-      var newItemNo;
-      if (num === 1) {
-        newItemNo = $scope.choiceOne.length + 1;
-        $scope.choiceOne.push({ id: 'choice' + newItemNo });
-      } else {
-        newItemNo = $scope.choiceTwo.length + 1;
-        $scope.choiceTwo.push({ id: 'choice' + newItemNo });
-      }
-    };
-    $scope.deleteChoice = function (index, num) {
-      if (num === 1) {
-        if (parseInt($scope.test.answerOne, 10) === $scope.choiceOne.length - 1) {
-          $scope.test.answerOne = $scope.test.answerOne - 1;
-        }
-        doDelete($scope.choiceOne, $scope.optionOne, index);
-      } else {
-        if (parseInt($scope.test.answerTwo, 10) === $scope.choiceTwo.length - 1) {
-          $scope.test.answerTwo = $scope.test.answerTwo - 1;
-        }
-        doDelete($scope.choiceTwo, $scope.optionTwo, index);
-      }
-    };
-    var doDelete = function (choiceArr, optionArr, index) {
-      choiceArr.splice(index, 1);
-      optionArr.splice(index, 1);
-      for (var i in choiceArr) {
-        choiceArr[i].id = 'choice' + i;
-      }
-    };
-    $scope.showAddChoice = function (choice, num) {
-      if (num === 1)
-        return choice.id === $scope.choiceOne[$scope.choiceOne.length - 1].id;
-      else
-        return choice.id === $scope.choiceTwo[$scope.choiceTwo.length - 1].id;
-    };
-    $scope.changeAnsVal = function (index, num) {
-      if (num === 1) {
-        $scope.answered = true;
-      } else {
-        $scope.answeredTwo = true;
-      }
-    };
-    // Create new user
-    $scope.create = function (role) {
-      if (role === 'admin') {
-        $scope.credentials.role = 'admin';
-      }
-      if (role === 'inst') {
-        $scope.credentials.role = 'instructor';
-      }
-      // console.log('createInstructor called', $scope.credentials);
-      $http.post('/admin/create', $scope.credentials).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        $scope.passwordDetails = null;
-        if (response.role === 'instructor') {
-          $location.path('/admin/instrs');
-        } else {
-          $location.path('/admins');
-        }
-      }).error(function (response) {
-        $scope.error = response.message;
-      });
-    };
-    /**
-    * Create camp
-    */
+    // Create Bootcamp
     $scope.createCamp = function () {
-      $http.post('/admin/camp', $scope.credentials).success(function (response) {
+      var bootcamp = new Bootcamp($scope.credentials);
+      bootcamp.$save(function success(response) {
         $location.path('/admin/camps');
-      }).error(function (response) {
-        $scope.error = response.message;
-        if ($scope.error.type === 'date') {
-          $scope.error = 'Please follow the date pattern specified M/D/YY e.g (use 2/5/2014 for 5th Feb 2014)';
+      }, function (error) {
+        if (error) {
+          $scope.error = 'Something went wrong. Please try again and check your input';
         }
       });
     };
+    // View a particular Bootcamp
     $scope.viewcamp = function () {
-      $http.get('/admin/camp/' + $stateParams.campId).success(function (response) {
+      Bootcamp.get({ campId: $stateParams.campId }, function success(response) {
         $scope.camp = response;
-        $scope.editorEnabled = false;  // If successful show success message and clear form
-      }).error(function (response) {
-        $scope.error = response.message;
+        $scope.editorEnabled = false;
+      }, function (error) {
+        $scope.error = error.message;
+      });
+    };
+    // List all Bootcamps
+    $scope.listcamps = function () {
+      Bootcamp.query(function success(response) {
+        $scope.camps = response;
+        for (var i = 0; i < response.length; i++) {
+          $scope.camp_options.push(response[i].camp_name);
+        }
+      }, function (error) {
+        $scope.error = error.data.message;
+        $location.path('/admin/welcome');
+      });
+    };
+    $scope.deleteCamp = function (camp, index) {
+      $scope.camps.splice(index, 1);
+      camp.$remove(function success(response) {
+      }, function (error) {
+        $scope.error = error.data.message;
       });
     };
     $scope.enableApplicantEditor = function (index) {
@@ -273,23 +196,71 @@ angular.module('admin').controller('AdminController', [
           email: $scope.formData.editableEmail
         };
       $http.put(url, data).success(function (response) {
-        console.log('success');
       }).error(function (response) {
         $scope.error = response.message;
       });
       $scope.disableApplicantEditor();
     };
-    $scope.listcamps = function () {
-      $http.get('/admin/camp').success(function (response) {
+    $scope.changeApplicantStatusInline = function (apptId, index) {
+      if ($scope.data.status.name === 'fellow') {
+        $http.put('/admin/applicant/' + apptId + '/role', { role: 'fellow' }).success(function (response) {
+          // If successful show success message and clear form
+          $scope.camp.applicants[index].status.name = 'Andela Fellow';
+        }).error(function (response) {
+          $scope.error = response.message;
+        });
+      } else {
+        $http.put('/admin/applicant/' + apptId + '/status', $scope.data).success(function (response) {
+          // If successful show success message and clear form
+          $scope.camp.applicants[index].status.name = $scope.data.status.name;
+          $scope.camp.applicants[index].status.reason = $scope.data.status.reason;
+          $scope.data.status.name = '';
+        }).error(function (response) {
+          $scope.error = response.message;
+        });
+      }
+    };
+  }
+]);'use strict';
+// Lists controller
+angular.module('admin').controller('AdminController', [
+  '$scope',
+  '$http',
+  'Authentication',
+  '$stateParams',
+  '$location',
+  '$modal',
+  '$log',
+  function ($scope, $http, Authentication, $stateParams, $location, $modal, $log) {
+    $scope.user = Authentication.user;
+    $scope.weeks = 0;
+    $scope.camp_options = [];
+    $scope.formData = {};
+    $scope.data = {};
+    // download CV
+    $scope.download = function (path) {
+      var fullPath = '/admin/download?file=' + path;
+      window.open(fullPath, '_parent');
+    };
+    // Create new user
+    $scope.create = function (role) {
+      if (role === 'admin') {
+        $scope.credentials.role = 'admin';
+      }
+      if (role === 'inst') {
+        $scope.credentials.role = 'instructor';
+      }
+      $http.post('/admin/create', $scope.credentials).success(function (response) {
         // If successful show success message and clear form
-        $scope.camps = response;
-        console.log('success: ' + $scope.camps);
-        for (var i = 0; i < response.length; i++) {
-          $scope.camp_options.push(response[i].camp_name);
+        $scope.success = true;
+        $scope.passwordDetails = null;
+        if (response.role === 'instructor') {
+          $location.path('/admin/instrs');
+        } else {
+          $location.path('/admins');
         }
       }).error(function (response) {
         $scope.error = response.message;
-        $location.path('/admin/welcome');
       });
     };
     $scope.viewTrainees = function () {
@@ -303,19 +274,16 @@ angular.module('admin').controller('AdminController', [
       });
     };
     $scope.listApplicants = function () {
-      // $scope.statusInit = 'pending';
       $http.get('/admin/applicants').success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
         $scope.applicants = response;
-        console.log('Applicant Init');
-        console.log('appt: ' + $scope.applicants);
       }).error(function (response) {
         $scope.error = response.message;
       });
     };
     $scope.viewApplicant = function () {
-      $http.get('/admin/appt/' + $stateParams.apptId).success(function (response) {
+      $http.get('/admin/applicant/' + $stateParams.apptId).success(function (response) {
         // If successful show success message and clear form
         $scope.data = {};
         $scope.success = true;
@@ -333,7 +301,7 @@ angular.module('admin').controller('AdminController', [
         $scope.skillScoreEditorEnabled = [];
         $scope.editableSkillName = [];
         $scope.editableSkillScore = [];
-        $score.editableDetails = [];
+        $scope.editableDetails = [];
         for (var i in $scope.appt.skillSet) {
           $scope.skillNameEditorEnabled[i] = false;
           $scope.skillScoreEditorEnabled[i] = false;
@@ -416,34 +384,20 @@ angular.module('admin').controller('AdminController', [
             $scope.disableCurrPlacementEditor('endDate');
           }
         };
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
-    // $scope.updateApplicantDetails = function(apptId) {
-    //   $http.put('/admin/appt/' + apptId).success(function(response) {
-    //     console.log('Success - Done', response);
-    //   }).error(function(response) {
-    //     $scope.error = response.message;
-    //     console.log($scope.error);
-    //   });
-    // };
     $scope.updateSkill = function (appt, index) {
       $http.put('/admin/trainee/' + appt._id + '/rate/' + appt.skillSets[index]._id, appt.skillSets[index]).success(function (response) {
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
     $scope.updatePlacement = function (appt) {
       $http.put('/admin/fellow/' + appt._id + '/placement', appt.currPlacement).success(function (response) {
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
     $scope.deleteUser = function (userId, index) {
@@ -451,20 +405,14 @@ angular.module('admin').controller('AdminController', [
       $http.put('/admin/camp/' + $scope.camp._id, $scope.camp).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        // $scope.appt = response;
-        console.log('Edit bootcamp done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);  // console.log('Error - can not');
       });
       $http.delete('/admin/user/' + userId).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);  // console.log('Error - can not');
       });
     };
     $scope.deleteAdmin = function (userId, index) {
@@ -472,11 +420,8 @@ angular.module('admin').controller('AdminController', [
       $http.delete('/admin/user/' + userId).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);  // console.log('Error - can not');
       });
     };
     $scope.deleteInstr = function (userId, index) {
@@ -484,59 +429,8 @@ angular.module('admin').controller('AdminController', [
       $http.delete('/admin/user/' + userId).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);  // console.log('Error - can not');
-      });
-    };
-    $scope.deleteTest = function (testId, index) {
-      $scope.tests.splice(index, 1);
-      $http.delete('/admin/test/' + testId).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
-    $scope.deleteQuestion = function (testId, questionId, index) {
-      $scope.test.questions.splice(index, 1);
-      $http.delete('/admin/test/' + testId + '/' + questionId).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
-    $scope.deleteOption = function (testId, questionId, optionId, queIndex, index) {
-      $scope.test.questions[queIndex].questOptions.splice(index, 1);
-      $http.delete('/admin/test/' + testId + '/' + questionId + '/' + optionId).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log($scope.error);
-      });
-    };
-    $scope.deleteCamp = function (campId, index) {
-      $scope.camps.splice(index, 1);
-      $http.delete('/admin/camp/' + campId).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log($scope.error);
       });
     };
     $scope.deleteFellow = function (userId, index) {
@@ -544,11 +438,8 @@ angular.module('admin').controller('AdminController', [
       $http.delete('/admin/user/' + userId).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);
       });
     };
     $scope.getSkillLevel = function (val) {
@@ -571,7 +462,6 @@ angular.module('admin').controller('AdminController', [
         $scope.fellows = response;
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.IsFellowUnavailable = function (fellow) {
@@ -604,7 +494,6 @@ angular.module('admin').controller('AdminController', [
       if (fellow.placements && fellow.placements.length > 0) {
         var curr_date = new Date();
         var fellowavailabilityweeks = Math.ceil(new Date(fellow.placements[0].end_date).getTime() - curr_date.getTime()) / (oneday * 7);
-        console.log(Math.ceil(fellowavailabilityweeks));
         if (fellowavailabilityweeks <= 0) {
           return 0;
         } else {
@@ -618,10 +507,8 @@ angular.module('admin').controller('AdminController', [
       if ($scope.get_fellow_work_days(placement) <= 0) {
         $scope.fellows[index].available = 'Needs Work';
         $scope.fellows[index].week = $scope.get_fellow_work_days(placement);
-        console.log($scope.fellows[index].week);
       } else {
         $scope.fellows[index].available = 'Currently Placed';
-        console.log(' placed');
         $scope.fellows[index].week = $scope.get_fellow_work_days(placement);
       }
     };
@@ -629,10 +516,8 @@ angular.module('admin').controller('AdminController', [
       $http.get('/admin/instructors').success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.listAdmins = function () {
@@ -640,10 +525,8 @@ angular.module('admin').controller('AdminController', [
         // If successful show success message and clear form
         $scope.admins = response;
         $scope.success = true;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.listInstructors = function () {
@@ -651,68 +534,25 @@ angular.module('admin').controller('AdminController', [
         // If successful show success message and clear form
         $scope.instructors = response;
         $scope.success = true;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-    $scope.changeStatus = function () {
-      console.log('Data Init');
-      console.log($scope.data);
-      $http.put('/admin/appt/' + $stateParams.apptId, $scope.data).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        console.log('response: ' + response.status.name);
-        // $location.path('admin/appt/' + response._id);
-        console.log('Success - Done', response);
-        $location.path('/admin/camps/' + $stateParams.bootcampId);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.changeRoleToFellow = function (trainee_id, index) {
       $scope.trainees.splice(index, 1);
-      $http.put('/admin/appt/' + trainee_id + '/role', { role: $scope.role[index] }).success(function (response) {
+      $http.put('/admin/applicant/' + trainee_id + '/role', { role: $scope.role[index] }).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
-    $scope.changeApplicantStatusInline = function (apptId, index) {
-      if ($scope.data.status.name === 'fellow') {
-        $http.put('/admin/appt/' + apptId + '/role', { role: 'fellow' }).success(function (response) {
-          // If successful show success message and clear form
-          $scope.success = true;
-          $scope.camp.applicants[index].status.name = 'Andela Fellow';
-        }).error(function (response) {
-          $scope.error = response.message;
-          console.log('Error - can not');
-        });
-      } else {
-        $http.put('/admin/appt/' + apptId, $scope.data).success(function (response) {
-          // If successful show success message and clear form
-          $scope.success = true;
-          $scope.camp.applicants[index].status.name = $scope.data.status.name;
-          $scope.camp.applicants[index].status.reason = $scope.data.status.reason;
-          $scope.data.status.name = '';
-        }).error(function (response) {
-          $scope.error = response.message;
-          console.log('Error - can not');
-        });
-      }
-    };
     $scope.viewInstructor = function (instrId) {
-      $http.get('/admin/appt/' + instrId).success(function (response) {
+      $http.get('/admin/applicant/' + instrId).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.rateFellow = function (traineeId, skillId, newRating) {
@@ -720,14 +560,11 @@ angular.module('admin').controller('AdminController', [
       $http.put(url, { rating: newRating }).success(function (response) {
         $scope.success = true;
         $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.addPlacement = function () {
-      console.log($stateParams.apptId);
       $http.post('/admin/fellow/' + $stateParams.apptId + '/placements', $scope.data).success(function (response) {
         // If successful show success message and clear form
         $scope.data.company = '';
@@ -735,61 +572,207 @@ angular.module('admin').controller('AdminController', [
         $scope.data.start_date = '';
         $scope.data.end_date = '';
         $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
         if ($scope.error.type === 'date') {
           $scope.error = 'Please follow the date pattern specified M/D/YY e.g (use 2/5/2014 for 5th Feb 2014)';
         }
-        console.log('Error - can not');
       });
     };
-    $scope.createTest = function () {
-      $http.post('/admin/test', {
-        questions: $scope.questions,
-        optionOne: $scope.optionOne,
-        optionTwo: $scope.optionTwo,
-        testName: $scope.testName,
-        answerOne: $scope.test.answerOne,
-        answerTwo: $scope.test.answerTwo
-      }).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        console.log('Success - Done', response);
-        $location.path('/admin/test');
+    /*SKILLS*/
+    $scope.listSkills = function () {
+      $http.get('/admin/skills').success(function (response) {
+        $scope.skills = response;
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
+        $location.path('/admin/welcome');
+      });
+    };
+    $scope.openSkillModal = function (size) {
+      var modalInstance = $modal.open({
+          templateUrl: '/modules/admin/views/admin.skills_modal.html',
+          controller: 'ModalInstanceCtrl',
+          size: size,
+          resolve: {
+            categories: function () {
+              return $scope.skillCategories;
+            }
+          }
+        });
+      modalInstance.result.then(function (selectedItem) {
+        $scope.selected = selectedItem;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    $scope.getSkillCategories = function () {
+      $http.get('/admin/skillCategories').success(function (response) {
+        $scope.skillCategories = response;
+      }).error(function (response) {
+        $scope.error = response.message;
+        $location.path('/admin/welcome');
+      });
+    };
+    /*DELETE CATEGORY*/
+    $scope.deleteSkillCategory = function (catId, index) {
+      $scope.skills.splice(index, 1);
+      $http.delete('/admin/skillCategories/' + catId).success(function (response) {
+        // If successful show success message and clear form
+        $scope.success = true;
+      }).error(function (response) {
+        $scope.error = response.message;
+      });
+    };
+  }
+]);'use strict';
+// Please note that $modalInstance represents a modal window (instance) dependency.
+// It is not the same as the $modal service used above.
+var ModalInstanceCtrl = function ($http, $scope, $route, $modalInstance, categories) {
+  $scope.categories = categories;
+  $scope.data = {};
+  $scope.data.category = categories[0];
+  $scope.createCategory = false;
+  $scope.ok = function () {
+    $modalInstance.close('close');
+  };
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+  $scope.createSkillCategory = function () {
+    $http.post('/admin/skillCategories', $scope.data).success(function (response) {
+      $scope.categories.push(response);
+      $scope.createCategory = false;
+      $scope.data.name = '';
+    }).error(function (response) {
+      $scope.error = response.message;
+    });
+  };
+  $scope.createSkill = function () {
+    var url = '/admin/skillCategories/' + $scope.data.category._id + '/skills';
+    $http.post(url, $scope.data).success(function (response) {
+      $route.reload();
+    }).error(function (response) {
+      $scope.error = response.message;
+    });
+  };
+  $scope.showCreateCategory = function () {
+    $scope.createCategory = true;
+  };
+};'use strict';
+// Lists controller
+angular.module('admin').controller('TestsController', [
+  '$scope',
+  '$http',
+  'Authentication',
+  '$stateParams',
+  '$location',
+  '$modal',
+  '$log',
+  'Tests',
+  function ($scope, $http, Authentication, $stateParams, $location, $modal, $log, Tests) {
+    $scope.choiceOne = [
+      { id: 'choice1' },
+      { id: 'choice2' }
+    ];
+    //answer to question one
+    $scope.choiceTwo = [
+      { id: 'choice1' },
+      { id: 'choice2' }
+    ];
+    //answer to question two
+    $scope.optionOne = [];
+    //options for question one
+    $scope.optionTwo = [];
+    //options for question two
+    $scope.questions = [];
+    $scope.selected = '';
+    $scope.testName = '';
+    $scope.answered = false;
+    $scope.answeredTwo = false;
+    $scope.setShow = function (val) {
+      $scope.selected = val;
+    };
+    $scope.isSelected = function (val) {
+      return val === $scope.selected;
+    };
+    $scope.addNewChoice = function (num) {
+      var newItemNo;
+      if (num === 1) {
+        newItemNo = $scope.choiceOne.length + 1;
+        $scope.choiceOne.push({ id: 'choice' + newItemNo });
+      } else {
+        newItemNo = $scope.choiceTwo.length + 1;
+        $scope.choiceTwo.push({ id: 'choice' + newItemNo });
+      }
+    };
+    $scope.deleteChoice = function (index, num) {
+      if (num === 1) {
+        if (parseInt($scope.test.answerOne, 10) === $scope.choiceOne.length - 1) {
+          $scope.test.answerOne = $scope.test.answerOne - 1;
+        }
+        doDelete($scope.choiceOne, $scope.optionOne, index);
+      } else {
+        if (parseInt($scope.test.answerTwo, 10) === $scope.choiceTwo.length - 1) {
+          $scope.test.answerTwo = $scope.test.answerTwo - 1;
+        }
+        doDelete($scope.choiceTwo, $scope.optionTwo, index);
+      }
+    };
+    var doDelete = function (choiceArr, optionArr, index) {
+      choiceArr.splice(index, 1);
+      optionArr.splice(index, 1);
+      for (var i in choiceArr) {
+        choiceArr[i].id = 'choice' + i;
+      }
+    };
+    $scope.showAddChoice = function (choice, num) {
+      if (num === 1)
+        return choice.id === $scope.choiceOne[$scope.choiceOne.length - 1].id;
+      else
+        return choice.id === $scope.choiceTwo[$scope.choiceTwo.length - 1].id;
+    };
+    $scope.changeAnsVal = function (index, num) {
+      if (num === 1) {
+        $scope.answered = true;
+      } else {
+        $scope.answeredTwo = true;
+      }
+    };
+    $scope.createTest = function () {
+      var test = new Tests({
+          questions: $scope.questions,
+          optionOne: $scope.optionOne,
+          optionTwo: $scope.optionTwo,
+          testName: $scope.testName,
+          answerOne: $scope.test.answerOne,
+          answerTwo: $scope.test.answerTwo
+        });
+      test.$save(function (response) {
+        $location.path('/admin/test');
+      }, function (response) {
+        $scope.error = response.message;
       });
     };
     $scope.createQuestion = function () {
-      $http.post('/admin/test/' + $stateParams.testId, {
-        question: $scope.question,
-        option: $scope.optionOne,
-        answer: $scope.test.answerOne
-      }).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        console.log('Success - Done', response);
+      var test = new Tests({
+          _id: $stateParams.testId,
+          question: $scope.question,
+          option: $scope.optionOne,
+          answer: $scope.test.answerOne
+        });
+      test.$save(function (response) {
         $location.path('/admin/test');
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
+      }, function (err) {
+        $scope.error = err.message;
       });
     };
     $scope.viewTests = function () {
-      $http.get('/admin/test').success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        $scope.tests = response;
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
+      var tests = Tests.query(function success(response) {
+          $scope.tests = response;
+        });
     };
     $scope.viewTest = function () {
-      $http.get('/admin/test/' + $stateParams.testId).success(function (response) {
+      Tests.get({ testId: $stateParams.testId }, function success(response) {
         $scope.test = response;
         $scope.testNameEditorEnabled = false;
         $scope.questionEditorEnabled = [];
@@ -831,7 +814,7 @@ angular.module('admin').controller('AdminController', [
             $scope.optionEditorEnabled[index][optionIndex] = false;
           }
         };
-        // Checks to see if all answers are set to same (false/true). 
+        // Checks to see if all answers are set to same (false/true).
         // Returns true if all are the same
         var checkAllanswers = function (questOptions) {
           var firstOption = questOptions[0].answer;
@@ -876,133 +859,75 @@ angular.module('admin').controller('AdminController', [
           }
           $scope.disableEditor(field, index, optionIndex);
         };
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
+      }  //ends test.get() success callbk
+);
     };
     $scope.changeTestName = function (test) {
-      $http.put('/admin/test/' + test._id, test).success(function (response) {
-        console.log('Success - Done', response);
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
+      test.$update({ _id: test._id }, function success() {
+      }, function (errorResponse) {
+        $scope.error = errorResponse;
       });
     };
     $scope.updateQuestion = function (test, quesIndex) {
-      $http.put('/admin/test/' + test._id + '/' + test.questions[quesIndex]._id, test.questions[quesIndex]).success(function (response) {
-        console.log('Success - Done', response);
+      var question = test.questions[quesIndex];
+      $http.put('/admin/test/' + test._id + '/' + test.questions[quesIndex]._id, question).success(function (response) {
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
-    /*SKILLS*/
-    $scope.listSkills = function () {
-      $http.get('/admin/skills').success(function (response) {
-        $scope.skills = response;
-      }).error(function (response) {
+    $scope.deleteTest = function (test, index) {
+      $scope.tests.splice(index, 1);
+      test.$remove({ _id: test._id }, function success() {
+      }, function (response) {
         $scope.error = response.message;
-        $location.path('/admin/welcome');
       });
     };
-    $scope.openSkillModal = function (size) {
-      var modalInstance = $modal.open({
-          templateUrl: '/modules/admin/views/admin.skills_modal.html',
-          controller: 'ModalInstanceCtrl',
-          size: size,
-          resolve: {
-            categories: function () {
-              return $scope.skillCategories;
-            }
-          }
-        });
-      modalInstance.result.then(function (selectedItem) {
-        $scope.selected = selectedItem;
-      }, function () {
-        $log.info('Modal dismissed at: ' + new Date());
-      });
-    };
-    $scope.getSkillCategories = function () {
-      $http.get('/admin/skillCategories').success(function (response) {
-        $scope.skillCategories = response;
-      }).error(function (response) {
-        $scope.error = response.message;
-        $location.path('/admin/welcome');
-      });
-    };
-    /*DELETE CATEGORY*/
-    $scope.deleteSkillCategory = function (catId, index) {
-      console.log('message: ' + $scope.skills);
-      $scope.skills.splice(index, 1);
-      console.log('after delete: ' + $scope.skills);
-      $http.delete('/admin/skillCategories/' + catId).success(function (response) {
-        // If successful show success message and clear form
+    $scope.deleteQuestion = function (testId, questionId, index) {
+      $scope.test.questions.splice(index, 1);
+      $http.delete('/admin/test/' + testId + '/' + questionId).success(function (response) {
         $scope.success = true;
-        // $scope.appt = response;
-        console.log('Success - Done', response);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log($scope.error);
+      });
+    };
+    $scope.deleteOption = function (testId, questionId, optionId, queIndex, index) {
+      $scope.test.questions[queIndex].questOptions.splice(index, 1);
+      $http.delete('/admin/test/' + testId + '/' + questionId + '/' + optionId).success(function (response) {
+        $scope.success = true;
+      }).error(function (response) {
+        $scope.error = response.message;
       });
     };
   }
 ]);'use strict';
-// Please note that $modalInstance represents a modal window (instance) dependency.
-// It is not the same as the $modal service used above.
-var ModalInstanceCtrl = function ($http, $scope, $route, $modalInstance, categories) {
-  $scope.categories = categories;
-  $scope.data = {};
-  $scope.data.category = categories[0];
-  $scope.createCategory = false;
-  $scope.ok = function () {
-    $modalInstance.close('close');
-  };
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-  $scope.createSkillCategory = function () {
-    $http.post('/admin/skillCategories', $scope.data).success(function (response) {
-      $scope.categories.push(response);
-      $scope.createCategory = false;
-      $scope.data.name = '';
-    }).error(function (response) {
-      $scope.error = response.message;
-    });
-  };
-  $scope.createSkill = function () {
-    var url = '/admin/skillCategories/' + $scope.data.category._id + '/skills';
-    $http.post(url, $scope.data).success(function (response) {
-      $route.reload();
-    }).error(function (response) {
-      $scope.error = response.message;
-    });
-  };
-  $scope.showCreateCategory = function () {
-    $scope.createCategory = true;
-  };
-};'use strict';
 // Admin service for admin variables
 angular.module('admin').factory('Users', [
   '$resource',
   function ($resource) {
     return $resource('admin', {}, { update: { method: 'PUT' } });
   }
-]);
-angular.module('admin').filter('range', function () {
+]).filter('range', function () {
   return function (input, total, start) {
     total = parseInt(total);
     for (var i = start; i < total; i++)
       input.push(i);
     return input;
   };
-});// 'use strict'
-//Setting up route
+}).factory('Tests', [
+  '$resource',
+  function ($resource) {
+    return $resource('admin/test/:testId', { testId: '@_id' }, { update: { method: 'PUT' } });
+  }
+]).factory('Bootcamp', [
+  '$resource',
+  function ($resource) {
+    return $resource('admin/camp/:campId', { campId: '@_id' }, { update: { method: 'PUT' } });
+  }
+]);'use strict';
 angular.module('applicant-test').config([
   '$stateProvider',
   function ($stateProvider) {
-    //Test state routing
+    // Test state routing
     $stateProvider.state('listTest', {
       url: '/test/:testId',
       templateUrl: 'modules/applicant-test/views/test.client.view.html'
@@ -1019,28 +944,13 @@ angular.module('applicant-test').controller('ApplicantTestController', [
   function ($scope, $stateParams, $location, Authentication, Questions, $http) {
     $scope.authentication = Authentication;
     $scope.find = function () {
-      var url = '/test/';
-      $http.get(url).success(function (response) {
+      $http.get('/test/').success(function (response) {
         $scope.questions = response;
-        console.log('Questions init');
-        console.log($scope.questions);
       });
-    };  // $scope.findOne = function() {
-        //           var url = '/test/' + $stateParams.testId;
-        //           console.log('Getting stateParams');
-        //           console.log($stateParams);
-        //           $http.get(url).success(function(response) {
-        //                   $scope.questions = response;
-        //                   console.log('Questions init');
-        //                   console.log($scope.questions);
-        //               });
-        //  //      	$scope.test = Questions.get({
-        // 	// 	testId: $stateParams.testId
-        // 	// });  
-        //       };
+    };
   }
 ]);'use strict';
-//Test service used for communicating with the tests REST endpoints
+// Test service used for communicating with the tests REST endpoints
 angular.module('applicant-test').factory('Questions', [
   '$resource',
   function ($resource) {
@@ -1089,50 +999,32 @@ angular.module('applicant').controller('ApplicantController', [
   'Applicants',
   'Users',
   'Bootcamps',
-  function ($scope, $upload, $http, Authentication, $stateParams, $location, Applicants, Users, Bootcamps) {
+  'Questions',
+  function ($scope, $upload, $http, Authentication, $stateParams, $location, Applicants, Users, Bootcamps, Questions) {
     $scope.authentication = Authentication;
     $scope.user = Authentication.user;
     $scope.isClicked = false;
-    //$scope.showLoader = false;
-    $scope.find = function () {
-      $scope.applicants = Users.query();
-      console.log($scope.applicants);
-    };
     $scope.clicked = function () {
       $scope.isClicked = true;
       $scope.showLoader = true;
-      $scope.signup();  //console.log(showLoader);
+      $scope.signup();
     };
     $scope.findCamp = function () {
       $scope.result;
       Bootcamps.query().$promise.then(function (value) {
-        console.log(value);
         $scope.camp = value[0]._id;
-        console.log($scope.camp);
       }, function (err) {
         return err;
       });
-      console.log($scope.result);
     };
     $scope.field = 1;
-    $scope.prog_bar = 0;
-    var color_class = [
-        'progress',
-        'progress1',
-        'progress2',
-        'progress3'
-      ];
-    $scope.classess = color_class[0];
     $scope.username = '';
     $scope.password1 = '';
     $scope.cpassword1 = '';
     $scope.state = false;
     $scope.show_next = function (value) {
-      console.log(value);
       if (value < 4) {
         $scope.field++;
-        $scope.prog_bar = $scope.prog_bar + 33.33;
-        $scope.classess = color_class[value];
         $scope.result = [
           $scope.username,
           $scope.password1,
@@ -1145,30 +1037,19 @@ angular.module('applicant').controller('ApplicantController', [
       }
     };
     $scope.show_prev = function (value) {
-      console.log(value);
       if (value > 1) {
         $scope.field--;
-        $scope.prog_bar = $scope.prog_bar - 33.33;
-        $scope.classess = color_class[value - 2];
       }
     };
-    // $scope.confirm_password(
-    //  if ($scope.password1 === $scope.cpassword1){
-    //      $scope.state = true;
-    //  }
     $scope.findOneQuestion = function () {
-      var url = '/test/';
-      console.log('Getting stateParams');
-      console.log($stateParams);
-      $http.get(url).success(function (response) {
+      Questions.query().$promise.then(function (response) {
         $scope.questions = response[0];
-        console.log('Questions init');
-        console.log($scope.questions);
+      }, function (err) {
+        return err;
       });
     };
     $scope.options = [];
     $scope.assess = function (test, option) {
-      console.log(test, option);
       if ($scope.options.length === 0) {
         $scope.options.push({
           question: test,
@@ -1178,23 +1059,20 @@ angular.module('applicant').controller('ApplicantController', [
         for (var i = 0; i < $scope.options.length; i++) {
           if (test === $scope.options[i].question) {
             $scope.options[i].answer = option;
-            console.log($scope.options[i]);
           } else {
             $scope.options.push({
               question: test,
               answer: option
-            });  // alert( $scope.options[0].question);
-                 // alert( $scope.options[0].answer);
+            });
           }
         }
         ;
       }
       ;
     };
-    //cv upload
+    // cv upload
     $scope.onFileSelect = function ($files) {
       $scope.files = $files;
-      console.log($scope.files);
       if ($scope.files) {
         if ($scope.files[0].type === 'application/pdf' || $scope.files[0].type === 'application/msword' || $scope.files[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
           $scope.correctFormat = true;
@@ -1206,18 +1084,11 @@ angular.module('applicant').controller('ApplicantController', [
     $scope.correctAnswers = 0;
     $scope.signup = function () {
       var user = new Users($scope.user);
-      console.log($scope.questions.questions);
-      console.log;
       for (var i in $scope.questions.questions) {
         var choices = $scope.questions.questions[i].questOptions;
-        console.log('choices: ' + choices);
         for (var j in choices) {
-          console.log(typeof choices[j]._id + typeof $scope.options[i].question);
-          console.log(choices[j].answer);
-          console.log($scope.options);
           if (choices[j]._id === $scope.options[i].answer && choices[j].answer === true) {
             $scope.correctAnswers += 1;
-            console.log('correctAnswers: ' + $scope.correctAnswers);
             break;
           }
           ;
@@ -1225,51 +1096,38 @@ angular.module('applicant').controller('ApplicantController', [
         ;
       }
       ;
-      $scope.testScore = $scope.correctAnswers / $scope.questions.questions.length * 100;
-      console.log($scope.testScore);
+      $scope.testScore = Math.round($scope.correctAnswers / $scope.questions.questions.length * 100);
       $scope.user.type = 'applicant';
       $scope.user.testScore = $scope.testScore;
-      console.log($scope.camp);
       $scope.upload = $upload.upload({
         url: '/auth/' + $scope.camp + '/signup',
         method: 'Post',
         data: $scope.user,
         file: $scope.files[0]
       }).success(function (response) {
-        console.log('response: ' + response);
-        console.log(response);
         $scope.logId = response;
-        console.log('logId: ' + $scope.logId);
         $scope.authentication.user = response;
         $location.path('/successpage');
       }).error(function (err) {
-        console.log(err);
-        console.log('Error uploading file: ' + err.message || err);
       });
     };
     $scope.findOne = function () {
-      var url = '/users/' + $stateParams.applicantId;
-      $http.get(url).success(function (response) {
+      Applicants.get({ applicantId: $stateParams.applicantId }).$promise.then(function (response) {
         $scope.applicant = response;
-        console.log($scope.applicant);
-      }).error(function (response) {
-        $scope.error = response.message;
+      }, function (err) {
+        $scope.error = err.message;
         $location.path('/');
       });
     };
     $scope.show_profile = function () {
       var url = '/users/' + $stateParams.logged_inId;
-      console.log('params: ' + $stateParams.logged_inId);
       $http.get(url).success(function (response) {
-        console.log('response: ' + response);
         $scope.user_profile = response;
       }).error(function (response) {
         $scope.error = response.message;
         $http.get('/auth/signout');
         $location.path('/errorpage');
       });
-    };
-    $scope.sucess = function () {
     };
   }
 ]);
@@ -1310,7 +1168,6 @@ angular.module('applicant').directive('ensureUnique', [
               url: '/users/check/uniqueUsername',
               data: { 'username': newValue }
             }).success(function (data, status, headers, cfg) {
-              console.log(data);
               if (data.length > 0) {
                 c.$setValidity('unique', false);
               } else {
@@ -1634,7 +1491,7 @@ angular.module('core').service('anchorSmoothScroll', function () {
     }
   };
 });'use strict';
-//Setting up route
+// Setting up route
 angular.module('instructors').config([
   '$stateProvider',
   function ($stateProvider) {
@@ -1652,7 +1509,7 @@ angular.module('instructors').config([
       url: '/instructors/trainees/:applicantId',
       templateUrl: 'modules/instructors/views/view-trainee.client.view.html'
     }).state('create_Assessment', {
-      url: '/instructors/trainees/:applicantId/create_Assessment',
+      url: '/instructors/trainees/:applicantId/create_assessment',
       templateUrl: 'modules/instructors/views/create-assessment.client.view.html'
     }).state('editAssessment', {
       url: '/instructors/trainees/:applicantId/:assessmentId/edit',
@@ -1692,33 +1549,112 @@ angular.module('instructors').config([
       templateUrl: 'modules/instructors/views/edit-skill.client.view.html'
     });
   }
-]);  // assessment of a particular applicant would be seen in his view page
-     // 'instructors/fellow_selected'
-'use strict';
+]);'use strict';
+angular.module('instructors').controller('AssessmentController', [
+  '$scope',
+  '$stateParams',
+  '$location',
+  'Authentication',
+  'Assessment',
+  '$http',
+  function ($scope, $stateParams, $location, Authentication, Assessment, $http) {
+    $scope.editStates = [];
+    var date = new Date(), year = date.getFullYear(), month = date.getMonth(), day = date.getDate();
+    // month 2 digits
+    month = ('0' + (month + 1)).slice(-2);
+    // year 2 digits
+    year = year.toString().substr(2, 2);
+    var formattedDate = month + '/' + day + '/' + year;
+    $scope.date = formattedDate;
+    $scope.initEditStates = function () {
+      for (var i in $scope.assessments) {
+        $scope.editStates[i] = false;
+      }
+    };
+    $scope.initEditStates();
+    $scope.models = [];
+    // create assessment record
+    $scope.createAssessment = function () {
+      // create new assessment for trainee 
+      var assmntObject = {
+          traineeId: $stateParams.applicantId,
+          assessment_name: $scope.assessment_name,
+          assessment_date: $scope.date,
+          score: $scope.score
+        };
+      var assessment = new Assessment(assmntObject);
+      assessment.$save(function success(response) {
+        $location.path('/instructors/trainees/' + $stateParams.applicantId);
+      }, function (error) {
+        $scope.error = error.data.message;
+      });
+    };
+    // edit trainee assessment record
+    $scope.updateAssessment = function (index, assessment, model) {
+      var assessment = new Assessment(assessment);
+      assessment.traineeId = assessment.applicantId;
+      if (typeof model.newScore !== 'undefined') {
+        if (model.newScore.length !== 0) {
+          assessment.score = model.newScore;
+        }
+      }
+      if (typeof model.newName !== 'undefined') {
+        if (model.newName.length !== 0) {
+          assessment.assessment_name = model.newName;
+        }
+      }
+      if (typeof model.newDate !== 'undefined') {
+        if (model.newDate.length !== 0) {
+          var pattern = /^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/(199\d|[2-9]\d{3})$/;
+          if (pattern.test(model.newDate) === true) {
+            assessment.assessment_date = model.newDate;
+          } else {
+            alert('Date format should be MM/dd/yyyy');
+            return;
+          }
+        }
+      }
+      assessment.$update(function success(response) {
+        $scope.editStates[index] = false;
+        $scope.assessments = response.assessments;
+      }, function (error) {
+        $scope.error = error.message;
+      });
+    };
+    // delete trainee assessment record
+    $scope.deleteAssessment = function (index, assessment) {
+      $scope.assessments.splice(index, 1);
+      var assessment = new Assessment(assessment);
+      assessment.traineeId = assessment.applicantId;
+      assessment.$remove(function success(response) {
+        $scope.success = true;
+      }, function (error) {
+        $scope.error = error.message;
+      });
+    };
+  }
+]);'use strict';
 // Instructors controller
 angular.module('instructors').controller('InstructorsController', [
   '$scope',
-  '$rootScope',
+  'Assessment',
+  'Camp',
   '$upload',
   '$stateParams',
   '$location',
   'Authentication',
   '$http',
-  function ($scope, $rootScope, $upload, $stateParams, $location, Authentication, $http) {
+  function ($scope, Assessment, Camp, $upload, $stateParams, $location, Authentication, $http) {
     $scope.user = Authentication.user;
-    // instructor sigin 
+    // instructor signin 
     $scope.instructor_signin = function () {
       $http.post('/auth/signin', $scope.credentials).success(function (response) {
-        //If successful we assign the response to the global user model
+        // If successful we assign the response to the global user model
         $scope.user = response;
-        console.log('signed');
-        //And redirect to the right page
-        console.log($scope.user);
-        console.log($scope.credentials);
+        // And redirect to the right page
         if ($scope.user.role === 'instructor') {
           $location.path('/instructors/home');
         } else {
-          console.log('instructorsigin');
           $location.path('/');
         }
       }).error(function (response) {
@@ -1726,348 +1662,235 @@ angular.module('instructors').controller('InstructorsController', [
         $location.path('/');
       });
     };
+    // instructor's home page
     $scope.instructorHome = function () {
-      console.log(Authentication.user);
       if (!$scope.user) {
         $location.path('/');
       }
     };
-    // for bootcamps
+    // list all bootcamps
     $scope.listBootcamps = function () {
-      $scope.appl_length = 0;
-      $http.get('/instr/bootcamps').success(function (response) {
-        // If successful show success message and clear form
+      Camp.query(function success(response) {
         $scope.success = true;
         $scope.bootcamps = response;
-      }).error(function (response) {
-        $scope.error = response.message;
+        $scope.traineeCountArr = [];
+        for (var i in $scope.bootcamps) {
+          var traineeCount = 0;
+          for (var j in $scope.bootcamps[i].applicants) {
+            if ($scope.bootcamps[i].applicants[j].role === 'trainee') {
+              traineeCount += 1;
+            }
+          }
+          $scope.traineeCountArr.push(traineeCount);
+        }
+      }, function (error) {
+        $scope.error = error.message;
       });
     };
-    // if $locaton.path('/')
+    // viewing only a particular bootcamp
     $scope.viewBootcamp = function () {
-      console.log($stateParams.bootcampId.length);
-      if ($stateParams.bootcampId.length < 20) {
-        $location.path('/');
+      $scope.error = false;
+      if ($stateParams.bootcampId.length === 0) {
+        $scope.error = true;
       } else {
-        $http.get('/instr/camp/' + $stateParams.bootcampId).success(function (response) {
-          // If successful show success message and clear form
-          console.log('/instr/camp/' + $stateParams.bootcampId);
-          $scope.success = true;
+        Camp.get({ campId: $stateParams.bootcampId }, function success(response) {
           $scope.bootcamp = response;
-          console.log($scope.bootcamp);
-          $scope.applicants = $scope.bootcamp.applicants;  // console.log($scope.applicants);
-        }).error(function (response) {
-          $scope.error = response.message;
+          $scope.applicants = $scope.bootcamp.applicants;
+        }, function (error) {
+          $scope.error = true;
         });
       }
     };
-    // for trainees
+    // filter to get only trainees
+    $scope.onlyTrainees = function (applicant) {
+      return applicant.role === 'trainee';
+    };
+    // list all trainees 
     $scope.listTrainees = function () {
-      console.log('inside listcontroller');
-      $http.get('/instr').success(function (response) {
-        // If successful show success message and clear form
-        // $scope.user;
-        console.log('working list');
+      $http.get('/instructor/trainees').success(function (response) {
         $scope.success = true;
         $scope.trainees = response;
-        console.log($scope.trainees);  // $location.path('instructors/applicants');
       }).error(function (response) {
         $scope.error = response.message;
       });
     };
-    $rootScope.viewTrainee = function () {
-      if ($stateParams.applicantId.length < 20) {
-        $location.path('/');
+    // view a particular trainee        
+    $scope.viewTrainee = function () {
+      if ($stateParams.applicantId === '') {
+        $scope.error = true;
       } else {
-        $rootScope.traineeId = $stateParams.applicantId;
-        $http.get('/instr/trainee/' + $rootScope.traineeId).success(function (response) {
-          // If successful show success message and clear form
+        Assessment.get({ traineeId: $stateParams.applicantId }, function success(response) {
           $scope.success = true;
-          $rootScope.trainee = response;
-          $rootScope.assessments = $rootScope.trainee.assessments;
-          angular.forEach($rootScope.trainee.assessments, function (assessment, key) {
-            $rootScope.assessment = assessment;
-            console.log(assessment);
-            console.log(user._id);
-            console.log(assessment.instructorId);
-          });  // $location.path('instructors' + applicant._id);
-        }).error(function (response) {
-          $scope.error = response.message;
+          $scope.error = false;
+          $scope.trainee = response;
+          $scope.assessments = $scope.trainee.assessments;
+        }, function (error) {
+          $scope.error = true;
         });
       }
     };
-    // assessment for trainees 
-    $scope.createAssessment = function () {
-      // create new assessment for trainee 
-      $scope.assessment = {
-        assessment_name: this.assessment_name,
-        assessment_date: $scope.dt,
-        score: this.score
-      };
-      console.log($scope.assessment);
-      // console.log($stateParams);
-      // console.log($scope.assessment.assessment_name);
-      // $scope.enterNew = false;
-      $http.post('/instr/trainee/' + $stateParams.applicantId, $scope.assessment).success(function (response) {
-        $location.path('/instructors/trainees/' + $stateParams.applicantId);
-      }, function (errorResponse) {
-        $scope.error = errorResponse.data.message;
-      });
-      this.assessment_name = '';
-      this.assessment_date = '';
-      this.score = '';
-      console.log(typeof assessment_date);
-    };
-    $rootScope.editAssessment = function (index, assessment) {
-      $rootScope.assessment = assessment;
-      $rootScope.index = index;
-      console.log($rootScope.assessment);
-    };
-    $scope.updateAssessment = function () {
-      console.log($scope.index);
-      $http.put('/instr/trainee/' + $scope.assessment.applicantId + '/' + $scope.assessment._id, $scope.assessment).success(function (response) {
-        // If successful show success message and clear form
-        $location.path('/instructors/trainees/' + $scope.assessment.applicantId);
-      }).error(function (response) {
-        $scope.error = response.message;
-      });
-    };
-    $scope.deleteAssessment = function (index, assessment) {
-      $scope.assessments.splice(index, 1);
-      console.log('response');
-      $http.delete('/instr/trainee/' + $stateParams.applicantId + '/' + assessment._id).success(function (response) {
-        console.log('response');
-        $scope.success = true;
-        console.log('responsem');
-      }).error(function (response) {
-        $scope.error = response.message;
-      });
-    };
-    // $scope.selectFellow = function() {
-    // 	console.log($scope.trainee.role);
-    // 	$scope.trainee.role = "fellow";
-    // 	console.log($scope.trainee);
-    //   	$http.put('/instr/trainee/' + $stateParams.applicantId, $scope.trainee).success(function(response) {
-    //     // If successful show success message and clear form
-    //     	$scope.success = true;
-    //     	$location.path('instructors/fellow_selected/' + $scope.traineeId);
-    //   	}).error(function(response) {
-    //     $scope.error = response.message;
-    //   	});
-    // };
-    // for fellows
+    // list all fellows
     $scope.listFellows = function () {
-      $http.get('/instr/fellows').success(function (response) {
-        // If successful show success message and clear form
+      $http.get('/instructor/fellows').success(function (response) {
         $scope.success = true;
         $scope.fellows = response;
-        console.log($scope.fellows);  // $location.path('instructors'...);
       }).error(function (response) {
         $scope.error = response.message;
       });
     };
+    // view a particular fellow
     $scope.viewFellow = function () {
       if ($stateParams.fellowId.length < 20) {
         $location.path('/');
       } else {
-        $http.get('/instr/trainee/' + $stateParams.fellowId).success(function (response) {
-          // If successful show success message and clear form
+        $http.get('/instructor/trainee/' + $stateParams.fellowId).success(function (response) {
           $scope.success = true;
           $scope.fellow = response;
-          angular.forEach($scope.fellow.skillSets, function (skillSets, key) {
-            $scope.skillSets = skillSets;
-            console.log(user._id);
-            console.log($scope.fellow);
-          });  // $location.path('instructors' + applicant._id);
         }).error(function (response) {
           $scope.error = response.message;
         });
       }
     };
+    // show instructor profile picture
+    $scope.showImage = function (img) {
+      if (img) {
+        img = img.substring(6);
+        return img;
+      } else {
+        return 'http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png';
+      }
+    };
+    // get assessment
+    $scope.getAssessment = function () {
+      $scope.error = false;
+      Assessment.get({
+        traineeId: $stateParams.applicantId,
+        assmtId: $stateParams.assessmentId
+      }, function success(response) {
+        if (response._id) {
+          $scope.assessment = response;
+          var date = new Date($scope.assessment.assessment_date), year = date.getFullYear(), month = date.getMonth(), day = date.getDate();
+          //month 2 digits
+          month = ('0' + (month + 1)).slice(-2);
+          //year 2 digits
+          year = year.toString().substr(2, 2);
+          $scope.assessment.assessment_date = month + '/' + day + '/' + year;
+        } else {
+          $scope.error = true;
+        }
+      }, function (error) {
+        $scope.error = true;
+      });
+    };
+  }
+]);angular.module('instructors').controller('RateController', [
+  '$scope',
+  '$stateParams',
+  '$location',
+  '$http',
+  function ($scope, $stateParams, $location, $http) {
     $scope.ratefellow = function () {
-      //Permissions check
-      console.log($stateParams);
-      console.log($scope.data);
-      $http.post('/instr/trainee/' + $stateParams.fellowId + '/rate', $scope.data).success(function (response) {
+      // Permissions check
+      $http.post('/instructor/trainee/' + $stateParams.fellowId + '/rate', $scope.data).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('Success - Done', response + $stateParams.fellowId);
         $location.path('/instructors/fellows/' + $stateParams.fellowId);
       }).error(function (response) {
         $scope.error = response.message;
-        console.log('Error - can not');
       });
     };
     $scope.deleteRate = function (index, skillSet) {
       $scope.skillSets = $scope.fellow.skillSets;
       $scope.skillSets.splice(index, 1);
-      $http.delete('/instr/trainee/' + $scope.fellow._id + '/rate/' + skillSet._id).success(function (response) {
-        console.log('response');
+      $http.delete('/instructor/trainee/' + $scope.fellow._id + '/rate/' + skillSet._id).success(function (response) {
         $scope.success = true;
-        console.log('responsem');
       }).error(function (response) {
         $scope.error = response.message;
       });
     };
-    // $rootScope.editRate= function(index, skillSets) {
-    // 	$rootScope.skillSets = skillSets;
-    // 	$rootScope.index = index;
-    // 	console.log($rootScope.skillSets);
-    // };
-    // $scope.editingRate = function(){
-    // 	$scope.skillSetsNow = $scope.skillSets;
-    // 	console.log($scope.skillSetsNow);
-    // };
     $scope.editFellowRate = function () {
-      console.log($scope.skillSets);
-      console.log($stateParams);
-      $http.put('/instr/trainee/' + $stateParams.fellowId + '/rate/' + $stateParams.skillSetId, $scope.skillSetsNow).success(function (response) {
+      $http.put('/instructor/trainee/' + $stateParams.fellowId + '/rate/' + $stateParams.skillSetId, $scope.skillSetsNow).success(function (response) {
         // If successful show success message and clear form
         $scope.success = true;
-        console.log('success');
-        // console.log();
         $location.path('/instructors/fellows/' + $stateParams.fellowId);
       }).error(function (response) {
         $scope.error = response.message;
       });
     };
-    // Upload Image
-    $scope.onFileSelect = function ($file) {
-      $scope.file = $file;
-      if ($scope.file) {
-        if ($scope.file[0].type === 'image/jpeg' || $scope.file[0].type === 'image/png') {
-          $scope.correctFormat = true;
-        } else {
-          $scope.correctFormat = false;
-        }
-      }
-    };
-    $scope.removeAlert = function (message) {
-      if (message === 'error') {
-        $scope.error = null;
-      } else {
-        $scope.success = null;
-      }
-    };
-    // upload file
-    $scope.create = function () {
-      console.log($scope.details + $scope.details.exp);
-      $scope.success = null;
-      $scope.error = null;
-      $scope.upload = $upload.upload({
-        url: '/instr/updateInfo',
-        method: 'POST',
-        data: $scope.details,
-        file: $scope.file
-      }).success(function (response) {
-        // $scope.instr = response;
-        $scope.success = 'Your details have been updated successfully';
-      }).error(function (err) {
-        $scope.error = err.message;
-        console.log('Error uploading file: ' + err.message || err);
-      });
-    };
-    $scope.deletePhoto = function ($index, photo) {
-      $scope.photo = $scope.user.photo;
-      $scope.user.photo = '';
-      console.log($scope.photo);
-      //  $scope.delete_image = !$scope.delete_image;	
-      // console.log( $scope.delete_image);	
-      $http.delete('/instr/' + $scope.user._id + '/deletePhoto').success(function (response) {
-        $scope.success = true;
-        $scope.photo = response;
-        $scope.upload_new = true;
-      }).error(function (response) {
-        $scope.error = response.message;
-      });
-    };
-    $scope.showImage = function (img) {
-      if (img) {
-        img = img.substring(6);
-        return img;
-      }
-    };
-    // instructor rates his skills
-    $scope.rateInstr = function () {
-      //Permissions check
-      if ($scope.user === null) {
-        $location.path('/');
-      } else if ($scope.user.role !== 'instructor') {
-        $location.path('/');
-      }
-      $http.post('/instr/skill', $scope.data).success(function (response) {
-        // If successful show success message and clear form
-        $scope.success = true;
-        console.log('Success - Done', response);
-        console.log($scope.data);
-        $location.path('/instructors/home');
-      }).error(function (response) {
-        $scope.error = response.message;
-        console.log('Error - can not');
-      });
-    };
-    $scope.editingSkill = function () {
-      console.log($stateParams);
-    };
-    // '/instr/skill/:userId/:skillId'
-    $scope.editSkill = function () {
-    };
-    $scope.deleteSkill = function ($index, skillSet) {
-      console.log($stateParams);  // $scope.skillSet.splice(index, 1);
-    };
-    // $scope.deleteRating = function(){
-    // 	$scope.success = $scope.error = null;
-    // 	$http.delete('/instr/skill/:userId/:skillId').success(function(response) {
-    //     // If successful show success message and clear form
-    //     	$scope.success = true;
-    //     	// $location.path('instructors'...);
-    //   	}).error(function(response) {
-    //     $scope.error = response.message;
-    //   	});
-    // };
-    $scope.today = function () {
-      $scope.dt = new Date();
-      // $scope.dt = assessment_date;
-      console.log(typeof $scope.dt);
-      console.log($scope.dt);
-    };
-    $scope.today();
-    $scope.clear = function () {
-      $scope.dt = null;
-    };
-    // Disable weekend selection
-    $scope.disabled = function (date, mode) {
-      return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
-    };
-    $scope.toggleMin = function () {
-      $scope.minDate = $scope.minDate ? null : new Date();
-    };
-    $scope.toggleMin();
-    $scope.open = function ($event) {
-      $event.preventDefault();
-      $event.stopPropagation();
-      $scope.opened = true;
-    };
-    $scope.dateOptions = {
-      formatYear: 'yy',
-      startingDay: 1
-    };
-    // $scope.initDate = new Date('2016-15-20');
-    $scope.formats = [
-      'dd-MMMM-yyyy',
-      'yyyy/MM/dd',
-      'dd.MM.yyyy',
-      'shortDate',
-      'longDate'
-    ];
-    $scope.format = $scope.formats[4];  // assessment_date: "2014-12-09T23:00:00.000Z
   }
 ]);'use strict';
-//Instructors service used to communicate Instructors REST endpoints
-angular.module('instructors').factory('Instructors', [
+var ProfileController = function ($scope, $http, $upload, $stateParams, $location, Authentication) {
+  $scope.user = Authentication.user;
+  // Upload Image
+  $scope.onFileSelect = function ($file) {
+    $scope.file = $file;
+    if ($scope.file) {
+      if ($scope.file[0].type === 'image/jpeg' || $scope.file[0].type === 'image/png') {
+        $scope.correctFormat = true;
+      } else {
+        $scope.correctFormat = false;
+      }
+    }
+  };
+  $scope.removeAlert = function (message) {
+    if (message === 'error') {
+      $scope.error = null;
+    } else {
+      $scope.success = null;
+    }
+  };
+  // upload file
+  $scope.create = function () {
+    $scope.success = null;
+    $scope.error = null;
+    $scope.upload = $upload.upload({
+      url: '/instructor/updateInfo',
+      method: 'POST',
+      data: $scope.user,
+      file: $scope.file
+    }).success(function (response) {
+      $scope.user = Authentication.user = response;
+      $scope.success = 'Your details have been updated successfully';
+    }).error(function (err) {
+      $scope.error = err.message;
+    });
+  };
+  // delete profile picture
+  $scope.deletePhoto = function ($index, photo) {
+    $http.delete('/instructor/' + $scope.user._id + '/deletePhoto').success(function (response) {
+      $scope.user.photo = response.photo;
+    }).error(function (response) {
+      $scope.error = response.message;
+    });
+  };
+  // show instructor's profile photo
+  $scope.showImage = function (img) {
+    if (img) {
+      img = img.substring(6);
+      return img;
+    } else {
+      return 'http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png';
+    }
+  };
+};'use strict';
+// Assessment service
+angular.module('instructors').factory('Assessment', [
   '$resource',
   function ($resource) {
-    return $resource('instructors/:instructorId', { instructorId: '@_id' }, { update: { method: 'PUT' } });
+    return $resource('instructor/trainee/:traineeId/:assmtId', {
+      traineeId: '@traineeId',
+      assmtId: '@_id'
+    }, { update: { method: 'PUT' } });
+  }
+]).factory('Camp', [
+  '$resource',
+  function ($resource) {
+    return $resource('instructor/camp/:campId', { campId: '@_id' }, { update: { method: 'PUT' } });
+  }
+]).factory('Tests', [
+  '$resource',
+  function ($resource) {
+    return $resource('instructor', {}, { update: { method: 'PUT' } });
   }
 ]);'use strict';
 // Config HTTP Error Handling
@@ -2130,13 +1953,11 @@ angular.module('users').controller('AuthenticationController', [
   'Authentication',
   function ($scope, $http, $location, Authentication) {
     $scope.authentication = Authentication;
-    //If user is signed in then redirect back home
-    // if ($scope.authentication.user);
     $scope.signup = function () {
       $http.post('/auth/signup', $scope.credentials).success(function (response) {
-        //If successful we assign the response to the global user model
+        // If successful we assign the response to the global user model
         $scope.authentication.user = response;
-        //And redirect to the index page
+        // And redirect to the index page
         $location.path('/');
       }).error(function (response) {
         $scope.error = response.message;
@@ -2144,12 +1965,9 @@ angular.module('users').controller('AuthenticationController', [
     };
     $scope.signin = function () {
       $http.post('/auth/signin', $scope.credentials).success(function (response) {
-        //If successful we assign the response to the global user model
+        // If successful we assign the response to the global user model
         $scope.authentication.user = response;
-        console.log('user: ' + $scope.authentication.user);
-        console.log($scope.authentication.user._id);
-        console.log(response);
-        //And redirect to the right page
+        // And redirect to the right page
         if ($scope.authentication.user.role === 'admin') {
           $location.path('/admin/welcome');
         } else if ($scope.authentication.user.role === 'instructor') {
@@ -2167,11 +1985,12 @@ angular.module('users').controller('AuthenticationController', [
 ]);'use strict';
 angular.module('users').controller('SettingsController', [
   '$scope',
+  '$timeout',
   '$http',
   '$location',
   'Users',
   'Authentication',
-  function ($scope, $http, $location, Users, Authentication) {
+  function ($scope, $timeout, $http, $location, Users, Authentication) {
     $scope.user = Authentication.user;
     // If user is not signed in then redirect back home
     if (!$scope.user)
@@ -2200,13 +2019,18 @@ angular.module('users').controller('SettingsController', [
     };
     // Update a user profile
     $scope.updateUserProfile = function () {
-      $scope.success = $scope.error = null;
       var user = new Users($scope.user);
       user.$update(function (response) {
-        $scope.success = true;
-        Authentication.user = response;
+        $scope.successOne = true;
+        $scope.user = Authentication.user = response;
+        $timeout(function () {
+          $scope.successOne = null;
+        }, 5000);
       }, function (response) {
-        $scope.error = response.data.message;
+        $scope.errorOne = response.data.message;
+        $timeout(function () {
+          $scope.errorOne = null;
+        }, 5000);
       });
     };
     // Change user password
@@ -2216,7 +2040,6 @@ angular.module('users').controller('SettingsController', [
         // If successful show success message and clear form
         $scope.success = true;
         $scope.passwordDetails = null;
-        $location.path('/instructors/home');
       }).error(function (response) {
         $scope.error = response.message;
       });
