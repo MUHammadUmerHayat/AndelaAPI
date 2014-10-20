@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('applicant-test').controller('ApplicantTestController', ['$scope', '$stateParams', '$location', 'Authentication', 'Questions', '$http',
-    function($scope, $stateParams, $location, Authentication, Questions, $http ) {
-        
+    function($scope, $stateParams, $location, Authentication, Questions, $http) {
+
         $scope.authentication = Authentication;
 
         $scope.find = function() {
@@ -11,4 +11,4 @@ angular.module('applicant-test').controller('ApplicantTestController', ['$scope'
             });
         };
     }
-]);  
+]);

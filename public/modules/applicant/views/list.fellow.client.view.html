@@ -1,22 +1,23 @@
 <section data-ng-controller="ApplicantController" data-ng-init="find()">
-   
+
     <div class="page-header">
         <h1>Fellows</h1>
     </div>
     <div>
-    	<table class="table table-hover" style="border-sizing:border-box">
-			<tr class="success">
-				<td>Username</td>
-				<td>Email</td>
-				<td>Role</td>
-				<td>Profile View</td>
-			</tr>
-	        <tr data-ng-repeat="applicant in applicants">
-				<td  data-ng-bind="applicant.username"></td>
-				<td  data-ng-bind="applicant.email"></td>
-				<td  data-ng-bind="applicant.role"></td>
-				<td><a data-ng-href="#!/profile/{{applicant._id}}" class="btn btn-default">View</a></td>
-	        </tr>
+        <table class="table table-hover" style="border-sizing:border-box">
+            <tr class="success">
+                <td>Username</td>
+                <td>Email</td>
+                <td>Role</td>
+                <td>Profile View</td>
+            </tr>
+            <tr data-ng-repeat="applicant in applicants">
+                <td data-ng-bind="applicant.username"></td>
+                <td data-ng-bind="applicant.email"></td>
+                <td data-ng-bind="applicant.role"></td>
+                <td><a data-ng-href="#!/profile/{{applicant._id}}" class="btn btn-default">View</a>
+                </td>
+            </tr>
         </table>
     </div>
 </section>

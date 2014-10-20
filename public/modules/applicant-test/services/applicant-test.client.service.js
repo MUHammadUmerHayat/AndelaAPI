@@ -6,9 +6,9 @@ angular.module('applicant-test').factory('Questions', ['$resource',
         return $resource('/test/:testId', {
             testId: '@_id'
         }, {
-            updates:{
+            updates: {
                 method: 'PUT'
             }
         });
     }
-]);   
+]);

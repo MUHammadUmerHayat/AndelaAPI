@@ -12,11 +12,11 @@
                 <div style="margin: 0 30%;">
                     <a class="btn btn-xs btn-success" data-ng-show="user.photo" data-ng-click="deletePhoto()"><i class="glyphicon glyphicon-trash"></i></a>
                 </div>
-            </div>         
+            </div>
             <div data-ng-controller="SettingsController" style="width: 50%; float: left; margin-bottom: 20px;">
                 <form data-ng-submit="updateUserProfile()" class="basic-grey" autocomplete="off">
                     <fieldset>
-                         <div data-ng-show="successOne" class="text-center text-success alert alert-success">
+                        <div data-ng-show="successOne" class="text-center text-success alert alert-success">
                             <strong>Profile Saved Successfully</strong>
                         </div>
                         <div data-ng-show="errorOne" class="text-center text-danger alert alert-danger">
@@ -44,7 +44,7 @@
                     </fieldset>
                 </form>
             </div>
-            <div style="width: 50%; clear: both; margin-left: 25%;">   
+            <div style="width: 50%; clear: both; margin-left: 25%;">
                 <form name="update" class="basic-grey" data-ng-submit="create()">
                     <fieldset>
                         <div data-ng-show="error" class="alert alert-danger">
@@ -59,10 +59,10 @@
                             <label class="control-label">Experience</label>
                             <textarea name="experience" data-ng-model="user.experience"></textarea>
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label class="control-label">Upload Image</label>
                             <input type="file" data-ng-file-select="onFileSelect($files)" name="upload" accept="image/png, image/jpeg">
-                             <span class="text text-danger" data-ng-show="file && !correctFormat">Please only jpeg and png formats are allowed
+                            <span class="text text-danger" data-ng-show="file && !correctFormat">Please only jpeg and png formats are allowed
                         </div>
                         <div class="form-group">
                             <input type="submit" value="Submit" class="btn btn-default" data-ng-disabled="file && !correctFormat">
@@ -76,7 +76,9 @@
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
     </div>

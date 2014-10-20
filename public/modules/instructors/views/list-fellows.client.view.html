@@ -1,5 +1,5 @@
 <section data-ng-controller="InstructorsController" data-ng-init="listFellows()" class="pad">
-    <div class="container"  data-ng-show="user.role === 'instructor'">
+    <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
             <div class="col-sm-12 col-lg-12" data-ng-show="user">
@@ -11,36 +11,40 @@
             <div>
                 <table class="list list-link">
                     <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                      </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                        </tr>
                     </thead>
                     <tbody class="capitalize">
                         <tr data-ng-repeat="fellow in fellows">
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}">{{$index + 1}}</a></td>
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.firstName"></a></td>
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.lastName"></a></td>
-                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.email"></a></td>    
-                        </tr>               
+                            <td><a data-ng-href="/#!/instructors/fellows/{{fellow._id}}">{{$index + 1}}</a>
+                            </td>
+                            <td>
+                                <a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.firstName"></a>
+                            </td>
+                            <td>
+                                <a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.lastName"></a>
+                            </td>
+                            <td>
+                                <a data-ng-href="/#!/instructors/fellows/{{fellow._id}}" data-ng-bind="fellow.email"></a>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-     <div data-ng-show="user.role !== 'instructor'">
+    <div data-ng-show="user.role !== 'instructor'">
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
-    </div> 
+    </div>
 </section>
-
-
- 
-
- 

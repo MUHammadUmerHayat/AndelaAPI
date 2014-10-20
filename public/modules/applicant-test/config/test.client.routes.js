@@ -1,8 +1,8 @@
 'use strict'
 
-angular.module('applicant-test').config(['$stateProvider', 
+angular.module('applicant-test').config(['$stateProvider',
     function($stateProvider) {
-        
+
         // Test state routing
         $stateProvider.
         state('listTest', {

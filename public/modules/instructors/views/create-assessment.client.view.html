@@ -3,7 +3,7 @@
     <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
-             <div class="col-sm-12 col-lg-12" data-ng-show="user">
+            <div class="col-sm-12 col-lg-12" data-ng-show="user">
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="title col-md-offset-4 col-md-4">
@@ -26,33 +26,33 @@
                                 <mac-datepicker id="dt" class="form-control" ng-model="date"></mac-datepicker>
                             </div>
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label class="control-label" for="score">Score</label>
-                            <div class="controls"  data-ng-class="{'has-error': assessmentForm.assessmentScore.$invalid && !assessmentForm.assessmentScore.$pristine }">
-                                <input type="number" name="assessmentScore" data-ng-model="score" 
-                                id="assessmentScore" class="form-control" required>
-                                <span data-ng-show="assessmentForm.assessmentScore.$invalid && !assessmentForm.assessmentScore.$pristine"
-                                class="help-block text-danger">Score should be a number.</span>
+                            <div class="controls" data-ng-class="{'has-error': assessmentForm.assessmentScore.$invalid && !assessmentForm.assessmentScore.$pristine }">
+                                <input type="number" name="assessmentScore" data-ng-model="score" id="assessmentScore" class="form-control" required>
+                                <span data-ng-show="assessmentForm.assessmentScore.$invalid && !assessmentForm.assessmentScore.$pristine" class="help-block text-danger">Score should be a number.</span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
-                           <input type="submit" value="Create" class="btn btn-large btn-default myButton"  data-ng-disabled="assessmentForm.$invalid">
+                            <input type="submit" value="Create" class="btn btn-large btn-default myButton" data-ng-disabled="assessmentForm.$invalid">
                         </div>
-        				<div data-ng-show="error" class="text-danger">
-        					<strong data-ng-bind="error"></strong>
-        				</div>
+                        <div data-ng-show="error" class="text-danger">
+                            <strong data-ng-bind="error"></strong>
+                        </div>
                     </fieldset>
                 </form>
             </div>
-     	</div>
+        </div>
 
     </div>
     <div data-ng-show="user.role !== 'instructor'">
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
     </div>

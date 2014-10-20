@@ -33,7 +33,7 @@ module.exports = function(app) {
     // instructor can add skills for himself
     app.route('/instructor/skill')
         .post(users.requiresLogin, instructor.checkRights, instructor.addSkills);
-    
+
 
     // view all bootcamps
     app.route('/instructor/camp')
@@ -44,13 +44,13 @@ module.exports = function(app) {
     app.route('/instructor/camp/:campId')
         .get(users.requiresLogin, instructor.checkRights, admin.read);
 
-    
+
     // instructor can view a particular trainee and enter assessment records
     app.route('/instructor/trainee/:traineeId')
         .get(users.requiresLogin, instructor.checkRights, instructor.readTrainee)
         .post(users.requiresLogin, instructor.checkRights, instructor.createAssmt);
 
-    
+
     // update and delete a particular assessment record of a trainee
     app.route('/instructor/trainee/:traineeId/:assmtId')
         .get(users.requiresLogin, instructor.checkRights, instructor.getAssessment)

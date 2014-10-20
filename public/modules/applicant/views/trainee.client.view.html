@@ -1,17 +1,17 @@
 <section>
-	<div data-ng-controller="ApplicantController" data-ng-init="find()" class="page-header">
-		<h1 data-ng-bind="question.question" style="text-align:left"></h1>
-		<small>
-				<em class="text-muted">
-					Posted on
-					<span data-ng-bind="question.created | date:'mediumDate'"></span>
-					by
-					<span data-ng-bind="question.user.displayName"></span>
-				</em>
-			</small>
-		
-		<div data-ng-show="comment_state" class="comment_div">
-			
-		</div>
-	</div>
+    <div data-ng-controller="ApplicantController" data-ng-init="find()" class="page-header">
+        <h1 data-ng-bind="question.question" style="text-align:left"></h1>
+        <small>
+            <em class="text-muted">
+                Posted on
+                <span data-ng-bind="question.created | date:'mediumDate'"></span>
+                by
+                <span data-ng-bind="question.user.displayName"></span>
+            </em>
+        </small>
+
+        <div data-ng-show="comment_state" class="comment_div">
+
+        </div>
+    </div>
 </section>

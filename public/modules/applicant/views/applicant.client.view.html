@@ -16,67 +16,68 @@
                     <form name="userForm" data-ng-submit=" signup()" novalidate role="form" class="form-horizontal" autocomplete="off">
                         <div id="first_step" ng-show="field === 1">
                             <div style="margin-bottom: 25px" class="form-group" data-ng-class="{ 'has-error' : userForm.username.$invalid && !userForm.username.$pristine }">
-                                <label for="username" class="control-label col-xs-2">Username: </label>
-                                    <div class="col-xs-10">
-                                         <input type="text" name="username" class="form-control" data-ng-model="user.username" ensure-unique required ng-minlength="4"  Placeholder="Username"/>
-                                         <span data-ng-show="userForm.username.$error.minlength" class="help-block">Username should be at least 4 characters long.</span>
-                                         <span data-ng-show="userForm.username.$error.unique" class="help-block">Username already exists.</span>
-                                     </div>                            </div>
+                                <label for="username" class="control-label col-xs-2">Username:</label>
+                                <div class="col-xs-10">
+                                    <input type="text" name="username" class="form-control" data-ng-model="user.username" ensure-unique required ng-minlength="4" Placeholder="Username" />
+                                    <span data-ng-show="userForm.username.$error.minlength" class="help-block">Username should be at least 4 characters long.</span>
+                                    <span data-ng-show="userForm.username.$error.unique" class="help-block">Username already exists.</span>
+                                </div>
+                            </div>
                             <div style="margin-bottom: 25px" class="form-group" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
-                                <label for="password" class="control-label col-xs-2">Password: </label>
-                                    <div class="col-xs-10">
-                                        <input type="password" name="password" class="form-control" data-ng-model="user.password" required ng-minlength="8" Placeholder="Password"/>
-                                        <span data-ng-show="userForm.password.$error.minlength" class="help-block">Password should be at least 8 characters long.</span>
-                                    </div>
+                                <label for="password" class="control-label col-xs-2">Password:</label>
+                                <div class="col-xs-10">
+                                    <input type="password" name="password" class="form-control" data-ng-model="user.password" required ng-minlength="8" Placeholder="Password" />
+                                    <span data-ng-show="userForm.password.$error.minlength" class="help-block">Password should be at least 8 characters long.</span>
+                                </div>
                             </div>
                             <div style="margin-bottom: 25px" class="form-group" ng-class="{ 'has-error' : userForm.cpassword.$invalid && !userForm.cpassword.$pristine }">
-                                <label for="password" class="control-label col-xs-2">Re Enter Password: </label>
-                                    <div class="col-xs-10">
-                                        <input type="password" name="cpassword" class="form-control" data-ng-model="cpassword" required Placeholder="Re enter Password" data-ng-confirm-field confirm-against="user.password"/>
-                                        <span data-ng-show="userForm.cpassword.$error.noMatch" class="help-block">Passwords do not match.</span>
-                                    </div>
+                                <label for="password" class="control-label col-xs-2">Re Enter Password:</label>
+                                <div class="col-xs-10">
+                                    <input type="password" name="cpassword" class="form-control" data-ng-model="cpassword" required Placeholder="Re enter Password" data-ng-confirm-field confirm-against="user.password" />
+                                    <span data-ng-show="userForm.cpassword.$error.noMatch" class="help-block">Passwords do not match.</span>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-offset-2 col-xs-10">
-                                 <input class="btn btn-primary" type="button" ng-click="show_next(1)" ng-disabled="userForm.username.$invalid || userForm.password.$invalid || userForm.cpassword.$invalid" name="submit_first" id="submit_first" value="Next" />
+                                    <input class="btn btn-primary" type="button" ng-click="show_next(1)" ng-disabled="userForm.username.$invalid || userForm.password.$invalid || userForm.cpassword.$invalid" name="submit_first" id="submit_first" value="Next" />
                                 </div>
                             </div>
                         </div>
                         <!-- Step Two Starts Here -->
                         <div id="second_step" ng-show="field === 2">
                             <div style="margin-bottom: 25px" class="form-group" ng-class="{ 'has-error' : userForm.firstName.$invalid && !userForm.firstName.$pristine }">
-                                <label for="firstName" class="control-label col-xs-2">First Name: </label>
-                                    <div class="col-xs-10">
-                                        <input type="text" name="firstName" class="form-control" data-ng-model="user.firstName" required Placeholder="First Name"/>
-                                        <p data-ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">Please enter your first name.</p>
-                                    </div>
+                                <label for="firstName" class="control-label col-xs-2">First Name:</label>
+                                <div class="col-xs-10">
+                                    <input type="text" name="firstName" class="form-control" data-ng-model="user.firstName" required Placeholder="First Name" />
+                                    <p data-ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">Please enter your first name.</p>
+                                </div>
                             </div>
                             <div style="margin-bottom: 25px" class="form-group" ng-class="{ 'has-error' : userForm.lastname.$invalid && !userForm.lastname.$pristine }">
-                                <label for="lastName" class="control-label col-xs-2">Last Name: </label>
-                                    <div class="col-xs-10">
-                                        <input type="text" name="lastname" class="form-control" data-ng-model="user.lastName" required  Placeholder="Last Name"/>
-                                        <p data-ng-show="userForm.lastname.$error.required && !userForm.lastname.$pristine" class="help-block">Please enter your last name.</p>
-                                    </div>
+                                <label for="lastName" class="control-label col-xs-2">Last Name:</label>
+                                <div class="col-xs-10">
+                                    <input type="text" name="lastname" class="form-control" data-ng-model="user.lastName" required Placeholder="Last Name" />
+                                    <p data-ng-show="userForm.lastname.$error.required && !userForm.lastname.$pristine" class="help-block">Please enter your last name.</p>
+                                </div>
                             </div>
                             <div style="margin-bottom: 25px" class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
-                                <label for="email" class="control-label col-xs-2">Email Address: </label>
-                                    <div class="col-xs-10">
-                                        <input type="email" name="email" class="form-control" data-ng-model="user.email" required  Placeholder="Email Address" ng-pattern="/^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/" />
-                                        <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help">Please enter a valid Email Address.</p>
-                                    </div>
+                                <label for="email" class="control-label col-xs-2">Email Address:</label>
+                                <div class="col-xs-10">
+                                    <input type="email" name="email" class="form-control" data-ng-model="user.email" required Placeholder="Email Address" ng-pattern="/^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/" />
+                                    <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help">Please enter a valid Email Address.</p>
+                                </div>
                             </div>
                             <div style="margin-bottom: 25px" class="form-group">
                                 <label class="control-label col-xs-2">Upload CV, in .pdf or .doc</label>
-                                    <div class="col-xs-10">
-                                        <input type="file" class="form-control" data-ng-file-select="onFileSelect($files)" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf" required/>
-                                        <span class="text text-danger" ng-show="files && !correctFormat">File formats allowed are doc, docx and pdf</span>
-                                    </div>
+                                <div class="col-xs-10">
+                                    <input type="file" class="form-control" data-ng-file-select="onFileSelect($files)" accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf" required/>
+                                    <span class="text text-danger" ng-show="files && !correctFormat">File formats allowed are doc, docx and pdf</span>
+                                </div>
 
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-offset-2 col-xs-10">
-                                 <input class="btn btn-primary" type="button" ng-click="show_prev(2)" name="submit_second" id="submit_second" value="Prev" />
-                                 <input class="btn btn-primary" type="button" ng-click="show_next(2)" ng-disabled="userForm.firstname.$invalid || userForm.email.$invalid || !correctFormat" name="submit_second" id="submit_first" value="Next" />
+                                    <input class="btn btn-primary" type="button" ng-click="show_prev(2)" name="submit_second" id="submit_second" value="Prev" />
+                                    <input class="btn btn-primary" type="button" ng-click="show_next(2)" ng-disabled="userForm.firstname.$invalid || userForm.email.$invalid || !correctFormat" name="submit_second" id="submit_first" value="Next" />
                                 </div>
                             </div>
                         </div>
@@ -100,12 +101,14 @@
                                                                                 <div data-ng-repeat="test in questions.questions">
                                                                                     <iquestion class="ng-isolate-scope" text="{{test.question}}">
                                                                                         <strong>
-                                                                                            Q: <span class="list-group-item-text" data-ng-bind="test.question"></span>
+                                                                                            Q:
+                                                                                            <span class="list-group-item-text" data-ng-bind="test.question"></span>
                                                                                         </strong>
                                                                                         <div data-ng-repeat="option in test.questOptions ">
                                                                                             <input data-ng-click="assess( test._id, option._id, $index)" type="radio" name="{{test._id}}" value="{{option._id}">
                                                                                             <span data-ng-bind="option.option"></span>
-                                                                                        </div>                                                                                    </iquestion>
+                                                                                        </div>
+                                                                                    </iquestion>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -120,7 +123,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <button type="button" class="btn btn-primary" ng-click="show_prev(3)" name="submit_third" id="submit_third" value="Prev" >Prev</button>
+                            <button type="button" class="btn btn-primary" ng-click="show_prev(3)" name="submit_third" id="submit_third" value="Prev">Prev</button>
                             <button type="button" class="btn btn-large btn-primary" ng-disabled="userForm.$invalid || isClicked" data-ng-click="clicked()">Submit</button>
                             <img ng-src="modules/core/img/loader.GIF" data-ng-show="showLoader" />
                         </div>

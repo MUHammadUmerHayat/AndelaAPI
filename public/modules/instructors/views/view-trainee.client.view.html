@@ -2,7 +2,7 @@
     <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
-            <div class="col-sm-12 col-lg-12" data-ng-show="user"> 
+            <div class="col-sm-12 col-lg-12" data-ng-show="user">
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="container" data-ng-show="!error">
@@ -14,18 +14,18 @@
                         <section id="settings">
                             <h1 style="text-transform: capitalize">Trainee Details</h1>
                             <p class="setting">
-                              <span>Name: </span> {{trainee.firstName}} {{trainee.lastName}} </p>
+                                <span>Name:</span>{{trainee.firstName}} {{trainee.lastName}}</p>
                             <p class="setting">
-                              <span>E-mail Address</span> {{trainee.email}}  </p>
+                                <span>E-mail Address</span>{{trainee.email}}</p>
                             <p class="setting" data-ng-show="appt.role == 'applicant'">
-                              <span>Test Score: </span> {{trainee.testScore}} </p>
+                                <span>Test Score:</span>{{trainee.testScore}}</p>
                             <p class="setting" data-ng-show="appt.role == 'applicant'">
-                              <span>Status: </span> {{user_profile.status || 'Pending'}} </p>
+                                <span>Status:</span>{{user_profile.status || 'Pending'}}</p>
                         </section>
-                        <div data-ng-controller="AssessmentController">  
+                        <div data-ng-controller="AssessmentController">
                             <div style="clear: both; margin-bottom: 5px;">
-                               <a href="/#!/instructors/trainees/{{trainee._id}}/create_assessment" class="btn btn-xs btn-danger">Add Assessment</a>
-                            </div> 
+                                <a href="/#!/instructors/trainees/{{trainee._id}}/create_assessment" class="btn btn-xs btn-danger">Add Assessment</a>
+                            </div>
                             <table class="list" data-ng-show="assessments.length > 0">
                                 <thead>
                                     <tr>
@@ -37,33 +37,40 @@
                                     </tr>
                                 </thead>
                                 <tbody class="capitalize">
-                                    <tr data-ng-repeat= "assessment in assessments">
-                                        <td><span data-ng-show="!editStates[$index]">{{assessment.assessment_name}}</span>
+                                    <tr data-ng-repeat="assessment in assessments">
+                                        <td>
+                                            <span data-ng-show="!editStates[$index]">{{assessment.assessment_name}}</span>
                                             <input type="text" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newName">
                                         </td>
-                                        <td><span data-ng-show="!editStates[$index]">{{assessment.assessment_date | date}} </span>
+                                        <td>
+                                            <span data-ng-show="!editStates[$index]">{{assessment.assessment_date | date}}</span>
                                             <input type="text" name="inputDate" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" ng-model="model.newDate" placeholder="MM/dd/yyyy">
                                         </td>
-                                        <td><span data-ng-show="!editStates[$index]">{{assessment.score}}</span>
+                                        <td>
+                                            <span data-ng-show="!editStates[$index]">{{assessment.score}}</span>
                                             <input type="number" name="score" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newScore">
                                         </td>
-                                        <td><a class="btn btn-default" data-ng-click="editStates[$index]=true" data-ng-show= "assessment.instructorId === user._id && !editStates[$index]">
-                                            <i class="glyphicon glyphicon-edit"></i></a>
+                                        <td>
+                                            <a class="btn btn-default" data-ng-click="editStates[$index]=true" data-ng-show="assessment.instructorId === user._id && !editStates[$index]">
+                                                <i class="glyphicon glyphicon-edit"></i>
+                                            </a>
 
-                                        <a class="btn btn-default" data-ng-click="updateAssessment($index, assessment, model)" data-ng-show= "assessment.instructorId === user._id && editStates[$index]" data-ng-disabled="!model.newName.length && !model.newScore && !model.newDate.length">
+                                            <a class="btn btn-default" data-ng-click="updateAssessment($index, assessment, model)" data-ng-show="assessment.instructorId === user._id && editStates[$index]" data-ng-disabled="!model.newName.length && !model.newScore && !model.newDate.length">
                                             Save</a>
                                         </td>
-                                        <td><a class="btn btn-default" data-ng-show= "assessment.instructorId === user._id && !editStates[$index]" data-ng-click="deleteAssessment($index, assessment)">
-                                            <i class="glyphicon glyphicon-trash"></i></a>
+                                        <td>
+                                            <a class="btn btn-default" data-ng-show="assessment.instructorId === user._id && !editStates[$index]" data-ng-click="deleteAssessment($index, assessment)">
+                                                <i class="glyphicon glyphicon-trash"></i>
+                                            </a>
 
-                                        <a class="btn btn-default" data-ng-click="editStates[$index]=false" data-ng-show= "assessment.instructorId === user._id && editStates[$index]">
+                                            <a class="btn btn-default" data-ng-click="editStates[$index]=false" data-ng-show="assessment.instructorId === user._id && editStates[$index]">
                                             Cancel</a>
                                         </td>
-                                    </tr>            
+                                    </tr>
                                 </tbody>
                             </table>
                             <div class="alert alert-warning text-center" data-ng-if="trainee.$resolved && !assessments.length">
-                                <span> No assessment yet for {{trainee.firstName}} {{trainee.lastName}} 
+                                <span>No assessment yet for {{trainee.firstName}} {{trainee.lastName}}
                                 </span>
                             </div>
                         </div>
@@ -76,11 +83,13 @@
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
     </div>
-    <div class="alert alert-warning text-center" data-ng-show="error && user.role === 'instructor'" >
+    <div class="alert alert-warning text-center" data-ng-show="error && user.role === 'instructor'">
         <p>Oops!! The Trainee you are looking for doesn't exist</p>
-    </div>  
+    </div>
 </section>

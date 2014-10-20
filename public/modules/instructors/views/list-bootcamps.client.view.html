@@ -1,30 +1,38 @@
 <section data-ng-controller="InstructorsController" data-ng-init="listBootcamps()" class="pad">
-    <div class="container"  data-ng-show="user.role === 'instructor'">
+    <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
             <div class="col-sm-12 col-lg-12" data-ng-show="user">
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="page-header text-center">
-              <h1>Bootcamps</h1>
+                <h1>Bootcamps</h1>
             </div>
             <div>
                 <table class="list list-link">
                     <thead>
-                      <tr>
-                        <th>Bootcamp Name</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Number of Trainees</th>
-                      </tr>
+                        <tr>
+                            <th>Bootcamp Name</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Number of Trainees</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr data-ng-repeat="bootcamp in bootcamps">
-                            <td><a data-ng-bind="bootcamp.camp_name" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
-                            <td><a data-ng-bind="bootcamp.start_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
-                            <td><a data-ng-bind="bootcamp.end_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
-                            <td><a data-ng-bind="traineeCountArr[$index]" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
-                        </tr>               
+                            <td>
+                                <a data-ng-bind="bootcamp.camp_name" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a>
+                            </td>
+                            <td>
+                                <a data-ng-bind="bootcamp.start_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a>
+                            </td>
+                            <td>
+                                <a data-ng-bind="bootcamp.end_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a>
+                            </td>
+                            <td>
+                                <a data-ng-bind="traineeCountArr[$index]" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -34,11 +42,10 @@
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
     </div>
 </section>
-
-
- 

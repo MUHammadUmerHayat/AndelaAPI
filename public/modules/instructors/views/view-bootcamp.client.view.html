@@ -6,7 +6,7 @@
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="page-header text-center">
-              <h1>Applicants</h1>
+                <h1>Applicants</h1>
             </div>
 
             <div>
@@ -20,14 +20,20 @@
                     </thead>
                     <tbody class="capitalize">
                         <tr data-ng-repeat="applicant in applicants | filter: onlyTrainees">
-                            <td><a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.firstName"></a></td>
-                            <td><a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.lastName"></a></td>
-                            <td><a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.email"></a></td>
-                        </tr>               
+                            <td>
+                                <a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.firstName"></a>
+                            </td>
+                            <td>
+                                <a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.lastName"></a>
+                            </td>
+                            <td>
+                                <a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.email"></a>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="alert alert-warning text-center" data-ng-if="bootcamp.$resolved && !applicants.length">
-                    <span> No applicants have applied to this Bootcamp </span>
+                    <span>No applicants have applied to this Bootcamp</span>
                 </div>
             </div>
         </div>
@@ -36,12 +42,13 @@
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
     </div>
-    <div class="alert alert-warning text-center" data-ng-show="error && user.role === 'instructor'" >
+    <div class="alert alert-warning text-center" data-ng-show="error && user.role === 'instructor'">
         <p>Oops!! The page you are looking for doesn't exist</p>
-    </div>  
+    </div>
 </section>
- 

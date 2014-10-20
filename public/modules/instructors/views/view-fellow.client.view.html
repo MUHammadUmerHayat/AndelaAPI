@@ -14,17 +14,19 @@
                         <section id="settings">
                             <h1 style="text-transform: capitalize">Fellow Details</h1>
                             <p class="setting">
-                              <span>Name: </span> {{fellow.firstName}} {{fellow.lastName}} </p>
+                                <span>Name:</span>{{fellow.firstName}} {{fellow.lastName}}</p>
                             <p class="setting">
-                              <span>E-mail Address</span> {{fellow.email}}  </p>
+                                <span>E-mail Address</span>{{fellow.email}}</p>
                         </section>
 
                         <section>
                             <div class="setting">
                                 <p>
-                                    <span data-ng-hide="fellow.skillSet.length === 0"><i>Skills:</i></span>
+                                    <span data-ng-hide="fellow.skillSet.length === 0"><i>Skills:</i>
+                                    </span>
                                     <span ng-repeat="skill in fellow.skillSet" class="pull-right">
-                                      &nbsp;&nbsp;<b>{{skill.skill.name}}: {{skill.rating}}</b><br>
+                                        &nbsp;&nbsp;<b>{{skill.skill.name}}: {{skill.rating}}</b>
+                                        <br>
                                     </span>
                                 </p>
                             </div>
@@ -35,15 +37,18 @@
                                 <p data-ng-show="appt.role == 'fellow'">
                                     <span data-ng-hide="fellow.placements.length === 0"><i class="glyphicon glyphicon-gift"></i> Work History</span>
                                     <span data-ng-repeat="placement in fellow.placements">
-                                      <b>Company: {{placement.company}}</b><br>
-                                      <b>Job Description: {{placement.jobDescription}}</b><br>
-                                      <b>From: {{placement.start_date | date : longDate}}</b><br>
-                                      <b>To: {{placement.end_date | date : longDate}}</b>  
+                                        <b>Company: {{placement.company}}</b>
+                                        <br>
+                                        <b>Job Description: {{placement.jobDescription}}</b>
+                                        <br>
+                                        <b>From: {{placement.start_date | date : longDate}}</b>
+                                        <br>
+                                        <b>To: {{placement.end_date | date : longDate}}</b> 
                                     </span>
                                 </p>
                             </div>
                         </section>
-                    </div>  
+                    </div>
                 </div>
             </div>s
         </div>
@@ -52,7 +57,9 @@
         <div class="row">
             <div class="alert alert-danger col-md-offset-2 col-md-6">
                 <a class="close" data-dismiss="alert" data-ng-click="removeAlert('error')" href="#">×</a>
-                <span><h4>You are not permitted to view this page</h4></span>
+                <span>
+                    <h4>You are not permitted to view this page</h4>
+                </span>
             </div>
         </div>
     </div>

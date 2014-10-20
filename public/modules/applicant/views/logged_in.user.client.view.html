@@ -1,46 +1,65 @@
 <section class="row" data-ng-controller="ApplicantController" data-ng-init="show_profile()" style="padding-top: 100px;">
-	
-	<div class="container viewuser">
-<!-- 		<div class="pull-right">
+
+    <div class="container viewuser">
+        <!-- 		<div class="pull-right">
 	        <a class="btn btn-danger btn-xs" href="/auth/signout">Signout</a>
 	    </div>
- -->	    <h3 style="text-transform: uppercase" class="col-md-12 text-center">{{user_profile.role}} Details</h3>
-		<div style="margin-left: 100px;" class="row text-center">
-			<div>
-				<div class="col-sm-2 col-md-2">
-				    <img src="http://thetransformedmale.files.wordpress.com/2011/06/bruce-wayne-armani.jpg"
-				    alt="" class="img-rounded img-responsive" />
-				</div>
-				<div class="col-sm-4 col-md-4 info-center">
-			        <p><span><i class="glyphicon glyphicon-user"></i></span>Name: {{user_profile.firstName}} {{user_profile.lastName}}</p>
-				    <p><span><i class="glyphicon glyphicon-envelope"></i></span>{{user_profile.email}}</p>
-			        
-				    <p data-ng-show="user_profile.role == 'applicant'"><span><i class="glyphicon glyphicon-certificate"></i></span>Test score: {{user_profile.testScore}}</p>
+ -->
+        <h3 style="text-transform: uppercase" class="col-md-12 text-center">{{user_profile.role}} Details</h3>
+        <div style="margin-left: 100px;" class="row text-center">
+            <div>
+                <div class="col-sm-2 col-md-2">
+                    <img src="http://thetransformedmale.files.wordpress.com/2011/06/bruce-wayne-armani.jpg" alt="" class="img-rounded img-responsive" />
+                </div>
+                <div class="col-sm-4 col-md-4 info-center">
+                    <p>
+                        <span><i class="glyphicon glyphicon-user"></i>
+                        </span>Name: {{user_profile.firstName}} {{user_profile.lastName}}</p>
+                    <p>
+                        <span><i class="glyphicon glyphicon-envelope"></i>
+                        </span>{{user_profile.email}}</p>
 
-				    <p data-ng-show="user_profile.role == 'applicant'"><span><i class="glyphicon glyphicon-calendar"></i></span>Status: {{user_profile.status.name || 'Pending'}}</p>
+                    <p data-ng-show="user_profile.role == 'applicant'">
+                        <span><i class="glyphicon glyphicon-certificate"></i>
+                        </span>Test score: {{user_profile.testScore}}</p>
 
-				    <p data-ng-show="user_profile.role == 'trainee'"><span><i class="glyphicon glyphicon-gift"></i></span>{{user_profile.assessment}}</p>
-				    <p data-ng-show="user_profile.role == 'fellow'"><span><i class="glyphicon glyphicon-certificate"></i></span>Skillset: 
-				    	<ul data-ng-repeat="skill in user_profile.skillSets">
-				            <li><b data-ng-bind="skill.skill"></b>: <b data-ng-bind="skill.rating"></b></li>
-			            </ul>
-				    </p>
+                    <p data-ng-show="user_profile.role == 'applicant'">
+                        <span><i class="glyphicon glyphicon-calendar"></i>
+                        </span>Status: {{user_profile.status.name || 'Pending'}}</p>
 
-				    <p data-ng-show="user_profile.role == 'fellow'"><span><i class="glyphicon glyphicon-saved"></i></span>Work History
-			          <ol data-ng-repeat="workHist in user_profile.workHistory">
-			            <b>Company: {{workHist.company}}</b><br>
-			            <b>Job Description: {{workHist.jobDescription}}</b><br>
-			            <b>Location: {{workHist.location}}</b><br>
-			            <b>From: {{workHist.from | date : longDate}}</b><br>
-			            <b>From: {{workHist.to | date : longDate}}</b>  
-			          </ol>
-				    </p>
-				    <p data-ng-show="user_profile.role == 'applicant'" class="alert-warning text-center">We will get back to you as soon as possible</p>
-			        </li>
-			        <div>
-				</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    <p data-ng-show="user_profile.role == 'trainee'">
+                        <span><i class="glyphicon glyphicon-gift"></i>
+                        </span>{{user_profile.assessment}}</p>
+                    <p data-ng-show="user_profile.role == 'fellow'">
+                        <span><i class="glyphicon glyphicon-certificate"></i>
+                        </span>Skillset:
+                        <ul data-ng-repeat="skill in user_profile.skillSets">
+                            <li><b data-ng-bind="skill.skill"></b>: <b data-ng-bind="skill.rating"></b>
+                            </li>
+                        </ul>
+                    </p>
+
+                    <p data-ng-show="user_profile.role == 'fellow'">
+                        <span><i class="glyphicon glyphicon-saved"></i>
+                        </span>Work History
+                        <ol data-ng-repeat="workHist in user_profile.workHistory">
+                            <b>Company: {{workHist.company}}</b>
+                            <br>
+                            <b>Job Description: {{workHist.jobDescription}}</b>
+                            <br>
+                            <b>Location: {{workHist.location}}</b>
+                            <br>
+                            <b>From: {{workHist.from | date : longDate}}</b>
+                            <br>
+                            <b>From: {{workHist.to | date : longDate}}</b> 
+                        </ol>
+                    </p>
+                    <p data-ng-show="user_profile.role == 'applicant'" class="alert-warning text-center">We will get back to you as soon as possible</p>
+                    </li>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
