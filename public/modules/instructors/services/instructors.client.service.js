@@ -1,9 +1,9 @@
 'use strict';
 
-// Instructors service used to communicate Instructors REST endpoints
-angular.module('instructors').factory('Instructors', ['$resource',
+// Assessment service
+angular.module('instructors').factory('Assessment', ['$resource',
     function($resource) {
-        return $resource('instructor/:instructorId', { instructorId: '@_id'
+        return $resource('instructor/trainee/:traineeId/:assmtId', { traineeId: '@traineeId', assmtId: '@_id'
         }, {
             update: {
                 method: 'PUT'
@@ -12,7 +12,18 @@ angular.module('instructors').factory('Instructors', ['$resource',
     }
 ])
 
-// Test service for communicating with the test api endpoint
+// Camp service
+.factory('Camp', ['$resource',
+    function($resource) {
+        return $resource('instructor/camp/:campId', { campId: '@_id' }, {
+            update: {
+                method: 'PUT'
+            }
+        });
+    }
+])
+
+// Instructor service
 .factory('Tests', ['$resource',
     function($resource) {
         return $resource('instructor', {}, {

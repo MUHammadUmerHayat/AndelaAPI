@@ -250,12 +250,12 @@ exports.createBootCamp = function(req, res) {
  * List all Bootcamps
  */
 exports.bootCamps = function(req, res) {
-    Bootcamp.find().sort('-start_date').exec(function(err, camps) {
+    Bootcamp.find().sort('-start_date').populate('applicants').exec(function(err, camps) {
         if (err) {
             res.send(500, {
                 message: 'Could not find bootcamps'
             });
-        } else {
+        } else { 
             res.jsonp(camps);
         }
     });

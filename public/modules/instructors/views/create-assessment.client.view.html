@@ -7,37 +7,37 @@
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="title col-md-offset-4 col-md-4">
-                <h1>Assess Trainee</h1>
+                <h1>Assessment</h1>
             </div>
-            <div class="col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
-                <form class="basic-grey" data-ng-submit="createAssessment()">
+            <div class="assessment col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
+                <form name="assessmentForm" class="basic-grey" data-ng-submit="createAssessment()">
                     <fieldset>
                         <div class="form-group">
                             <label class="control-label" for="assessment_name">Assessment Name</label>
-                            <div class="controls">
-                                <input type="text" data-ng-model="assessment_name" id="assessment_name" class="form-control" placeholder="" required>
+                            <div class="controls" data-ng-class="{'has-error': assessmentForm.assessmentName.$invalid && !assessmentForm.assessmentName.$pristine }">
+                                <input type="text" name="assessmentName" data-ng-model="assessment_name" id="assessmentName" class="form-control" required>
+                                <span data-ng-show="assessmentForm.assessmentName.$invalid && !assessmentForm.assessmentName.$pristine" class="help-block text-danger">Please enter a test name.
+                                </span>
                             </div>
                         </div>
-                        <div>
-                            <em>{{dt | date:'fullDate'}}</em>
-                            <div>
-                                <p class="input-group">
-                                  <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-                                  <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                  </span>
-                                </p>
+                        <div class="form-group">
+                            <em>Assessment Date</em>
+                            <div class="controls">
+                                <mac-datepicker id="dt" class="form-control" ng-model="date"></mac-datepicker>
                             </div>
                         </div>
                          <div class="form-group">
                             <label class="control-label" for="score">Score</label>
-                            <div class="controls">
-                                <input type="text" data-ng-model="score" id="score" class="form-control" placeholder="" required>
+                            <div class="controls"  data-ng-class="{'has-error': assessmentForm.assessmentScore.$invalid && !assessmentForm.assessmentScore.$pristine }">
+                                <input type="number" name="assessmentScore" data-ng-model="score" 
+                                id="assessmentScore" class="form-control" required>
+                                <span data-ng-show="assessmentForm.assessmentScore.$invalid && !assessmentForm.assessmentScore.$pristine"
+                                class="help-block text-danger">Score should be a number.</span>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <input type="submit" class="btn btn-large btn-success myButton">
+                           <input type="submit" value="Create" class="btn btn-large btn-default myButton"  data-ng-disabled="assessmentForm.$invalid">
                         </div>
         				<div data-ng-show="error" class="text-danger">
         					<strong data-ng-bind="error"></strong>

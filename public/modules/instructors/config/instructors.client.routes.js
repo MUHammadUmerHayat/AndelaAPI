@@ -23,7 +23,7 @@ angular.module('instructors').config(['$stateProvider',
             templateUrl: 'modules/instructors/views/view-trainee.client.view.html'
         }).
         state('create_Assessment', {
-            url: '/instructors/trainees/:applicantId/create_Assessment',
+            url: '/instructors/trainees/:applicantId/create_assessment',
             templateUrl: 'modules/instructors/views/create-assessment.client.view.html'
         }).
         state('editAssessment', {

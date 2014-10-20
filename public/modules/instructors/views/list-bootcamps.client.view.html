@@ -15,7 +15,7 @@
                         <th>Bootcamp Name</th>
                         <th>Start Date</th>
                         <th>End Date</th>
-                        <th>Number of Applicants</th>
+                        <th>Number of Trainees</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -23,7 +23,7 @@
                             <td><a data-ng-bind="bootcamp.camp_name" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
                             <td><a data-ng-bind="bootcamp.start_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
                             <td><a data-ng-bind="bootcamp.end_date | date" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
-                            <td><a data-ng-bind="bootcamp.applicants.length" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
+                            <td><a data-ng-bind="traineeCountArr[$index]" data-ng-href="/#!/instructors/bootcamps/{{bootcamp._id}}"></a></td>
                         </tr>               
                     </tbody>
                 </table>

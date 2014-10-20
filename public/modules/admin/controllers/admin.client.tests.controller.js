@@ -3,13 +3,13 @@
 
 // Lists controller
 angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authentication', '$stateParams', '$location', '$modal', '$log', 'Tests',
-	function($scope, $http, Authentication, $stateParams, $location, $modal, $log, Tests){
+	function($scope, $http, Authentication, $stateParams, $location, $modal, $log, Tests) {
 
 	    $scope.choiceOne = [{id: 'choice1'},{id: 'choice2'}]; //answer to question one
 	    $scope.choiceTwo = [{id: 'choice1'},{id: 'choice2'}]; //answer to question two
-	    $scope.optionOne=[];  //options for question one
-	    $scope.optionTwo=[]; //options for question two
-	    $scope.questions=[];
+	    $scope.optionOne = [];  //options for question one
+	    $scope.optionTwo = []; //options for question two
+	    $scope.questions = [];
 	    $scope.selected = '';
 	    $scope.testName = '';
 	    $scope.answered = false;
@@ -49,12 +49,12 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
 	    };
 
 	    var doDelete = function(choiceArr, optionArr, index) {
-	            choiceArr.splice(index, 1);
-	            optionArr.splice(index, 1);
+            choiceArr.splice(index, 1);
+            optionArr.splice(index, 1);
 
-	            for (var i in choiceArr) {
-	                choiceArr[i].id = 'choice' + i;
-	            }
+            for (var i in choiceArr) {
+                choiceArr[i].id = 'choice' + i;
+            }
 	    };
 
 	    $scope.showAddChoice = function(choice, num) {
@@ -158,6 +158,7 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
                             $scope.optionEditorEnabled[index][optionIndex] = false;
                         }
                     };
+
                     // Checks to see if all answers are set to same (false/true).
                     // Returns true if all are the same
                     var checkAllanswers = function (questOptions) {
@@ -168,7 +169,7 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
                             }
                         }
                         return true;
-                    }
+                    };
 
                     $scope.save = function(field, index, optionIndex) {
                         if (field === 'testName') {
@@ -207,7 +208,7 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
                         }
 
                         $scope.disableEditor(field, index, optionIndex);
-                    }
+                    };
                 } //ends test.get() success callbk
             );
 		};
@@ -241,7 +242,7 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
             $scope.test.questions.splice(index, 1);
             $http.delete('/admin/test/' + testId + '/' + questionId).success(function(response) {
                 $scope.success = true;
-                }).error(function(response) {
+            }).error(function(response) {
                 $scope.error = response.message;
             });
         };
@@ -250,10 +251,9 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
             $scope.test.questions[queIndex].questOptions.splice(index, 1);
             $http.delete('/admin/test/' + testId + '/' + questionId + '/' + optionId).success(function(response) {
                 $scope.success = true;
-                }).error(function(response) {
+            }).error(function(response) {
                 $scope.error = response.message;
             });
         };
 	}
-
 ]);

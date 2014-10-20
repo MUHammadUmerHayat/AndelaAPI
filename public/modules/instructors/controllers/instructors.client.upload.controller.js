@@ -1,7 +1,8 @@
 'use strict';
 
 
-var ProfileController = function($scope, $upload, $stateParams, $location) {
+var ProfileController = function($scope, $http, $upload, $stateParams, $location, Authentication) {
+    $scope.user = Authentication.user;
 
     // Upload Image
     $scope.onFileSelect = function($file) {
@@ -15,7 +16,6 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
 		}
     };
 
-
     $scope.removeAlert = function(message) {
         if (message === "error") {
             $scope.error = null;
@@ -24,7 +24,6 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
         }
     };
 
-
     // upload file
 	$scope.create = function() {
 		$scope.success = null;
@@ -32,34 +31,32 @@ var ProfileController = function($scope, $upload, $stateParams, $location) {
 		$scope.upload = $upload.upload({
             url: '/instructor/updateInfo',
             method: 'POST',
-            data: $scope.details,
+            data: $scope.user,
             file: $scope.file
         }).success(function(response) {
-        	user.photo = response.photo;
+        	$scope.user = Authentication.user = response;
             $scope.success = 'Your details have been updated successfully';
         }).error(function(err) {
         	$scope.error = err.message;
         });
 	};
 
-
-	$scope.deletePhoto = function($index, photo){
-		$scope.photo = $scope.user.photo;
-		$scope.user.photo = "";
-		$http.delete('/instructor/' + $scope.user._id + '/deletePhoto').success(function(response){
-			$scope.success = true;
-	 		$scope.photo = response.photo;
-	 		$scope.upload_new = true;
+	// delete profile picture
+	$scope.deletePhoto = function($index, photo) {
+		$http.delete('/instructor/' + $scope.user._id + '/deletePhoto').success(function(response) {
+	 		$scope.user.photo = response.photo; 
 		}).error(function(response) {
 		   	$scope.error = response.message;
 		});
 	};
 
-
+    // show instructor's profile photo
 	$scope.showImage = function(img) {
 	 	if (img) {
             img = img.substring(6);
         	return img;
+	 	} else {
+	 		return 'http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png';
 	 	}
     };
-};
+}

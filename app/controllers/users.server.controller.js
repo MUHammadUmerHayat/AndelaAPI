@@ -105,8 +105,6 @@ var userSignup = function(req, res, user, destPath) {
         user.status.name = 'pending';
         user.status.reason = '';
 
-        console.log(user);
-
         return user;
     }
     return false;
@@ -184,11 +182,11 @@ exports.signup = function(req, res) {
  * Signin after passport authentication
  */
 exports.signin = function(req, res, next) {
-    console.log(req.body);
     passport.authenticate('local', function(err, user, info) {
         if (err || !user) {
             res.send(400, info);
         } else {
+            
             // Remove sensitive data before login
             user.password = undefined;
             user.salt = undefined;

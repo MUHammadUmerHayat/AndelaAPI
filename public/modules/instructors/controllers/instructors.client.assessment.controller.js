@@ -1,97 +1,101 @@
 'use strict';
 
-angular.module('instructors').controller('AssessmentController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Instructors', '$http',
-    function($scope, $rootScope, $stateParams, $location, Authentication, Instructors, $http) {
-    
-    // assessment for trainees 
-    $scope.createAssessment = function() {
-    
-        // create new assessment for trainee 
-        $scope.assessment = ({
-            assessment_name: this.assessment_name,
-            assessment_date: $scope.dt,
-            score: this.score
-        });
+angular.module('instructors').controller('AssessmentController', ['$scope', '$stateParams', '$location', 'Authentication', 'Assessment', '$http',
+    function($scope, $stateParams, $location, Authentication, Assessment, $http) {
+        
+        $scope.editStates = [];
+        var date = new Date(),
+            year = date.getFullYear(),
+           month = date.getMonth(),
+             day = date.getDate();
 
-        $http.post('/instructor/trainee/'+ $stateParams.applicantId, $scope.assessment).success(function(response) {
-            $location.path('/instructors/trainees/' + $stateParams.applicantId);
-        }, function(errorResponse) {
-            $scope.error = errorResponse.data.message;
-        });
+        // month 2 digits
+        month = ("0" + (month + 1)).slice(-2);
 
-        this.assessment_name = '';
-        this.assessment_date = '';
-        this.score = '';
-    };
+        // year 2 digits
+        year = year.toString().substr(2,2);
 
-    
-    $rootScope.editAssessment = function(index, assessment) {
-        $scope.assessment = assessment;
-        $scope.index = index;
-    };
+        var formattedDate = month + '/' + day+ "/" + year;
+        $scope.date =  formattedDate; 
 
-    
-    // edit trainee assessment record
-    $scope.updateAssessment = function() {
-        $http.put('/instructor/trainee/' + $scope.assessment.applicantId + '/' + $scope.assessment._id,  $scope.assessment).success(function(response) {
-       
-            // If successful show success message and clear form
-            $location.path('/instructors/trainees/' + $scope.assessment.applicantId);
-        }).error(function(response) {
-            $scope.error = response.message;
-        }); 
-    };
+        $scope.initEditStates = function() {
+            for (var i in $scope.assessments) {
+                $scope.editStates[i] = false;
+            }
+        };
 
-    
-    // delete trainee assessment record
-    $scope.deleteAssessment = function(index, assessment) {
-        $scope.assessments.splice(index, 1);
-        $http.delete('/instructor/trainee/'+ $stateParams.applicantId +'/'+ assessment._id).success(function(response) {
-            $scope.success = true;
-        }).error(function(response) {
-            $scope.error = response.message;
-        });   
-    };
+        $scope.initEditStates();
+        $scope.models = [];
 
+        // create assessment record
+        $scope.createAssessment = function() {
+        
+            // create new assessment for trainee 
+            var assmntObject = ({
+                traineeId: $stateParams.applicantId,
+                assessment_name: $scope.assessment_name,
+                assessment_date: $scope.date,
+                score: $scope.score
+            });
 
-    $scope.today = function() {
-        $scope.dt = new Date();
-    };
-    
+            var assessment = new Assessment(assmntObject);
+            assessment.$save(function success(response) {
+                $location.path('/instructors/trainees/' + $stateParams.applicantId);
+            },  function (error) {
+                    $scope.error = error.data.message;
+                }
+            );
+        };
 
-    $scope.today();
+        // edit trainee assessment record
+        $scope.updateAssessment = function(index, assessment, model) { 
+            var assessment = new Assessment(assessment);
+            assessment.traineeId = assessment.applicantId;
+            if (typeof model.newScore !== 'undefined') {
+                if (model.newScore.length!== 0) {
+                    assessment.score =  model.newScore;
+                }
+            }
 
+            if (typeof model.newName !== 'undefined') {
+                if (model.newName.length!== 0) {
+                    assessment.assessment_name =  model.newName;
+                }
+            }
 
-    $scope.clear = function () {
-        $scope.dt = null;
-    };
+            if (typeof model.newDate !== 'undefined') {
+                if (model.newDate.length!== 0) {
+                    var pattern = /^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/(199\d|[2-9]\d{3})$/;
+                    if (pattern.test(model.newDate) === true) {
+                        assessment.assessment_date =  model.newDate;
+                    } else {
+                        alert('Date format should be MM/dd/yyyy');
+                        return ;
+                    }
+                }
+            }
 
+            assessment.$update(function success(response) {
+                $scope.editStates[index] = false;
+                $scope.assessments = response.assessments;
+            },  function (error) {
+                    $scope.error = error.message;
+                }
+            );
+        };
 
-    // Disable weekend selection
-    $scope.disabled = function(date, mode) {
-        return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-    };
+        // delete trainee assessment record
+        $scope.deleteAssessment = function(index, assessment) {
+            $scope.assessments.splice(index, 1);
+            var assessment = new Assessment(assessment);
+            assessment.traineeId = assessment.applicantId;
 
-    $scope.toggleMin = function() {
-        $scope.minDate = $scope.minDate ? null : new Date();
-    };
-      
-    $scope.toggleMin();
-
-    $scope.open = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-
-        $scope.opened = true;
-    };
-
-    $scope.dateOptions = {
-        formatYear: 'yy',
-        startingDay: 1
-
-    };
-
-    // $scope.initDate = new Date('2016-15-20');
-    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate', 'longDate'];
-    $scope.format = $scope.formats[4];
-}])
+            assessment.$remove(function success(response) {
+                $scope.success = true;
+            },  function (error) {
+                    $scope.error = error.message;
+                }
+            ); 
+        };
+    }
+]);

@@ -14,10 +14,7 @@ var mongoose 		= require('mongoose'),
  * Show the current Test
  */
 exports.read = function(req, res) {
-	console.log('Getting Test');
 	res.jsonp(req.test);
-	console.log('Request Test');
-	console.log('Request: ' + req.test);
 };
 
 exports.list = function(req, res) {

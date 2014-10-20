@@ -1,4 +1,4 @@
-<section data-ng-controller="InstructorsController" class="pad">
+<section data-ng-controller="InstructorsController" data-ng-init="getAssessment()" class="pad">
     <div class="container" data-ng-show="user.role === 'instructor'">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
@@ -6,34 +6,31 @@
                 <a class="btn btn-xs btn-danger pull-right" href="/#!/instructors/home">Back To Instructor Home</a>
             </div>
             <div class="col-md-offset-4 col-md-4" data-ng-controller="AssessmentController">
-                <form class="black-grey" data-ng-submit="updateAssessment()">
+                <form name="assessmentForm" class="black-grey" data-ng-show="!error" data-ng-submit="updateAssessment()">
                     <fieldset>
                         <div class="form-group">
                             <label class="control-label" for="assessment_name">Assessment Name</label>
-                            <div class="controls">
-                                <input type="text" data-ng-model="assessment.assessment_name" id="assessment_name" class="form-control" placeholder="" required>
+                            <div class="controls" data-ng-class="{'has-error': assessmentForm.assessment_name.$invalid && !assessmentForm.assessment_name.$pristine }">
+                                <input type="text" name="assessment_name" data-ng-model="assessment.assessment_name" id="assessment_name" class="form-control" placeholder="" required>
+                                <p data-ng-show="assessmentForm.assessment_name.$invalid" class="help-block text-danger">Please enter a test name.</p>
                             </div>
                         </div>
-                        <div>
-                            <em>{{dt | date:'fullDate'}}</em>
-                            <div>
-                                <p class="input-group">
-                                  <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-                                  <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                  </span>
-                                </p>
+                        <div class="form-group">
+                            <em>Assessment Date</em>
+                            <div class="controls">
+                                <mac-datepicker id="assessment.assessment_date" class="form-control" ng-model="assessment.assessment_date"></mac-datepicker>
                             </div>
                         </div>
                          <div class="form-group">
                             <label class="control-label" for="score">Score</label>
-                            <div class="controls">
-                                <input type="text" data-ng-model="assessment.score" id="score" class="form-control" placeholder="" required>
+                            <div class="controls" data-ng-class="{'has-error': assessmentForm.score.$invalid && !assessmentForm.score.$pristine }">
+                                <input type="number" name="score" data-ng-model="assessment.score" id="score" class="form-control" required>
+                                <p data-ng-show="assessmentForm.score.$invalid" class="help-block text-danger">Score should be number.</p>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <input type="submit" class="btn btn-large btn-success myButton">
+                            <input type="submit" value="Update" class="btn btn-large btn-default myButton" data-ng-disabled="assessmentForm.$invalid">
                         </div>
         				<div data-ng-show="error" class="text-danger">
         					<strong data-ng-bind="error"></strong>
@@ -50,5 +47,8 @@
                 <span><h4>You are not permitted to view this page</h4></span>
             </div>
         </div>
-    </div>
+    </div> {{error}}
+    <div class="alert alert-warning text-center" data-ng-show="error && user.role === 'instructor'" >
+        <p>Oops!! The assessment you are looking for doesn't exist</p>
+    </div>  
 </section>

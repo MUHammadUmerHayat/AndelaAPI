@@ -74,6 +74,13 @@ exports.createAssmt = function(req, res) {
     );
 };
 
+/**
+ * Get a particular assessment
+ */
+exports.getAssessment = function(req, res) {
+    res.jsonp(req.assessment);
+};
+
 /*
  * Update assessment
  */
