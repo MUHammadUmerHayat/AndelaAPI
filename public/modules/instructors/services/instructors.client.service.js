@@ -21,15 +21,15 @@ angular.module('instructors').factory('Assessment', ['$resource',
             }
         });
     }
-])
+]);
 
 // Instructor service
-.factory('Tests', ['$resource',
-    function($resource) {
-        return $resource('instructor', {}, {
-            update: {
-                method: 'PUT'
-            }
-        });
-    }
-]);
+// .factory('Tests', ['$resource',
+//     function($resource) {
+//         return $resource('instructor', {}, {
+//             update: {
+//                 method: 'PUT'
+//             }
+//         });
+//     }
+// ]);
