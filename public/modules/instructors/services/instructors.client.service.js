@@ -12,6 +12,17 @@ angular.module('instructors').factory('Assessment', ['$resource',
     }
 ])
 
+// Camp service
+.factory('Camp', ['$resource',
+    function($resource) {
+        return $resource('instructor/camp/:campId', { campId: '@_id' }, {
+            update: {
+                method: 'PUT'
+            }
+        });
+    }
+])
+
 // Instructor service
 .factory('Tests', ['$resource',
     function($resource) {

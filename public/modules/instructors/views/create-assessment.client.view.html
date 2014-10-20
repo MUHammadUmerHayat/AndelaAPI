@@ -20,15 +20,10 @@
                                 </span>
                             </div>
                         </div>
-                        <div>
+                        <div class="form-group">
                             <em>Assessment Date</em>
-                            <div>
-                                <p class="input-group">
-                                  <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-                                  <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                  </span>
-                                </p>
+                            <div class="controls">
+                                <mac-datepicker id="dt" class="form-control" ng-model="date"></mac-datepicker>
                             </div>
                         </div>
                          <div class="form-group">

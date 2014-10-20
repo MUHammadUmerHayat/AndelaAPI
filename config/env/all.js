@@ -32,11 +32,14 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/angular-file-upload/dist/angular-file-upload.min.js',
 				'public/lib/angular-file-upload/dist/angular-file-upload-shim.min.js',
-				'public/lib/moment/min/moment.min.js'
+				'public/lib/moment/min/moment.min.js',
+				'public/lib/angular-macgyver/lib/macgyver.js',
+				'public/lib/angular-macgyver/lib/macgyver-filters.js'
 			]
 		},
 		css: [
-			'public/modules/**/css/*.css'
+			'public/modules/**/css/*.css',
+			'public/lib/angular-macgyver/lib/*.css'
 		],
 		js: [
 			'public/config.js',

@@ -38,13 +38,27 @@
                                 </thead>
                                 <tbody class="capitalize">
                                     <tr data-ng-repeat= "assessment in assessments">
-                                        <td data-ng-bind="assessment.assessment_name"></td>
-                                        <td data-ng-bind="assessment.assessment_date | date"></td>
-                                        <td data-ng-bind="assessment.score"></td>
-                                        <td><a class="btn btn-default" href="/#!/instructors/trainees/{{trainee._id}}/{{assessment._id}}/edit" data-ng-show= "assessment.instructorId === user._id">
-                                            <i class="glyphicon glyphicon-edit"></i></a></td>
-                                        <td><a class="btn btn-default" data-ng-show= "assessment.instructorId === user._id" data-ng-click="deleteAssessment($index, assessment)">
-                                            <i class="glyphicon glyphicon-trash"></i></a></td>
+                                        <td><span data-ng-show="!editStates[$index]">{{assessment.assessment_name}}</span>
+                                            <input type="text" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newName">
+                                        </td>
+                                        <td><span data-ng-show="!editStates[$index]">{{assessment.assessment_date | date}} </span>
+                                            <input type="text" name="inputDate" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" ng-model="model.newDate" placeholder="MM/dd/yyyy">
+                                        </td>
+                                        <td><span data-ng-show="!editStates[$index]">{{assessment.score}}</span>
+                                            <input type="number" name="score" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newScore">
+                                        </td>
+                                        <td><a class="btn btn-default" data-ng-click="editStates[$index]=true" data-ng-show= "assessment.instructorId === user._id && !editStates[$index]">
+                                            <i class="glyphicon glyphicon-edit"></i></a>
+
+                                        <a class="btn btn-default" data-ng-click="updateAssessment($index, assessment, model)" data-ng-show= "assessment.instructorId === user._id && editStates[$index]" data-ng-disabled="!model.newName.length && !model.newScore && !model.newDate.length">
+                                            Save</a>
+                                        </td>
+                                        <td><a class="btn btn-default" data-ng-show= "assessment.instructorId === user._id && !editStates[$index]" data-ng-click="deleteAssessment($index, assessment)">
+                                            <i class="glyphicon glyphicon-trash"></i></a>
+
+                                        <a class="btn btn-default" data-ng-click="editStates[$index]=false" data-ng-show= "assessment.instructorId === user._id && editStates[$index]">
+                                            Cancel</a>
+                                        </td>
                                     </tr>            
                                 </tbody>
                             </table>

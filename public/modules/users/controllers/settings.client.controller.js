@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('SettingsController', ['$scope', '$timeout', '$http', '$location', 'Users', 'Authentication',
+	function($scope,  $timeout, $http, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 
 		// If user is not signed in then redirect back home
@@ -40,26 +40,30 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 
 		// Update a user profile
 		$scope.updateUserProfile = function() {
-			$scope.success = $scope.error = null;
 			var user = new Users($scope.user);
 
 			user.$update(function(response) {
-				$scope.success = true;
-				Authentication.user = response;
+				$scope.successOne = true;
+				$scope.user = Authentication.user = response;
+				$timeout(function() {
+	              $scope.successOne = null;
+	            }, 5000);
 			}, function(response) {
-				$scope.error = response.data.message;
+				$scope.errorOne = response.data.message;
+				$timeout(function() {
+	              $scope.errorOne = null;
+	            }, 5000);
 			});
 		};
 
 		// Change user password
 		$scope.changeUserPassword = function() {
 			$scope.success = $scope.error = null;
-
 			$http.post('/users/' + $scope.user._id + '/password', $scope.passwordDetails).success(function(response) {
+				
 				// If successful show success message and clear form
 				$scope.success = true;
 				$scope.passwordDetails = null;
-				$location.path('/instructors/home');
 			}).error(function(response) {
 				$scope.error = response.message;
 			});

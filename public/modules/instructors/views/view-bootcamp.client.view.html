@@ -1,5 +1,5 @@
 <section data-ng-controller="InstructorsController" data-ng-init="viewBootcamp()" class="pad">
-    <div class="container" data-ng-show="user.role === 'instructor'">
+    <div class="container" data-ng-show="user.role === 'instructor' && !error">
         <ng-include src='"/modules/instructors/views/instructor.sidebar.html"'></ng-include>
         <div class="admin-view">
             <div class="col-sm-12 col-lg-12" data-ng-show="user">
@@ -10,25 +10,25 @@
             </div>
 
             <div>
-                <table class="list">
+                <table class="list list-link" data-ng-show="applicants.length">
                     <thead>
                         <tr>
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Email</th>
-                            <th>Score</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="capitalize">
-                        <tr data-ng-repeat="applicant in applicants">
-                            <td data-ng-bind="applicant.firstName"></td>
-                            <td data-ng-bind="applicant.lastName"></td>
-                            <td data-ng-bind="applicant.email"></td>
-                            <td data-ng-bind="applicant.score"></td>
+                        <tr data-ng-repeat="applicant in applicants | filter: onlyTrainees">
+                            <td><a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.firstName"></a></td>
+                            <td><a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.lastName"></a></td>
+                            <td><a data-ng-href="/#!/instructors/trainees/{{applicant._id}}" data-ng-bind="applicant.email"></a></td>
                         </tr>               
                     </tbody>
                 </table>
+                <div class="alert alert-warning text-center" data-ng-if="bootcamp.$resolved && !applicants.length">
+                    <span> No applicants have applied to this Bootcamp </span>
+                </div>
             </div>
         </div>
     </div>
@@ -40,5 +40,8 @@
             </div>
         </div>
     </div>
+    <div class="alert alert-warning text-center" data-ng-show="error && user.role === 'instructor'" >
+        <p>Oops!! The page you are looking for doesn't exist</p>
+    </div>  
 </section>
  

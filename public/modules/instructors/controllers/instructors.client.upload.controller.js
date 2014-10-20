@@ -34,8 +34,7 @@ var ProfileController = function($scope, $http, $upload, $stateParams, $location
             data: $scope.user,
             file: $scope.file
         }).success(function(response) {
-        	$scope.user.photo = response.photo;
-        	Authentication.user = response;
+        	$scope.user = Authentication.user = response;
             $scope.success = 'Your details have been updated successfully';
         }).error(function(err) {
         	$scope.error = err.message;

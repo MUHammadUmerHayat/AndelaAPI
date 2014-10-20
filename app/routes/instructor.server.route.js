@@ -36,7 +36,7 @@ module.exports = function(app) {
     
 
     // view all bootcamps
-    app.route('/instructor/bootcamps')
+    app.route('/instructor/camp')
         .get(users.requiresLogin, instructor.checkRights, admin.bootCamps);
 
 
