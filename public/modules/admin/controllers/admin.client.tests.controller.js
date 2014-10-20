@@ -84,7 +84,6 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
         };
 
         $scope.createTest = function() {
-            console.log("message");
             var test = new Tests({
                 questions: $scope.questions,
                 optionOne: $scope.optionOne,
@@ -93,7 +92,6 @@ angular.module('admin').controller('TestsController', ['$scope', '$http', 'Authe
                 answerOne: $scope.test.answerOne,
                 answerTwo: $scope.test.answerTwo
             });
-            console.log('message', test);
             test.$save(function(response) {
                 $location.path('/admin/test');
             }, function(response) {
