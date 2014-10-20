@@ -1,26 +1,25 @@
-
 <section data-ng-controller="AdminController" class="pad">
-  <div class="container" data-ng-show="user.role === 'admin'">
-  <div class="admin-test">
-    <ng-include src='"/modules/admin/views/admin.sidebar.html"'></ng-include>
+    <div class="container" data-ng-show="user.role === 'admin'">
+        <div class="admin-test">
+            <ng-include src='"/modules/admin/views/admin.sidebar.html"'></ng-include>
 
-    <div class="admin-view">
-      <p>You're signed in as Admin with the following details:</p>
-      <ul class="list-group">
-        <li class="list-group-item">Name: <b data-ng-bind="user.firstName"></b> <b data-ng-bind="user.lastName"></b></li>
-        <li class="list-group-item">Username: <b data-ng-bind="user.username"></b></li>
-        <li class="list-group-item">Email: <b data-ng-bind="user.email"></b> </li>
-      </ul>
+            <div class="admin-view">
+                <p>You're signed in as Admin with the following details:</p>
+                <ul class="list-group">
+                    <li class="list-group-item">Name: <b data-ng-bind="user.firstName"></b>  <b data-ng-bind="user.lastName"></b>
+                    </li>
+                    <li class="list-group-item">Username: <b data-ng-bind="user.username"></b>
+                    </li>
+                    <li class="list-group-item">Email: <b data-ng-bind="user.email"></b> 
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
     </div>
-        
-  </div>
 
-  </div>
-
-  <div class="container" data-ng-show="user.role !== 'admin'">
-    <b class="reqLogin">You have no access to this page. You need to <a href="/#!/admin">signin</a> as an admin.</b>
-  </div>
+    <div class="container" data-ng-show="user.role !== 'admin'">
+        <b class="reqLogin">You have no access to this page. You need to <a href="/#!/admin">signin</a> as an admin.</b>
+    </div>
 </section>
-
-
-

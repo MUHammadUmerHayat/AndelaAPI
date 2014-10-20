@@ -73,7 +73,10 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     }
-}, { collection : 'users', discriminatorKey : '_type' });
+}, {
+    collection: 'users',
+    discriminatorKey: '_type'
+});
 
 /**
  * SkillCategory Schema
@@ -92,7 +95,7 @@ var SkillSchema = new Schema({
     name: {
         type: String
     },
-    category:{
+    category: {
         type: Schema.ObjectId,
         ref: 'SkillCategory'
     },
@@ -102,20 +105,20 @@ var SkillSchema = new Schema({
  * Assessment Schema
  */
 var AssessmentSchema = new Schema({
-    assessment_name:{
+    assessment_name: {
         type: String,
         trim: true,
         required: 'Name of assessment is important'
     },
-    assessment_date:{
+    assessment_date: {
         type: Date,
         required: 'Date of assessment is important'
     },
-    applicantId:{
+    applicantId: {
         type: Schema.ObjectId,
-        ref: 'Applicant' 
+        ref: 'Applicant'
     },
-    instructorId:{
+    instructorId: {
         type: Schema.ObjectId,
         ref: 'Instructor'
     },
@@ -124,7 +127,7 @@ var AssessmentSchema = new Schema({
         required: 'The Applicant score is compulsory'
     }
 
- });
+});
 
 /**
  * Placement Schema
@@ -148,10 +151,10 @@ var PlacementSchema = new Schema({
         required: 'End date is important'
     }
 
- });
+});
 
 /**
- * 
+ *
  * Applicant Schema, Trainee and Fellow
  */
 var ApplicantSchema = UserSchema.extend({
@@ -181,15 +184,16 @@ var ApplicantSchema = UserSchema.extend({
     portfolio: {
         type: String
     },
-    skillSet: [
-        {
-            skill: { type: Schema.Types.ObjectId, ref: 'Skill' },
-            rating: {
-                type: Number
-            }
+    skillSet: [{
+        skill: {
+            type: Schema.Types.ObjectId,
+            ref: 'Skill'
+        },
+        rating: {
+            type: Number
         }
-    ],
-    skillSummary:{},
+    }],
+    skillSummary: {},
     profile: {
         type: String
     },
@@ -198,7 +202,10 @@ var ApplicantSchema = UserSchema.extend({
         ref: 'Bootcamp'
     },
     assessments: [AssessmentSchema],
-    placements: [{ type: Schema.Types.ObjectId, ref: 'Placement' }]
+    placements: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Placement'
+    }]
 });
 
 /**
@@ -219,7 +226,7 @@ var InstructorSchema = UserSchema.extend({
 });
 
 
- /**
+/**
  * Bootcamp Schema
  */
 var BootcampSchema = new Schema({
@@ -243,9 +250,12 @@ var BootcampSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    applicants: [{ type: Schema.Types.ObjectId, ref: 'Applicant' }]
+    applicants: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Applicant'
+    }]
 });
- 
+
 /**
  * Hook a pre save method to hash the password
  */
@@ -283,58 +293,70 @@ InstructorSchema.pre('save', function(next) {
 });
 
 BootcampSchema.pre('save', function(next) {
-    if(this.start_date && this.location){
+    if (this.start_date && this.location) {
         this.camp_name = moment(this.start_date).format('MMMM D, YYYY') + ', ' + this.location;
     }
     next();
-    
+
 });
 
-SkillSchema.post('save', function(next){
+SkillSchema.post('save', function(next) {
     var skill = this;
     var Applicant = mongoose.model('Applicant');
-    Applicant.find().exec(function(err, applicants){
+    Applicant.find().exec(function(err, applicants) {
         applicants.forEach(function(applicant) {
-            Applicant.update(
-                { _id: applicant._id },
-                { $push: { 'skillSet': {skill: skill._id, rating: 0} }
-                }, function (err) {
-                    if (err) {
-                        return {
-                            message: 'Couldn\'t add skill to applicant'
-                        };
+            Applicant.update({
+                _id: applicant._id
+            }, {
+                $push: {
+                    'skillSet': {
+                        skill: skill._id,
+                        rating: 0
                     }
                 }
-            );
+            }, function(err) {
+                if (err) {
+                    return {
+                        message: 'Couldn\'t add skill to applicant'
+                    };
+                }
+            });
         });
     });
 });
 
-ApplicantSchema.post('save', function(next){
+ApplicantSchema.post('save', function(next) {
     var applicant = this;
     var Skill = mongoose.model('Skill');
     var Applicant = mongoose.model('Applicant');
     //Initialize skill summary
     var SkillCategory = mongoose.model('SkillCategory');
     var skillSummary = {};
-    SkillCategory.find().exec(function(err, skillCategories){
+    SkillCategory.find().exec(function(err, skillCategories) {
         skillCategories.forEach(function(category) {
             skillSummary[category.name] = 0;
         });
-        Skill.find().exec(function(err, skills){
+        Skill.find().exec(function(err, skills) {
             skills.forEach(function(skill) {
-                Applicant.update(
-                    { _id: applicant._id },
-                    { $push: { 'skillSet': {skill: skill._id, rating: 0}},
-                      $set: { 'skillSummary': skillSummary }
-                    }, function (err) {
-                        if (err) {
-                            return {
-                                message: 'Couldn\'t add skill to applicant'
-                            };
+                Applicant.update({
+                    _id: applicant._id
+                }, {
+                    $push: {
+                        'skillSet': {
+                            skill: skill._id,
+                            rating: 0
                         }
+                    },
+                    $set: {
+                        'skillSummary': skillSummary
                     }
-               );
+                }, function(err) {
+                    if (err) {
+                        return {
+                            message: 'Couldn\'t add skill to applicant'
+                        };
+                    }
+                });
             });
         });
     });
