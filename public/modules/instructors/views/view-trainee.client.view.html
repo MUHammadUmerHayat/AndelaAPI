@@ -44,11 +44,11 @@
                                         </td>
                                         <td>
                                             <span data-ng-show="!editStates[$index]">{{assessment.assessment_date | date}}</span>
-                                            <input type="text" name="inputDate" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" ng-model="model.newDate" placeholder="MM/dd/yyyy" min="0" max="100">
+                                            <input type="text" name="inputDate" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" ng-model="model.newDate" placeholder="MM/dd/yyyy">
                                         </td>
                                         <td>
                                             <span data-ng-show="!editStates[$index]">{{assessment.score}}</span>
-                                            <input type="number" name="score" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newScore">
+                                            <input type="number" name="score" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newScore"  min="0" max="100">
                                         </td>
                                         <td>
                                             <a class="btn btn-default" data-ng-click="editStates[$index]=true" data-ng-show="assessment.instructorId === user._id && !editStates[$index]">
