@@ -44,7 +44,7 @@
                                         </td>
                                         <td>
                                             <span data-ng-show="!editStates[$index]">{{assessment.assessment_date | date}}</span>
-                                            <input type="text" name="inputDate" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" ng-model="model.newDate" placeholder="MM/dd/yyyy">
+                                            <input type="text" name="inputDate" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" ng-model="model.newDate" placeholder="MM/dd/yyyy" min="0" max="100">
                                         </td>
                                         <td>
                                             <span data-ng-show="!editStates[$index]">{{assessment.score}}</span>
