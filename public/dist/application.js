@@ -6,14 +6,14 @@ var ApplicationConfiguration = function () {
     var applicationModuleVendorDependencies = [
         'ngResource',
         'ngCookies',
-        'Mac',
         'ngAnimate',
         'ngTouch',
         'ngSanitize',
         'ui.router',
         'ui.bootstrap',
         'ui.utils',
-        'angularFileUpload'
+        'angularFileUpload',
+        'Mac'
       ];
     // Add a new vertical module
     var registerModule = function (moduleName) {
@@ -1886,11 +1886,6 @@ angular.module('instructors').factory('Assessment', [
   '$resource',
   function ($resource) {
     return $resource('instructor/camp/:campId', { campId: '@_id' }, { update: { method: 'PUT' } });
-  }
-]).factory('Tests', [
-  '$resource',
-  function ($resource) {
-    return $resource('instructor', {}, { update: { method: 'PUT' } });
   }
 ]);'use strict';
 // Config HTTP Error Handling
