@@ -48,7 +48,7 @@
                                         </td>
                                         <td>
                                             <span data-ng-show="!editStates[$index]">{{assessment.score}}</span>
-                                            <input type="number" name="score" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newScore">
+                                            <input type="number" name="score" data-ng-show="editStates[$index] && assessment.instructorId === user._id" class="form-control" data-ng-model="model.newScore"  min="0" max="100">
                                         </td>
                                         <td>
                                             <a class="btn btn-default" data-ng-click="editStates[$index]=true" data-ng-show="assessment.instructorId === user._id && !editStates[$index]">
